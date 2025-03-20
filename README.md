@@ -1,0 +1,1 @@
+# chatgpt-custom-shortcuts-pro-privacy-policy
