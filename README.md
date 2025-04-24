@@ -41,14 +41,17 @@ The full [Changelog](#changelog) is now maintained exclusively in this readme.
 - Shrink UI Clutter for More Space
 - Collapse/Expand Sidebar via Toggle Button
 
+
+
+
+#### Changelog
 ```
 █████████████████████████████████
 ███▓▓▓▓▓▓▓░ CHANGE LOG ░▓▓▓▓▓▓███
 █████████████████████████████████
 ```
-#### Changelog
-If you’d like to help maintain this extension and can set up a GitHub repo to kick off the community, contact me via the support hub link at bottom of this page. 
 
+If you’d like to help maintain this extension and can set up a GitHub repo to kick off the community, contact me via the support hub link at bottom of this page. 
 ---
 
 #### [4.14.2025]
