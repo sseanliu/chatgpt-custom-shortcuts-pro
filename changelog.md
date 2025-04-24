@@ -1,6 +1,8 @@
+```
 █████████████████████████████████
 ███▓▓▓▓▓▓▓░ CHANGE LOG ░▓▓▓▓▓▓███
 █████████████████████████████████
+```
 If you’d like to help maintain this extension and can set up a GitHub repo to kick off the community, contact me via the support hub link at bottom of this page. 
 
 ---
