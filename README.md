@@ -51,8 +51,14 @@ The full [Changelog](#changelog) is now maintained exclusively in this readme.
 █████████████████████████████████
 ```
 
-If you’d like to help maintain this extension and can set up a GitHub repo to kick off the community, contact me via the support hub link at bottom of this page. 
+#### If you’d like to help maintain this extension and can set up a GitHub repo to kick off the community, contact me via the support hub link at bottom of this page. 
 ---
+
+#### [4.14.2025]
+##### Improved or Fixed
+- Scrolling offset adjusted based on whether TopBarToBottom is active.
+- Scrolling speed tweaked
+- GSAP implemented in more of the css tweaks
 
 #### [4.14.2025]
 ##### Added
