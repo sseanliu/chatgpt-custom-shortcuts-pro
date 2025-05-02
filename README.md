@@ -12,6 +12,7 @@ The full [Changelog](#changelog) is now maintained exclusively in this readme.
 - **Scroll to Bottom:** `Alt + z`
 - **Redirect PageUp/PageDown to Chat:** *(optionally disabled)*
 - **Move Top Bar to Bottom:** *(optionally faded for cleaner UI)*
+- **Keyboard Shortcuts to quickly switch model**
 
 ##### Copy & Select
 - **Copy Lowest Visible Response:** `Alt + c` *(cycles through messages, strips markdown if set)*
@@ -53,6 +54,18 @@ The full [Changelog](#changelog) is now maintained exclusively in this readme.
 
 #### If you’d like to help maintain this extension and can set up a GitHub repo to kick off the community, contact me via the support hub link at bottom of this page. 
 ---
+
+Current Known Bugs:
+- Copy and join all code boxes is including text outside of code boxes. This feature may be retired. 
+
+#### [5.1.2025]
+##### Improved or Fixed
+- Added keybord shortcuts to show the model picker
+- Added keyboard shortcuts using alt or control plus numbers 1-5 to switch between models. 
+- Fonally got the bottom bar opacity to consistently fade to the user set opacity. 
+- 6 languages officially supported including Englisg, Spanish, Hindi, Japanese, Ukrainian and Russian. 
+- Scrolling functions faster and more aggressive.  
+- Fixed bug in settings where the opacity slider for bottom bar was showing even when the feature was disabled. 
 
 #### [4.25.2025]
 ##### Improved or Fixed
