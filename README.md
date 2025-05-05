@@ -56,10 +56,13 @@ The full [Changelog](#changelog) is now maintained exclusively in this readme.
 ---
 
 Current Known Bugs:
-- Copy and join all code boxes is including text outside of code boxes. This feature may be retired. 
+- Copy and join all code boxes is including text outside of code boxes. This feature may be retired soon. 
+
+#### [5.5.2025]
+- Applied CSS to constrain table width within chat, preventing horizontal scroll bars. Issue was unrelated to this extension but visually disruptive.
+- Improved sync reliability for custom opacity setting on bottom bar.
 
 #### [5.1.2025]
-##### Improved or Fixed
 - Added keybord shortcuts to show the model picker
 - Added keyboard shortcuts using alt or control plus numbers 1-5 to switch between models. 
 - Fonally got the bottom bar opacity to consistently fade to the user set opacity. 
@@ -68,7 +71,6 @@ Current Known Bugs:
 - Fixed bug in settings where the opacity slider for bottom bar was showing even when the feature was disabled. 
 
 #### [4.25.2025]
-##### Improved or Fixed
 - Scrolling offset adjusted based on whether TopBarToBottom is active.
 - Scrolling speed tweaked
 - GSAP implemented in more of the css tweaks
