@@ -58,6 +58,11 @@ The full [Changelog](#changelog) is now maintained exclusively in this readme.
 Current Known Bugs:
 - Copy and join all code boxes is including text outside of code boxes. This feature may be retired soon. 
 
+#### [5.9.2025]
+- Fixed collapse sidebar after changes to underlying page. New method should be more resilient. 
+- Rehid teams junk in sidebar. Rehid "Explore GPTs" item when collapsed. 
+- Fixed sidebar sticky header transparency bug. 
+
 #### [5.5.2025]
 - Applied CSS to constrain table width within chat, preventing horizontal scroll bars. Issue was unrelated to this extension but visually disruptive.
 - Improved sync reliability for custom opacity setting on bottom bar.
