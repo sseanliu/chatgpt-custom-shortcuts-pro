@@ -5,6 +5,10 @@ The full changelog and feature history is maintained here.
 Current Known Bugs:
 - Copy and join all code boxes is including text outside of code boxes. This feature may be retired soon. 
 
+#### [5.13.2025]
+- Fixed collapse sidebar after changes, again.
+- Rehid teams junk in sidebar, again.
+
 #### [5.9.2025]
 - Fixed collapse sidebar after changes to underlying page. New method should be more resilient. 
 - Rehid teams junk in sidebar. Rehid "Explore GPTs" item when collapsed. 

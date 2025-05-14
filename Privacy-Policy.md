@@ -1,7 +1,13 @@
-Currently, this extension does not collect any data. The commented out text below is a placeholder in the event I implement feature usage tracking in future. 
+# Privacy Policy
+
+This extension does not collect, store, or transmit any user data.
+
+If this changes in the future (for optional feature usage tracking or similar), the policy will be updated here before any change goes live.
 
 
 <!--
+If we decide to track feature usage, we will use this privacy policy below.
+
 # ChatGPT Custom Shortcuts Pro Privacy Policy
 
 ChatGPT Custom Shortcuts Pro collects anonymized feature usage data to improve the extension.
