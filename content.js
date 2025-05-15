@@ -1352,42 +1352,68 @@ function getScrollableContainer() {
 
 
 
-        const isMac = navigator.platform.toUpperCase().indexOf("MAC") >= 0;
+        const isMac = /(Mac|iPhone|iPad|iPod)/i.test(navigator.userAgent);
 
         document.addEventListener('keydown', (event) => {
-            if (event.key === "Control" || event.key === "Meta") return; // Ignore single Ctrl or Command press
+            if (
+                event.isComposing ||                  // IME active (Hindi, Japanese)
+                event.keyCode === 229 ||              // Generic composition keyCode
+                ["Control", "Meta", "Alt", "AltGraph"].includes(event.key) ||  // Modifier keys
+                event.getModifierState?.("AltGraph") ||                        // AltGr pressed (ES, EU)
+                ["Henkan", "Muhenkan", "KanaMode"].includes(event.key)         // JIS IME-specific keys
+            ) {
+                return;
+            }            
 
-            const isCtrlPressed = isMac ? event.metaKey : event.ctrlKey; // Use Command (⌘) on Mac, Ctrl (⌃) elsewhere
+            const isCtrlPressed = isMac ? event.metaKey : event.ctrlKey;
             const isAltPressed = event.altKey;
 
-            // Normalize pressed key
-            let pressedKey = event.key.toLowerCase();
-            if (isMac && isAltPressed) {
-                if (event.code && event.code.startsWith("Key")) {
-                    pressedKey = event.code.slice(3).toLowerCase();
-                }
-            }
+            // Determine the intended key in a layout-independent way using event.key
+            // Canonical key: use layout-aware key for text, keep exact for special keys
+            let keyIdentifier = event.key.length === 1
+                ? event.key.toLowerCase()
+                : event.key;        
 
-            // Handle Alt-based shortcuts
+            // Handle Alt-based shortcuts (only if Alt is enabled for model switching or not a model-switch combo)
             if (isAltPressed && !isCtrlPressed) {
-                const altShortcut = keyFunctionMappingAlt[pressedKey];
-
+                // If user opted to use Ctrl for model switcher, skip Alt-based model switching keys to avoid conflicts
+                const modelToggleKey = shortcutKeyToggleModelSelector.toLowerCase();
+                if (window.useAltForModelSwitcherRadio === false) {
+                    if (keyIdentifier === modelToggleKey || /^\d$/.test(keyIdentifier)) {
+                        // Do not intercept Alt+<model key> or Alt+number when Alt-for-model is disabled (allows symbol/input)
+                        return;
+                    }
+                }
+                const altShortcut = keyFunctionMappingAlt[keyIdentifier];
                 if (altShortcut) {
-                    event.preventDefault(); // Prevent default only if the shortcut is assigned
-                    altShortcut();
+                    event.preventDefault();  // Prevent default when a valid Alt shortcut is found (stop symbol insertion on macOS)
+                    altShortcut();           // Invoke the mapped Alt-key shortcut action
                 }
             }
 
-            // Handle Ctrl/Command-based shortcuts
+            // Handle Ctrl/Command‑based shortcuts (model‑menu **toggle** only)
+            // Number‑key selection is left to the IIFE so we don’t duplicate logic.
             if (isCtrlPressed && !isAltPressed) {
-                if (event.key in keyFunctionMappingCtrl) {
-                    if (isCtrlShortcutEnabled(event.key)) {
+                const modelToggleKey = shortcutKeyToggleModelSelector.toLowerCase();
+
+                // If user chose Ctrl/Cmd for the model switcher, only intercept the toggle key (e.g. Ctrl + W).
+                if (window.useControlForModelSwitcherRadio === true && keyIdentifier === modelToggleKey) {
+                    event.preventDefault();
+                    window.toggleModelSelector();   // open / close the menu
+                    return;                         // allow Ctrl/Cmd + 1‑5 to fall through to the IIFE
+                }
+
+                // … everything else (Ctrl + Enter, Ctrl + Backspace, etc.) stays the same ↓
+                if (keyIdentifier in keyFunctionMappingCtrl) {
+                    if (isCtrlShortcutEnabled(keyIdentifier)) {
                         event.preventDefault();
-                        keyFunctionMappingCtrl[event.key]();
+                        keyFunctionMappingCtrl[keyIdentifier]();
                     }
                 }
             }
+
         });
+
 
 
         // Function to check if the specific Ctrl/Command + Key shortcut is enabled
@@ -2101,16 +2127,20 @@ setTimeout(() => {
                             // Wait for target UI pieces
                             const [topBarLeft, topBarRight, composerForm] = await waitForElements(
                                 [
-                                    "div.flex.items-center.gap-0",
-                                    "div.flex.items-center.gap-2.pe-1.leading-\\[0\\]",
-                                    "form[data-type='unified-composer']"
+                                    "#page-header > .flex.items-center",                             // LEFT: sidebar + new chat + model
+                                    "#page-header > .flex.items-center.gap-2.pe-1.leading-\\[0\\]",  // RIGHT: conversation header buttons
+                                    "form[data-type='unified-composer']"                             // Composer form
                                 ],
                                 12000,
                                 200
                             );
 
+
+
+
                             if (!topBarLeft || !topBarRight || !composerForm) return;
-                            const composerContainer = composerForm.querySelector(".border-token-border-light") || composerForm;
+                            const composerContainer = composerForm.querySelector(".border-token-border-default") || composerForm;
+
 
                             injectBottomBar(topBarLeft, topBarRight, composerContainer);
 
@@ -2174,17 +2204,20 @@ setTimeout(() => {
                                     }, 2500);
                                 });
 
-                                // Capture height before append
+                                // Capture scroll position before inserting
                                 const scrollContainer = typeof getScrollableContainer === 'function' && getScrollableContainer();
                                 const prevScrollBottom = scrollContainer ? scrollContainer.scrollHeight - scrollContainer.scrollTop : 0;
 
-                                composerContainer.appendChild(bottomBar); // ↰ layout shift here
+                                // Drop the bar *after* the form element
+                                const formEl = composerContainer.closest('form') || composerContainer;
+                                formEl.insertAdjacentElement('afterend', bottomBar);
 
-                                // Shift scroll to preserve bottom alignment
+                                // Restore scroll position
                                 if (scrollContainer) {
                                     const delta = scrollContainer.scrollHeight - prevScrollBottom;
                                     scrollContainer.scrollTop += delta;
                                 }
+
 
                                 gsap.set(bottomBar, { opacity: 0, y: 10, display: 'flex' });
                                 gsap.to(bottomBar, {
