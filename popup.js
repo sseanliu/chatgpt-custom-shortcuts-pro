@@ -385,7 +385,7 @@ document.addEventListener('DOMContentLoaded', function () {
         'shortcutKeyScrollToTop',
         'shortcutKeyPreviousThread',
         'shortcutKeyNextThread',
-        'selectAllLowestResponse',
+        'selectThenCopy',
         'shortcutKeyToggleSidebarFoldersButton',
         'shortcutKeyToggleModelSelector'
     ];

@@ -79,6 +79,34 @@ function getScrollableContainer() {
     return document.scrollingElement || document.documentElement;
 }
 
+// Utility function: findButton tries aria-label, data-testid, then SVG path fallback
+// Purpose: Allows all button lookups to use a single resilient API.
+// Finds ALL matching buttons, prioritizing testId, then SVG path, then aria-label (best for multi-language)
+function findAllButtons({ testId, svgPaths = [], ariaLabel }) {
+    let matches = [];
+    if (testId) {
+        matches = Array.from(document.querySelectorAll(`button[data-testid="${testId}"]`));
+        if (matches.length) return matches;
+    }
+    for (const pathD of svgPaths) {
+        const svgPathsFound = Array.from(document.querySelectorAll(`button svg path[d^="${pathD}"]`));
+        const btns = svgPathsFound.map(svgPath => svgPath.closest('button')).filter(Boolean);
+        if (btns.length) return btns;
+    }
+    if (ariaLabel) {
+        matches = Array.from(document.querySelectorAll(`button[aria-label="${ariaLabel}"]`));
+        if (matches.length) return matches;
+    }
+    return [];
+}
+
+// Finds the LAST matching button (lowest in DOM) using same selector priority
+function findButton(args) {
+    const btns = findAllButtons(args);
+    return btns.length ? btns[btns.length - 1] : null;
+}
+
+
 
 // =====================================
 // @note Sync Chrome Storage + UI State + Expose Global Variables
@@ -243,6 +271,48 @@ function getScrollableContainer() {
         link.rel = "stylesheet";
         document.head.appendChild(link);
     };
+
+
+    // --- Begin MutationObserver Message Cache ---
+    // Purpose: Keeps a live, up-to-date cache of message elements.
+    window.cachedConversationTurns = [];
+
+    function getConversationTurns() {
+        return Array.from(
+            document.querySelectorAll('[data-testid^="conversation-turn-"], [class*="conversation-turn"]')
+        );
+    }
+    window.cachedConversationTurns = getConversationTurns();
+
+    const msgObserver = new MutationObserver(mutations => {
+        for (const m of mutations) {
+            for (const node of m.addedNodes) {
+                if (node.nodeType !== Node.ELEMENT_NODE) continue;
+                if (node.matches && node.matches('[data-testid^="conversation-turn-"], [class*="conversation-turn"]')) {
+                    const turnId = node.getAttribute('data-testid');
+                    if (turnId && !window.cachedConversationTurns.some(e => e.getAttribute('data-testid') === turnId)) {
+                        window.cachedConversationTurns.push(node);
+                    }
+                } else if (node.querySelectorAll) {
+                    const turns = node.querySelectorAll('[data-testid^="conversation-turn-"], [class*="conversation-turn"]');
+                    turns.forEach(el => {
+                        const id = el.getAttribute('data-testid');
+                        if (id && !window.cachedConversationTurns.some(e => e.getAttribute('data-testid') === id)) {
+                            window.cachedConversationTurns.push(el);
+                        }
+                    });
+                }
+            }
+        }
+    });
+    // Attach observer to scroll container or body
+    const observerContainer = getScrollableContainer() || document.body;
+    if (observerContainer) {
+        msgObserver.observe(observerContainer, { childList: true, subtree: true });
+    }
+    // --- End MutationObserver Message Cache ---
+
+
 
     function createButton(icon, onClick, tooltipText, id) {
         const button = document.createElement('button');
@@ -604,6 +674,7 @@ function getScrollableContainer() {
         </svg>
     `;
 
+
         downButton.onclick = function () {
             resetScrollState();
 
@@ -692,7 +763,7 @@ function getScrollableContainer() {
 
 
     // @note Keyboard shortcut defaults 
-    chrome.storage.sync.get(['shortcutKeyScrollUpOneMessage', 'shortcutKeyScrollDownOneMessage', 'shortcutKeyCopyLowest', 'shortcutKeyEdit', 'shortcutKeySendEdit', 'shortcutKeyCopyAllResponses', 'shortcutKeyCopyAllCodeBlocks', 'shortcutKeyClickNativeScrollToBottom', 'shortcutKeyScrollToTop', 'shortcutKeyNewConversation', 'shortcutKeySearchConversationHistory', 'shortcutKeyToggleSidebar', 'shortcutKeyActivateInput', 'shortcutKeySearchWeb', 'shortcutKeyPreviousThread', 'shortcutKeyNextThread', 'selectAllLowestResponse', 'shortcutKeyToggleSidebarFoldersButton', 'shortcutKeyClickSendButton', 'shortcutKeyClickStopButton', 'shortcutKeyToggleModelSelector'], (data) => {
+    chrome.storage.sync.get(['shortcutKeyScrollUpOneMessage', 'shortcutKeyScrollDownOneMessage', 'shortcutKeyCopyLowest', 'shortcutKeyEdit', 'shortcutKeySendEdit', 'shortcutKeyCopyAllResponses', 'shortcutKeyCopyAllCodeBlocks', 'shortcutKeyClickNativeScrollToBottom', 'shortcutKeyScrollToTop', 'shortcutKeyNewConversation', 'shortcutKeySearchConversationHistory', 'shortcutKeyToggleSidebar', 'shortcutKeyActivateInput', 'shortcutKeySearchWeb', 'shortcutKeyPreviousThread', 'shortcutKeyNextThread', 'selectThenCopy', 'shortcutKeyToggleSidebarFoldersButton', 'shortcutKeyClickSendButton', 'shortcutKeyClickStopButton', 'shortcutKeyToggleModelSelector'], (data) => {
         const shortcutKeyScrollUpOneMessage = data.shortcutKeyScrollUpOneMessage || 'a';
         const shortcutKeyScrollDownOneMessage = data.shortcutKeyScrollDownOneMessage || 'f';
         const shortcutKeyCopyLowest = data.shortcutKeyCopyLowest || 'c';
@@ -709,7 +780,7 @@ function getScrollableContainer() {
         const shortcutKeySearchWeb = data.shortcutKeySearchWeb || 'q';
         const shortcutKeyPreviousThread = data.shortcutKeyPreviousThread || 'j';
         const shortcutKeyNextThread = data.shortcutKeyNextThread || ';';
-        const selectAllLowestResponse = data.selectAllLowestResponse || 'x';
+        const selectThenCopy = data.selectThenCopy || 'x';
         const shortcutKeyToggleSidebarFoldersButton = data.shortcutKeyToggleSidebarFoldersButton || 'g';
         const shortcutKeyClickSendButton = data.shortcutKeyClickSendButton || 'Enter';
         const shortcutKeyClickStopButton = data.shortcutKeyClickStopButton || 'Backspace';
@@ -717,23 +788,91 @@ function getScrollableContainer() {
 
         let scrollCompleted = false;
 
+        function splitByCodeFences(text) {
+            const lines = text.split(/\r?\n/);
+            const fences = [];
+            for (let i = 0; i < lines.length; ++i) {
+                // Accept up to 3 spaces before the fence
+                const m = lines[i].match(/^ {0,3}([`~]{3,})([^\n]*)$/);
+                if (m) {
+                    fences.push({ line: i, char: m[1][0], len: m[1].length, raw: m[1], info: m[2] });
+                }
+            }
 
+            let regions = [];
+            let lastLine = 0;
+            let i = 0;
+            while (i < fences.length) {
+                const open = fences[i];
+                let closeIdx = -1;
+                for (let j = i + 1; j < fences.length; ++j) {
+                    if (
+                        fences[j].char === open.char &&
+                        fences[j].len === open.len
+                    ) {
+                        closeIdx = j;
+                        break;
+                    }
+                }
+                if (closeIdx > -1) {
+                    if (open.line > lastLine) {
+                        regions.push({
+                            text: lines.slice(lastLine, open.line).join('\n') + '\n',
+                            isCode: false
+                        });
+                    }
+                    regions.push({
+                        text: lines.slice(open.line, fences[closeIdx].line + 1).join('\n') + '\n',
+                        isCode: true
+                    });
+                    lastLine = fences[closeIdx].line + 1;
+                    i = closeIdx + 1;
+                } else {
+                    break;
+                }
+            }
+            if (lastLine < lines.length) {
+                regions.push({
+                    text: lines.slice(lastLine).join('\n'),
+                    isCode: false
+                });
+            }
+            return regions;
+        }
+        
+
+        function stripMarkdownOutsideCodeblocks(text) {
+            return splitByCodeFences(text)
+                .map(seg => seg.isCode ? seg.text : removeMarkdown(seg.text))
+                .join('');
+        }
+        
+        
 
         function removeMarkdown(text) {
             return text
+                // Move 4+ backticks appearing after text to their own line
+                .replace(/([^\n`]+?)\s*(`{4,})(\s*)$/gm, "$1\n$2")
+                // Move 4+ tildes appearing after text to their own line
+                .replace(/([^\n~]+?)\s*(~{4,})(\s*)$/gm, "$1\n$2")
+                // Replace leading * or + or - with "- ", even if followed by spaces or markdown
+                .replace(/^(\s*)[\*\-\+]\s+/gm, "$1- ")
                 // Remove bold/italics
                 .replace(/(\*\*|__)(.*?)\1/g, "$2")
                 .replace(/(\*|_)(.*?)\1/g, "$2")
                 // Remove leading '#' from headers
                 .replace(/^#{1,6}\s+(.*)/gm, "$1")
-                // Preserve indentation for unordered list items
-                .replace(/^(\s*)[\*\-\+]\s+(.*)/gm, "$1- $2")
                 // Preserve indentation for ordered list items
                 .replace(/^(\s*)(\d+)\.\s+(.*)/gm, "$1$2. $3")
+                // Ensure four backticks at line start get their own line
+                .replace(/^````([^\n\S]*)([^\n`].*)$/gm, "````\n$2")
                 // Remove or comment out if you want to preserve triple+ line breaks exactly
                 .replace(/\n{3,}/g, "\n\n")
                 .trim();
         }
+        
+        
+        
 
 
         // Define the mappings for Ctrl+Key shortcuts dynamically
@@ -769,45 +908,55 @@ function getScrollableContainer() {
             [shortcutKeyCopyAllResponses]: copyAll,
             [shortcutKeyCopyAllCodeBlocks]: copyCode,
             [shortcutKeyCopyLowest]: () => {
-                const allButtons = Array.from(document.querySelectorAll('button'));
-                const visibleButtons = allButtons.filter(button =>
-                    button.innerHTML.includes('M7 5C7 3.34315')
-                ).filter(button => {
-                    const rect = button.getBoundingClientRect();
+                const copyPath = 'M7 5C7 3.34315';
+
+                // Find all visible copy buttons (by SVG path)
+                const visibleButtons = Array.from(document.querySelectorAll('button')).filter(btn => {
+                    if (!btn.querySelector(`svg path[d^="${copyPath}"]`)) return false;
+                    const r = btn.getBoundingClientRect();
                     return (
-                        rect.top >= 0 &&
-                        rect.left >= 0 &&
-                        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-                        rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+                        r.top >= 0 &&
+                        r.left >= 0 &&
+                        r.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+                        r.right <= (window.innerWidth || document.documentElement.clientWidth)
                     );
                 });
 
-                if (visibleButtons.length > 0) {
-                    visibleButtons[visibleButtons.length - 1].click();
+                if (!visibleButtons.length) return;
 
-                    // Proceed only if removeMarkdownOnCopyCheckbox is true
-                    if (window.removeMarkdownOnCopyCheckbox) {
-                        setTimeout(() => {
-                            if (!navigator.clipboard) {
-                                return;  // catch error silently
+                // Click the lowest visible button
+                const btn = visibleButtons[visibleButtons.length - 1];
+                btn.click();
+
+                // Only strip for message copy button with checkbox enabled
+                const isMsgCopy = btn.getAttribute('data-testid') === 'copy-turn-action-button';
+
+                setTimeout(() => {
+                    if (!navigator.clipboard) return;
+
+                    navigator.clipboard.readText()
+                        .then(text => {
+                            const trimmed = text.trim();
+                            // Never strip if clipboard content is ONLY code-fenced (for safety)
+                            if (/^```[\s\S]*```$/.test(trimmed)) {
+                                return navigator.clipboard.writeText(text);
                             }
-
-                            // Directly attempt clipboard operations without querying permissions
-                            navigator.clipboard.readText()
-                                .then((textContent) => {
-                                    const cleanedContent = removeMarkdown(textContent);
-                                    return navigator.clipboard.writeText(cleanedContent);
-                                })
-                                .then(() => {
-                                    console.log("Clipboard content cleaned and copied.");
-                                })
-                                .catch(() => {
-                                    // Suppress errors for a smoother user experience
-                                });
-                        }, 500);
-                    }
-                }
+                            // For full messages containing code, strip only outside codeblocks
+                            if (isMsgCopy && window.removeMarkdownOnCopyCheckbox) {
+                                const cleaned = stripMarkdownOutsideCodeblocks(text);
+                                return navigator.clipboard.writeText(cleaned);
+                            }
+                            // Otherwise, write as-is
+                            return navigator.clipboard.writeText(text);
+                        })
+                        .catch(() => {/* silent fail */ });
+                }, 500);
             },
+
+
+
+
+
             [shortcutKeyEdit]: () => {
                 setTimeout(() => {
                     try {
@@ -925,7 +1074,6 @@ function getScrollableContainer() {
                     }
                 }
             },
-
             [shortcutKeySearchConversationHistory]: () => {
                 // 1) Fire the native “Search Conversation History” shortcut first (Ctrl/Cmd + K)
                 const isMac = /Mac|iPod|iPhone|iPad/.test(navigator.platform);
@@ -1218,8 +1366,8 @@ function getScrollableContainer() {
                 /* ---- 5. click after one paint so the override takes effect ---- */
                 requestAnimationFrame(() => target.click());
             },
-            [selectAllLowestResponse]: (() => {
-                window.selectAllLowestResponseState = window.selectAllLowestResponseState || {
+            [selectThenCopy]: (() => {
+                window.selectThenCopyState = window.selectThenCopyState || {
                     lastSelectedIndex: -1
                 };
 
@@ -1232,7 +1380,8 @@ function getScrollableContainer() {
                             const onlySelectUser = window.onlySelectUserCheckbox || false;
                             const disableCopyAfterSelect = window.disableCopyAfterSelectCheckbox || false;
 
-                            const allConversationTurns = Array.from(document.querySelectorAll('[class*="conversation-turn"]'));
+                            const allConversationTurns = Array.from(window.cachedConversationTurns || []);
+
 
                             const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
                             const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
@@ -1263,13 +1412,13 @@ function getScrollableContainer() {
 
                             filteredVisibleTurns.sort((a, b) => b.getBoundingClientRect().top - a.getBoundingClientRect().top);
 
-                            const { lastSelectedIndex } = window.selectAllLowestResponseState;
+                            const { lastSelectedIndex } = window.selectThenCopyState;
                             const nextIndex = (lastSelectedIndex + 1) % filteredVisibleTurns.length;
                             const selectedTurn = filteredVisibleTurns[nextIndex];
                             if (!selectedTurn) return;
 
                             selectAndCopyMessage(selectedTurn);
-                            window.selectAllLowestResponseState.lastSelectedIndex = nextIndex;
+                            window.selectThenCopyState.lastSelectedIndex = nextIndex;
 
                             function selectAndCopyMessage(turn) {
                                 try {
@@ -1318,7 +1467,7 @@ function getScrollableContainer() {
                                 }
                             }
                         } catch (err) {
-                            if (DEBUG) console.debug('outer selectAllLowestResponse failure:', err);
+                            if (DEBUG) console.debug('outer selectThenCopy failure:', err);
                         }
                     }, 50);
                 };
@@ -1363,7 +1512,7 @@ function getScrollableContainer() {
                 ["Henkan", "Muhenkan", "KanaMode"].includes(event.key)         // JIS IME-specific keys
             ) {
                 return;
-            }            
+            }
 
             const isCtrlPressed = isMac ? event.metaKey : event.ctrlKey;
             const isAltPressed = event.altKey;
@@ -1372,7 +1521,7 @@ function getScrollableContainer() {
             // Canonical key: use layout-aware key for text, keep exact for special keys
             let keyIdentifier = event.key.length === 1
                 ? event.key.toLowerCase()
-                : event.key;        
+                : event.key;
 
             // Handle Alt-based shortcuts (only if Alt is enabled for model switching or not a model-switch combo)
             if (isAltPressed && !isCtrlPressed) {
@@ -2043,6 +2192,14 @@ setTimeout(() => {
         if (window.moveTopBarToBottomCheckbox) {
 
             // -------------------- Section 1. Utilities --------------------
+            function debounce(fn, wait = 80) {
+                let timeout;
+                return function (...args) {
+                    clearTimeout(timeout);
+                    timeout = setTimeout(() => fn.apply(this, args), wait);
+                };
+            }
+
             async function waitForElement(selector, timeout = 12000, poll = 200) {
                 const start = Date.now();
                 let el;
@@ -2154,139 +2311,131 @@ setTimeout(() => {
                         }
 
 
-                        // -------------------- Section 3. Bottom Bar Creation --------------------
+                        // ---------- Section 3 • Bottom Bar Creation ----------
+                        /* one global debounce helper — defined ONCE in the IIFE ------------------ */
+                        if (!window.__bbDebounce) {
+                            window.__bbDebounce = function (fn, wait = 80) {
+                                let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn.apply(this, a), wait); };
+                            };
+                        }
+                        const debounce = window.__bbDebounce;
+
+                        /* ----------------------------------------------------------------------- */
                         function injectBottomBar(topBarLeft, topBarRight, composerContainer) {
+                            /* prevent double‑injection ------------------------------------------ */
                             let bottomBar = document.getElementById('bottomBarContainer');
                             if (!bottomBar) {
+                                /* create bar ----------------------------------------------------- */
                                 bottomBar = document.createElement('div');
                                 bottomBar.id = 'bottomBarContainer';
-                                bottomBar.style.display = 'flex';
-                                bottomBar.style.justifyContent = 'space-between';
-                                bottomBar.style.alignItems = 'center';
-                                bottomBar.style.padding = '0px 12px';
-                                bottomBar.style.margin = '0';
-                                bottomBar.style.minHeight = 'unset';
-                                bottomBar.style.lineHeight = '1';
-                                bottomBar.style.gap = '8px';
-                                bottomBar.style.fontSize = '12px';
-                                bottomBar.style.boxSizing = 'border-box';
-                                bottomBar.style.opacity = '1';
-                                bottomBar.style.transition = 'opacity 0.5s';
-
-                                // Responsive width via ResizeObserver
-                                const setBarWidth = () =>
-                                    bottomBar.style.width = window.getComputedStyle(composerContainer).width;
-                                setBarWidth();
-                                const ro = new ResizeObserver(setBarWidth);
-                                ro.observe(composerContainer);
-
-                                // Fade/opacity logic
-                                function setIdleOpacity() {
-                                    const val = typeof window.popupBottomBarOpacityValue === 'number'
-                                        ? window.popupBottomBarOpacityValue
-                                        : 0.6;
-                                    bottomBar.style.opacity = val.toString();
-                                }
-
-                                let fadeTimeout;
-                                setTimeout(setIdleOpacity, 2500);
-
-                                bottomBar.addEventListener("mouseover", () => {
-                                    clearTimeout(fadeTimeout);
-                                    bottomBar.style.opacity = "1";
-                                    if (typeof setGrayscale === "function") setGrayscale(false);
+                                Object.assign(bottomBar.style, {
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                    padding: '0 12px',
+                                    margin: '0',
+                                    minHeight: 'unset',
+                                    lineHeight: '1',
+                                    gap: '8px',
+                                    fontSize: '12px',
+                                    boxSizing: 'border-box',
+                                    opacity: '1',
+                                    transition: 'opacity 0.5s'
                                 });
 
-                                bottomBar.addEventListener("mouseout", () => {
-                                    fadeTimeout = setTimeout(() => {
-                                        setIdleOpacity();
-                                        if (typeof setGrayscale === "function") setGrayscale(true);
+                                /* ----------------------------------------------------------------
+                                   width + scale logic
+                                ------------------------------------------------------------------ */
+                                function setWidth() {
+                                    bottomBar.style.width = window.getComputedStyle(composerContainer).width;
+                                }
+                                function scaleOnce() {
+                                    const avail = composerContainer.clientWidth;
+                                    const content = bottomBar.scrollWidth;
+                                    const s = Math.min(1, avail / content);
+                                    bottomBar.style.transform = `scale(${s})`;
+                                    bottomBar.style.transformOrigin = 'left center';
+                                    return s;
+                                }
+                                function scaleUntilStable() {
+                                    let prev;
+                                    const loop = () => {
+                                        setWidth();
+                                        const curr = scaleOnce();
+                                        if (curr !== prev) {
+                                            prev = curr;
+                                            requestAnimationFrame(loop);    // keep looping until stable
+                                        }
+                                    };
+                                    loop();
+                                }
+                                const debouncedStable = debounce(scaleUntilStable, 60);
+
+                                /* observe container resize + window resize ---------------------- */
+                                new ResizeObserver(debouncedStable).observe(composerContainer);
+                                window.addEventListener('resize', debouncedStable);
+
+                                /* fade / opacity handlers --------------------------------------- */
+                                const idleOpacity = () =>
+                                    bottomBar.style.opacity = (typeof window.popupBottomBarOpacityValue === 'number'
+                                        ? window.popupBottomBarOpacityValue : 0.6).toString();
+
+                                let fadeT;
+                                setTimeout(idleOpacity, 2500);
+                                bottomBar.addEventListener('mouseover', () => {
+                                    clearTimeout(fadeT); bottomBar.style.opacity = '1';
+                                    if (typeof setGrayscale === 'function') setGrayscale(false);
+                                });
+                                bottomBar.addEventListener('mouseout', () => {
+                                    fadeT = setTimeout(() => {
+                                        idleOpacity();
+                                        if (typeof setGrayscale === 'function') setGrayscale(true);
                                     }, 2500);
                                 });
 
-                                // Capture scroll position before inserting
-                                const scrollContainer = typeof getScrollableContainer === 'function' && getScrollableContainer();
-                                const prevScrollBottom = scrollContainer ? scrollContainer.scrollHeight - scrollContainer.scrollTop : 0;
+                                /* capture scroll, insert, restore ------------------------------- */
+                                const sc = typeof getScrollableContainer === 'function' && getScrollableContainer();
+                                const prevScrollBot = sc ? sc.scrollHeight - sc.scrollTop : 0;
+                                (composerContainer.closest('form') || composerContainer)
+                                    .insertAdjacentElement('afterend', bottomBar);
+                                if (sc) sc.scrollTop += sc.scrollHeight - prevScrollBot;
 
-                                // Drop the bar *after* the form element
-                                const formEl = composerContainer.closest('form') || composerContainer;
-                                formEl.insertAdjacentElement('afterend', bottomBar);
+                                /* run first stable scale pass after insertion ------------------- */
+                                requestAnimationFrame(scaleUntilStable);
+                                setTimeout(() => scaleUntilStable(), 1500);
 
-                                // Restore scroll position
-                                if (scrollContainer) {
-                                    const delta = scrollContainer.scrollHeight - prevScrollBottom;
-                                    scrollContainer.scrollTop += delta;
-                                }
-
-
+                                /* gsap intro ---------------------------------------------------- */
                                 gsap.set(bottomBar, { opacity: 0, y: 10, display: 'flex' });
-                                gsap.to(bottomBar, {
-                                    opacity: 1,
-                                    y: 0,
-                                    duration: 0.2,
-                                    ease: 'power2.out'
-                                });
+                                gsap.to(bottomBar, { opacity: 1, y: 0, duration: 0.2, ease: 'power2.out' });
                             }
 
-                            let bottomBarLeft = document.getElementById('bottomBarLeft');
-                            if (!bottomBarLeft) {
-                                bottomBarLeft = document.createElement('div');
-                                bottomBarLeft.id = 'bottomBarLeft';
-                                bottomBarLeft.style.display = 'flex';
-                                bottomBarLeft.style.alignItems = 'center';
-                                bottomBarLeft.style.gap = '2px';
-                                bottomBar.appendChild(bottomBarLeft);
-                            }
-                            let bottomBarRight = document.getElementById('bottomBarRight');
-                            if (!bottomBarRight) {
-                                bottomBarRight = document.createElement('div');
-                                bottomBarRight.id = 'bottomBarRight';
-                                bottomBarRight.style.display = 'flex';
-                                bottomBarRight.style.alignItems = 'center';
-                                bottomBarRight.style.gap = '2px';
-                                bottomBarRight.style.marginLeft = "auto";
-                                bottomBar.appendChild(bottomBarRight);
-                            }
+                            /* ----- left / right containers ------------------------------------ */
+                            let left = document.getElementById('bottomBarLeft');
+                            let right = document.getElementById('bottomBarRight');
+                            if (!left) { left = document.createElement('div'); left.id = 'bottomBarLeft'; left.style.display = 'flex'; left.style.alignItems = 'center'; left.style.gap = '2px'; bottomBar.appendChild(left); }
+                            if (!right) { right = document.createElement('div'); right.id = 'bottomBarRight'; right.style.display = 'flex'; right.style.alignItems = 'center'; right.style.gap = '2px'; right.style.marginLeft = 'auto'; bottomBar.appendChild(right); }
 
-                            [...bottomBarLeft.children].forEach(child => {
-                                const staticIds = ['static-sidebar-btn', 'static-newchat-btn'];
-                                const isStatic = staticIds.includes(child.dataset.id);
-                                if (!isStatic && child !== topBarLeft) child.remove();
+                            [...left.children].forEach(c => {
+                                const keep = ['static-sidebar-btn', 'static-newchat-btn'];
+                                if (!keep.includes(c.dataset.id) && c !== topBarLeft) c.remove();
                             });
 
-                            if (!bottomBarLeft.contains(topBarLeft)) bottomBarLeft.appendChild(topBarLeft);
-                            if (!bottomBarRight.contains(topBarRight)) bottomBarRight.appendChild(topBarRight);
+                            if (!left.contains(topBarLeft)) left.appendChild(topBarLeft);
+                            if (!right.contains(topBarRight)) right.appendChild(topBarRight);
 
-                            injectStaticButtons(bottomBarLeft);
-
-                            function adjustBottomBarScale() {
-                                const available = composerContainer.clientWidth;
-                                const content = bottomBar.scrollWidth;
-                                let scale = available / content;
-                                if (scale > 1) scale = 1;
-                                bottomBar.style.transform = `scale(${scale})`;
-                                bottomBar.style.transformOrigin = "left center";
-                            }
-                            adjustBottomBarScale();
-                            window.addEventListener("resize", adjustBottomBarScale);
-
+                            injectStaticButtons(left);
                             adjustBottomBarTextScaling(bottomBar);
+                            debounce(() => {
+                                /* re‑scale once text truncation done */
+                                scaleUntilStable();
+                            }, 50)();
 
-                            const oldDisclaimer = document.querySelector(
+                            /* hide stale disclaimer ------------------------------------------- */
+                            const old = document.querySelector(
                                 'div.text-token-text-secondary.relative.mt-auto.flex.min-h-8.w-full.items-center.justify-center.p-2.text-center.text-xs'
                             );
-                            if (oldDisclaimer) {
-                                gsap.to(oldDisclaimer, {
-                                    opacity: 0,
-                                    duration: 0.4,
-                                    ease: 'sine.out',
-                                    onComplete: () => {
-                                        oldDisclaimer.style.display = 'none';
-                                    }
-                                });
-                            }
+                            if (old) gsap.to(old, { opacity: 0, duration: 0.4, ease: 'sine.out', onComplete: () => (old.style.display = 'none') });
                         }
-
 
 
                         // -------------------- Section 4. Static Buttons --------------------
@@ -2408,9 +2557,6 @@ setTimeout(() => {
                         }
 
                         // ---------- Section 6 • Text Truncation ----------
-                        function debounce(fn, d = 100) {
-                            let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), d); };
-                        }
 
                         function applyOneLineEllipsis(el) {
                             const imp = v => ['important', v];
