@@ -223,5 +223,11 @@
     },
     "tt_use_Control_for_picker": {
         "message": "Control+1 (4o), Control+2 (o3), Control+3 (o4-mini), Control+4 (o4-mini-high), Control+5 (4o-mini) से ChatGPT मॉडल चुनें"
+    },
+    "tt_regenerate": {
+        "message": "सबसे नीचे दिखाई दे रहे रीजनरेट रिस्पॉन्स बटन पर क्लिक करता है।"
+    },
+    "label_regenerate": {
+        "message": "रिस्पॉन्स फिर से बनाएँ"
     }
 }

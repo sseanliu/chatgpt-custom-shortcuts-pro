@@ -763,7 +763,7 @@ function findButton(args) {
 
 
     // @note Keyboard shortcut defaults 
-    chrome.storage.sync.get(['shortcutKeyScrollUpOneMessage', 'shortcutKeyScrollDownOneMessage', 'shortcutKeyCopyLowest', 'shortcutKeyEdit', 'shortcutKeySendEdit', 'shortcutKeyCopyAllResponses', 'shortcutKeyCopyAllCodeBlocks', 'shortcutKeyClickNativeScrollToBottom', 'shortcutKeyScrollToTop', 'shortcutKeyNewConversation', 'shortcutKeySearchConversationHistory', 'shortcutKeyToggleSidebar', 'shortcutKeyActivateInput', 'shortcutKeySearchWeb', 'shortcutKeyPreviousThread', 'shortcutKeyNextThread', 'selectThenCopy', 'shortcutKeyToggleSidebarFoldersButton', 'shortcutKeyClickSendButton', 'shortcutKeyClickStopButton', 'shortcutKeyToggleModelSelector'], (data) => {
+    chrome.storage.sync.get(['shortcutKeyScrollUpOneMessage', 'shortcutKeyScrollDownOneMessage', 'shortcutKeyCopyLowest', 'shortcutKeyEdit', 'shortcutKeySendEdit', 'shortcutKeyCopyAllResponses', 'shortcutKeyCopyAllCodeBlocks', 'shortcutKeyClickNativeScrollToBottom', 'shortcutKeyScrollToTop', 'shortcutKeyNewConversation', 'shortcutKeySearchConversationHistory', 'shortcutKeyToggleSidebar', 'shortcutKeyActivateInput', 'shortcutKeySearchWeb', 'shortcutKeyPreviousThread', 'shortcutKeyNextThread', 'selectThenCopy', 'shortcutKeyToggleSidebarFoldersButton', 'shortcutKeyClickSendButton', 'shortcutKeyClickStopButton', 'shortcutKeyToggleModelSelector', 'shortcutKeyRegenerate'], (data) => {
         const shortcutKeyScrollUpOneMessage = data.shortcutKeyScrollUpOneMessage || 'a';
         const shortcutKeyScrollDownOneMessage = data.shortcutKeyScrollDownOneMessage || 'f';
         const shortcutKeyCopyLowest = data.shortcutKeyCopyLowest || 'c';
@@ -781,10 +781,11 @@ function findButton(args) {
         const shortcutKeyPreviousThread = data.shortcutKeyPreviousThread || 'j';
         const shortcutKeyNextThread = data.shortcutKeyNextThread || ';';
         const selectThenCopy = data.selectThenCopy || 'x';
-        const shortcutKeyToggleSidebarFoldersButton = data.shortcutKeyToggleSidebarFoldersButton || 'g';
+        const shortcutKeyToggleSidebarFoldersButton = data.shortcutKeyToggleSidebarFoldersButton || '';
         const shortcutKeyClickSendButton = data.shortcutKeyClickSendButton || 'Enter';
         const shortcutKeyClickStopButton = data.shortcutKeyClickStopButton || 'Backspace';
         const shortcutKeyToggleModelSelector = data.shortcutKeyToggleModelSelector || '/';
+        const shortcutKeyRegenerate = data.shortcutKeyRegenerate || 'r';
 
         let scrollCompleted = false;
 
@@ -839,15 +840,15 @@ function findButton(args) {
             }
             return regions;
         }
-        
+
 
         function stripMarkdownOutsideCodeblocks(text) {
             return splitByCodeFences(text)
                 .map(seg => seg.isCode ? seg.text : removeMarkdown(seg.text))
                 .join('');
         }
-        
-        
+
+
 
         function removeMarkdown(text) {
             return text
@@ -870,9 +871,9 @@ function findButton(args) {
                 .replace(/\n{3,}/g, "\n\n")
                 .trim();
         }
-        
-        
-        
+
+
+
 
 
         // Define the mappings for Ctrl+Key shortcuts dynamically
@@ -952,11 +953,6 @@ function findButton(args) {
                         .catch(() => {/* silent fail */ });
                 }, 500);
             },
-
-
-
-
-
             [shortcutKeyEdit]: () => {
                 setTimeout(() => {
                     try {
@@ -1243,39 +1239,66 @@ function findButton(args) {
                 document.dispatchEvent(new KeyboardEvent('keyup', eventInit));
             },
             [shortcutKeySearchWeb]: () => {
-                const selectors = [
-                    'button[data-testid="search-web-button"]',
-                    'button[data-testid="composer-button-search"]',
-                    'button svg path[d^="M2 12C2 6.47715"]'
-                ];
+                // Menu-opening button
+                const TOOL_MENU_BTN_SEL = 'button#system-hint-button[aria-haspopup="menu"]';
+                // The unique SVG path for the "search the web" tool
+                const SEARCH_SVG_PATH =
+                    'div[role="menuitemradio"] svg path[d^="M2 12C2 6.47715"]';
 
-                // First: scoped search inside unified composer
-                const container = document.querySelector('form[data-type="unified-composer"]');
-                if (container) {
-                    for (const selector of selectors) {
-                        const el = container.querySelector(selector);
-                        if (el) {
-                            const btn = el.closest('button');
-                            if (btn) {
-                                btn.click();
-                                return;
-                            }
+                // Helper to open menu if not open
+                const openMenuIfClosed = menuBtn => {
+                    if (menuBtn.getAttribute('aria-expanded') !== 'true') {
+                        menuBtn.focus();
+                        ['keydown', 'keyup'].forEach(type =>
+                            menuBtn.dispatchEvent(
+                                new KeyboardEvent(type, {
+                                    key: ' ',
+                                    code: 'Space',
+                                    keyCode: 32,
+                                    charCode: 32,
+                                    bubbles: true,
+                                    cancelable: true,
+                                    composed: true
+                                })
+                            )
+                        );
+                    }
+                };
+
+                const tryClickMenuItem = (root, attempt = 0) => {
+                    // Find the svg path inside a menuitemradio
+                    const path = root.querySelector(SEARCH_SVG_PATH);
+                    if (path) {
+                        // Find the ancestor div with role=menuitemradio
+                        const item = path.closest('div[role="menuitemradio"]');
+                        if (item) {
+                            item.click();
+                            return true;
                         }
+                    }
+                    // Retry up to 10x if not found (menu might not be open yet)
+                    if (attempt < 10) setTimeout(() => tryClickMenuItem(root, attempt + 1), 50);
+                    return false;
+                };
+
+                // Try inside unified composer first
+                const composer = document.querySelector('form[data-type="unified-composer"]');
+                if (composer) {
+                    const menuBtn = composer.querySelector(TOOL_MENU_BTN_SEL);
+                    if (menuBtn) {
+                        openMenuIfClosed(menuBtn);
+                        setTimeout(() => tryClickMenuItem(document), 200);
+                        return;
                     }
                 }
 
-                // Fallback: full document search
-                for (const selector of selectors) {
-                    const el = document.querySelector(selector);
-                    if (el) {
-                        const btn = el.closest('button');
-                        if (btn) {
-                            btn.click();
-                            return;
-                        }
-                    }
+                // Fallback: global scope
+                const menuBtn = document.querySelector(TOOL_MENU_BTN_SEL);
+                if (menuBtn) {
+                    openMenuIfClosed(menuBtn);
+                    setTimeout(() => tryClickMenuItem(document), 200);
                 }
-            },
+            },            
             [shortcutKeyPreviousThread]: () => {
                 /* ---- 1. find every “previous‑response” button via multiple selectors ---- */
                 const selectorList = [
@@ -1380,8 +1403,7 @@ function findButton(args) {
                             const onlySelectUser = window.onlySelectUserCheckbox || false;
                             const disableCopyAfterSelect = window.disableCopyAfterSelectCheckbox || false;
 
-                            const allConversationTurns = Array.from(window.cachedConversationTurns || []);
-
+                            const allConversationTurns = Array.from(document.querySelectorAll('[class*="conversation-turn"]'));
 
                             const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
                             const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
@@ -1489,6 +1511,67 @@ function findButton(args) {
             [shortcutKeyToggleModelSelector]: () => {
                 window.toggleModelSelector();
             },
+            [shortcutKeyRegenerate]: () => {
+                const REGEN_BTN_PATH = 'M3.06957 10.8763';
+                const MENU_BTN_SELECTOR = `button[id^="radix-"] svg path[d^="${REGEN_BTN_PATH}"]`;
+                const MENUITEM_SELECTOR = `div[role="menuitem"] svg path[d^="${REGEN_BTN_PATH}"]`;
+
+                // Utility: Is an element visible in the viewport?
+                function isVisible(el) {
+                    const r = el.getBoundingClientRect();
+                    return (
+                        r.top >= 0 &&
+                        r.left >= 0 &&
+                        r.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+                        r.right <= (window.innerWidth || document.documentElement.clientWidth)
+                    );
+                }
+
+                // Step 1: Find all visible matching menu buttons, pick the lowest one
+                const regenBtnPaths = Array.from(document.querySelectorAll(MENU_BTN_SELECTOR));
+                const visibleBtns = regenBtnPaths
+                    .map(path => path.closest('button'))
+                    .filter(btn => btn && isVisible(btn));
+                if (!visibleBtns.length) return;
+                const lowestMenuBtn = visibleBtns[visibleBtns.length - 1];
+
+                // Step 1b: Open menu if not open
+                if (lowestMenuBtn.getAttribute('aria-expanded') !== 'true') {
+                    lowestMenuBtn.focus();
+                    ['keydown', 'keyup'].forEach(type =>
+                        lowestMenuBtn.dispatchEvent(
+                            new KeyboardEvent(type, {
+                                key: ' ',
+                                code: 'Space',
+                                keyCode: 32,
+                                charCode: 32,
+                                bubbles: true,
+                                cancelable: true,
+                                composed: true
+                            })
+                        )
+                    );
+                }
+
+                // Step 2: After a short delay, find all visible matching menu items, pick the lowest, and click it
+                function clickLowestMenuItem(attempt = 0) {
+                    const menuItemPaths = Array.from(document.querySelectorAll(MENUITEM_SELECTOR));
+                    const visibleMenuItems = menuItemPaths
+                        .map(path => path.closest('div[role="menuitem"]'))
+                        .filter(item => item && isVisible(item));
+                    if (visibleMenuItems.length) {
+                        const lowestMenuItem = visibleMenuItems[visibleMenuItems.length - 1];
+                        lowestMenuItem.click();
+                        return;
+                    }
+                    // Retry for up to ~500ms if not found
+                    if (attempt < 10) setTimeout(() => clickLowestMenuItem(attempt + 1), 50);
+                }
+
+                setTimeout(() => clickLowestMenuItem(), lowestMenuBtn.getAttribute('aria-expanded') === 'true' ? 0 : 200);
+            },
+            
+            
 
 
         }; // Close keyFunctionMapping object
@@ -1525,18 +1608,26 @@ function findButton(args) {
 
             // Handle Alt-based shortcuts (only if Alt is enabled for model switching or not a model-switch combo)
             if (isAltPressed && !isCtrlPressed) {
-                // If user opted to use Ctrl for model switcher, skip Alt-based model switching keys to avoid conflicts
                 const modelToggleKey = shortcutKeyToggleModelSelector.toLowerCase();
+
+                // Always open menu for Alt+W (or whatever your toggle key is)
+                if (keyIdentifier === modelToggleKey) {
+                    event.preventDefault();
+                    window.toggleModelSelector();
+                    return;
+                }
+
+                // Only block Alt+1-5 if using Ctrl/Cmd for model switching
                 if (window.useAltForModelSwitcherRadio === false) {
-                    if (keyIdentifier === modelToggleKey || /^\d$/.test(keyIdentifier)) {
-                        // Do not intercept Alt+<model key> or Alt+number when Alt-for-model is disabled (allows symbol/input)
+                    if (/^\d$/.test(keyIdentifier)) {
+                        // Only block Alt+1 through Alt+5, but NOT the toggle key
                         return;
                     }
                 }
                 const altShortcut = keyFunctionMappingAlt[keyIdentifier];
                 if (altShortcut) {
-                    event.preventDefault();  // Prevent default when a valid Alt shortcut is found (stop symbol insertion on macOS)
-                    altShortcut();           // Invoke the mapped Alt-key shortcut action
+                    event.preventDefault();
+                    altShortcut();
                 }
             }
 
@@ -1626,7 +1717,7 @@ function findButton(args) {
 
             sticky.querySelectorAll('button, img, svg').forEach(el => {
                 gsap.to(el, {
-                    scale: 0.85,
+                    scale: 1,
                     transformOrigin: 'center',
                     duration: 0.2,
                     ease: 'sine.out'
@@ -1695,7 +1786,7 @@ function findButton(args) {
         // Kill sidebar scrollbar
         const main = document.querySelector('#main.transition-width');
         if (main) {
-            main.style.overflowY = 'hidden';
+            main.style.overflowY = '';
         }
     }
 
@@ -1846,38 +1937,123 @@ function findButton(args) {
 (function injectAlwaysVisibleStyle() {
     const style = document.createElement('style');
     style.textContent = `
-    /* Force any element that uses group-hover classes to show */
-    div[class*="group-hover/turn-messages"] {
-      opacity: 1 !important;
-      pointer-events: auto !important;
-    }
-    /* Make sure we also override any tailwind transitions that might re-add them */
-    div[class*="group-hover/turn-messages"] * {
-      opacity: 1 !important;
-      pointer-events: auto !important;
-    }
-    
-    /* Make sure we also override any tailwind transitions that might re-add them */
-    div[data-id="hide-this-warning"] {
+/* Ensure parents can receive hover events */
+div.flex.justify-start,
+div.flex.justify-end {
+    pointer-events: auto !important;
+}
+
+/* Force group-hover/turn-messages always visible, pointer-events always on */
+div[class*="group-hover/turn-messages"] {
+    opacity: 0.2 !important;
+    pointer-events: auto !important;
+    transition: opacity 0.5s !important;
+}
+
+/* Dark mode override for opacity */
+.dark div[class*="group-hover/turn-messages"] {
+    opacity: 0.08 !important;
+}
+
+/* Hover or JS-forced state: fully visible */
+div[class*="group-hover/turn-messages"]:hover,
+div[class*="group-hover/turn-messages"].force-full-opacity {
+    opacity: 1 !important;
+}
+
+/* Make sure we also override any tailwind transitions that might re-add pointer-events */
+div[class*="group-hover/turn-messages"] * {
+    pointer-events: auto !important;
+}
+
+/* Hide warning by ID */
+div[data-id="hide-this-warning"] {
     color: var(--main-surface-primary);
-    }
-    .group-hover\\/turn-messages\\:pointer-events-auto,
-        .group-hover\\/turn-messages\\:\\[mask-position\\:0_0\\] {
-            pointer-events: auto !important;
-            mask-position: 0% 0% !important;
-        }
+}
 
-    .pe-3:has(svg path[d^="M12.5001"]) {
-        display:none !important;
-        }
+/* Pointer events and mask for custom group-hover utilities */
+.group-hover\\/turn-messages\\:pointer-events-auto,
+.group-hover\\/turn-messages\\:\\[mask-position\\:0_0\\] {
+    pointer-events: auto !important;
+    mask-position: 0% 0% !important;
+}
 
-    div.bg-token-bg-elevated-secondary:has(a span svg path[d^="M12.5001"]) {
+/* Hide sidebar SVG button */
+.pe-3:has(svg path[d^="M12.5001"]) {
+    display:none !important;
+}
+
+/* Hide sidebar upgrade button SVG */
+div.bg-token-bg-elevated-secondary:has(a span svg path[d^="M12.5001"]) {
     display: none !important;
-        }
+}
 
+/* Hide the upgrade button in the top right corner */
+div.bg-token-bg-elevated-secondary div[tabindex="0"][data-fill] {
+    display: none !important;
+}
 
-  `;
+/* Hide bottom sticky upgrade bar */
+div.bg-token-bg-elevated-secondary.sticky.bottom-0 {
+    display: none !important;
+}
+
+/* Make the sidebar header shorter */
+div.bg-token-bg-elevated-secondary.sticky.top-0 {
+    padding-top: 2px !important;
+    padding-bottom: 2px !important;
+    margin-top: 2px !important;
+    margin-bottom: 2px !important;
+    min-height: 44px !important;
+}
+
+/* Reduce height of the inner header container */
+#sidebar-header {
+    min-height: 40px !important;
+    height: 40px !important;
+}
+`;
     document.head.appendChild(style);
+
+    // Decide how faded the buttons are in light/dark mode
+    function getFadeOpacity() {
+        if (
+            document.documentElement.classList.contains('dark') ||
+            document.body.classList.contains('dark') ||
+            window.matchMedia('(prefers-color-scheme: dark)').matches
+        ) {
+            return 0.08;
+        }
+        return 0.2;
+    }
+
+    // Attach to all .flex.justify-start OR .flex.justify-end
+    document.querySelectorAll('div.flex.justify-start, div.flex.justify-end').forEach(parent => {
+        // Find the child that contains "group-hover/turn-messages"
+        // (Does not need to be a direct child if you prefer querySelector)
+        const child = parent.querySelector('div[class*="group-hover/turn-messages"]');
+        if (!child) return;
+
+        let fadeTimeout = null;
+
+        // Show the child immediately on hover
+        parent.addEventListener('mouseenter', () => {
+            clearTimeout(fadeTimeout);
+            child.classList.add('force-full-opacity');
+            child.style.opacity = '1';
+        });
+
+        // Fade the child out 2s after mouse leaves
+        parent.addEventListener('mouseleave', () => {
+            fadeTimeout = setTimeout(() => {
+                child.classList.remove('force-full-opacity');
+                child.style.opacity = getFadeOpacity();
+            }, 2000);
+        });
+
+        // Set initial opacity according to current mode
+        child.style.opacity = getFadeOpacity();
+    });
 })();
 
 
@@ -3037,52 +3213,52 @@ setTimeout(() => {
 // =====================================
 // @note Kill horizontal scroll bars
 // =====================================
-// 
+//
 
 /*  Inject once from your extension  */
-(() => {
-    const style = document.createElement("style");
-    style.textContent = `
-  /* Table wrapper: fills chat bubble, local scrolling if too wide */
-  [class*="_tableContainer_"], [class*="_tableWrapper_"] {
-    display: block !important;
-    width: 100% !important;
-    max-width: inherit !important;
-    box-sizing: border-box !important;
-    overflow-x: auto !important;
-    padding: 0 !important;
-    margin: 0 !important;
-  }
-  
-  /* Table: fills wrapper, columns auto-size to content, allows overflow for wide tables */
-  [class*="_tableWrapper_"] > table {
-    width: 100% !important;
-    min-width: 100% !important;
-    box-sizing: border-box !important;
-    table-layout: auto !important;
-  }
-  
-  /* Cells: allow normal wrap, but never squash below 20ch */
-  [class*="_tableWrapper_"] th,
-  [class*="_tableWrapper_"] td {
-    width: auto !important;
-    min-width: 20ch !important;          /* never less than 20 chars wide */
-    max-width: 1px;                      /* try to shrink if crowded, but min still applies */
-    word-break: break-word !important;
-    overflow-wrap: anywhere !important;
-    text-overflow: ellipsis !important;
-    white-space: normal !important;
-    box-sizing: border-box !important;
-    padding: 0.5em 1em !important;       /* visually matches code blocks */
-  }
-  
-  /* Remove legacy/fixed size classes from the site */
-  [class*="_tableWrapper_"] th[data-col-size],
-  [class*="_tableWrapper_"] td[data-col-size] {
-    width: auto !important;
-    min-width: 20ch !important;
-    max-width: none !important;
-  }
-  `;
-    document.head.appendChild(style);
-})();
+// (() => {
+//     const style = document.createElement("style");
+//     style.textContent = `
+//   /* Table wrapper: fills chat bubble, local scrolling if too wide */
+//   [class*="_tableContainer_"], [class*="_tableWrapper_"] {
+//     display: block !important;
+//     width: 100% !important;
+//     max-width: inherit !important;
+//     box-sizing: border-box !important;
+//     overflow-x: auto !important;
+//     padding: 0 !important;
+//     margin: 0 !important;
+//   }
+//
+//   /* Table: fills wrapper, columns auto-size to content, allows overflow for wide tables */
+//   [class*="_tableWrapper_"] > table {
+//     width: 100% !important;
+//     min-width: 100% !important;
+//     box-sizing: border-box !important;
+//     table-layout: auto !important;
+//   }
+//
+//   /* Cells: allow normal wrap, but never squash below 20ch */
+//   [class*="_tableWrapper_"] th,
+//   [class*="_tableWrapper_"] td {
+//     width: auto !important;
+//     min-width: 20ch !important;          /* never less than 20 chars wide */
+//     max-width: 1px;                      /* try to shrink if crowded, but min still applies */
+//     word-break: break-word !important;
+//     overflow-wrap: anywhere !important;
+//     text-overflow: ellipsis !important;
+//     white-space: normal !important;
+//     box-sizing: border-box !important;
+//     padding: 0.5em 1em !important;       /* visually matches code blocks */
+//   }
+//
+//   /* Remove legacy/fixed size classes from the site */
+//   [class*="_tableWrapper_"] th[data-col-size],
+//   [class*="_tableWrapper_"] td[data-col-size] {
+//     width: auto !important;
+//     min-width: 20ch !important;
+//     max-width: none !important;
+//   }
+//   `;
+//     document.head.appendChild(style);
+// })();

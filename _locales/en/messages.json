@@ -54,7 +54,7 @@
         "message": "Toggle Sidebar"
     },
     "label_toggle_sidebar_folders": {
-        "message": "Toggle Sidebar Folders"
+        "message": "Toggle Sidebar Folders Down for Repairs"
     },
     "label_search_chats": {
         "message": "Search Chats"
@@ -156,7 +156,7 @@
         "message": "Toggle the sidebar."
     },
     "tt_toggle_sidebar_folders": {
-        "message": "Toggle sidebar folders and GPT list. Persists after reload."
+        "message": "Down for Repairs. Toggle sidebar folders and GPT list. Persists after reload."
     },
     "tt_search_chats": {
         "message": "Search chats (clicks native button, even if sidebar is hidden)."
@@ -223,5 +223,11 @@
     },
     "tt_use_Control_for_picker": {
         "message": "Select ChatGPT model using Control+1 (4o), Control+2 (o3), Control+3 (o4-mini), Control+4 (o4-mini-high), Control+5 (4o-mini)"
+    },
+    "tt_regenerate": {
+        "message": "Clicks the lowest visible regenerate response button."
+    },
+    "label_regenerate": {
+        "message": "Regenerate Response"
     }
 }

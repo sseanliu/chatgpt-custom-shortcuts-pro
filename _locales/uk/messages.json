@@ -223,5 +223,11 @@
     },
     "tt_use_Control_for_picker": {
         "message": "Оберіть модель ChatGPT через Control+1 (4o), Control+2 (o3), Control+3 (o4-mini), Control+4 (o4-mini-high), Control+5 (4o-mini)"
+    },
+    "tt_regenerate": {
+        "message": "Натискає найнижчу видиму кнопку повторного створення відповіді."
+    },
+    "label_regenerate": {
+        "message": "Перегенерувати відповідь"
     }
 }

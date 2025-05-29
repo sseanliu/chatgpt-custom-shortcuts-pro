@@ -387,7 +387,8 @@ document.addEventListener('DOMContentLoaded', function () {
         'shortcutKeyNextThread',
         'selectThenCopy',
         'shortcutKeyToggleSidebarFoldersButton',
-        'shortcutKeyToggleModelSelector'
+        'shortcutKeyToggleModelSelector',
+        'shortcutKeyRegenerate',
     ];
     const shortcutKeyValues = {};
 

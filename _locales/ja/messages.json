@@ -223,5 +223,11 @@
     },
     "tt_use_Control_for_picker": {
         "message": "Control+1（4o）, Control+2（o3）, Control+3（o4-mini）, Control+4（o4-mini-high）, Control+5（4o-mini）でChatGPTモデルを選択"
+    },
+    "tt_regenerate": {
+        "message": "表示されている一番下の回答再生成ボタンをクリックします。"
+    },
+    "label_regenerate": {
+        "message": "回答を再生成"
     }
 }

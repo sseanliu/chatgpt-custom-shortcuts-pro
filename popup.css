@@ -245,7 +245,7 @@ h1 {
 
 .blank-row {
     grid-column: span 2;
-    height: 2px;
+    height: 8px;
 }
 
 
@@ -522,4 +522,17 @@ h1 {
 
 #toast-container .toast {
     text-wrap: balance;
+}
+
+
+.disabled-section {
+    opacity: 0.2;
+    pointer-events: none;
+}
+
+.disabled-section .key-input {
+    background-color: #eee;
+    color: #aaa;
+    border-color: #ccc;
+    cursor: not-allowed;
 }
