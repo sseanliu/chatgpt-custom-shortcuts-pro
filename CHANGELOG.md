@@ -3,7 +3,19 @@
 The full changelog and feature history is maintained here.
 
 Current Known Bugs:
+- Collapse sidebar GPT's and Folders is down for repairs
 - Copy and join all code boxes is including text outside of code boxes. This feature may be retired soon. 
+
+#### [5.29.2025]
+- Disabled collapse sidebar for time being.
+- Rehid teams junk in sidebar, again.
+- Added regenerate response with alt+r
+- Fixed select and copy alt+x function so it works with new conversations again.
+- Fixed sidebar header to slightly reduce height withou shrinking the icons
+
+#### [5.13.2025]
+- Fixed collapse sidebar after changes, again.
+- Rehid teams junk in sidebar, again.
 
 #### [5.13.2025]
 - Fixed collapse sidebar after changes, again.
