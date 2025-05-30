@@ -12,6 +12,9 @@ Current Known Bugs:
 - Added regenerate response with alt+r
 - Fixed select and copy alt+x function so it works with new conversations again.
 - Fixed sidebar header to slightly reduce height withou shrinking the icons
+- Removed alterations to tables
+- Fixed "my gpt's" not having a vertical scroll bar.
+- improved the bottom bar adjusting width and scaling with window size changes
 
 #### [5.13.2025]
 - Fixed collapse sidebar after changes, again.
