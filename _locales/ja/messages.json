@@ -229,5 +229,11 @@
     },
     "label_regenerate": {
         "message": "回答を再生成"
+    },
+    "label_rememberSidebarScrollPositionCheckbox": {
+        "message": "サイドバー位置を記憶"
+    },
+    "tt_rememberSidebarScrollPositionCheckbox": {
+        "message": "通常、サイドバーは開閉や再読込すると最上部に戻ります。これをオンにすると前回の位置に戻ります。"
     }
 }

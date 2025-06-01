@@ -229,5 +229,11 @@
     },
     "label_regenerate": {
         "message": "Regenerate Response"
+    },
+    "label_rememberSidebarScrollPositionCheckbox": {
+        "message": "Remember Sidebar Scroll Position"
+    },
+    "tt_rememberSidebarScrollPositionCheckbox": {
+        "message": "Normally, the sidebar scrolls back to the top when you open, close, or reload it. Check this box to return to the same spot in the sidebar."
     }
 }

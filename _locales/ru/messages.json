@@ -229,5 +229,11 @@
     },
     "label_regenerate": {
         "message": "Повторно создать ответ"
+    },
+    "label_rememberSidebarScrollPositionCheckbox": {
+        "message": "Запомнить прокрутку боковой панели"
+    },
+    "tt_rememberSidebarScrollPositionCheckbox": {
+        "message": "Обычно при открытии, закрытии или перезагрузке боковая панель возвращается вверх. Включите, чтобы возвращаться на прежнее место."
     }
 }

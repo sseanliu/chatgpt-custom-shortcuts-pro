@@ -229,5 +229,11 @@
     },
     "label_regenerate": {
         "message": "Перегенерувати відповідь"
+    },
+    "label_rememberSidebarScrollPositionCheckbox": {
+        "message": "Запам'ятати прокрутку панелі"
+    },
+    "tt_rememberSidebarScrollPositionCheckbox": {
+        "message": "Зазвичай бічна панель скидає позицію при відкриванні, закриванні чи перезавантаженні. Увімкніть, щоб повертатися на попереднє місце."
     }
 }

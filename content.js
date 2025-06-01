@@ -175,6 +175,10 @@ function findButton(args) {
         window.useControlForModelSwitcherRadio = data.hasOwnProperty('useControlForModelSwitcherRadio')
             ? data.useControlForModelSwitcherRadio === true
             : false; // Default to false
+
+        window.rememberSidebarScrollPositionCheckbox = data.hasOwnProperty('rememberSidebarScrollPositionCheckbox')
+            ? data.rememberSidebarScrollPositionCheckbox === true
+            : false; // Default to false
     }
 
 
@@ -192,7 +196,8 @@ function findButton(args) {
         'enableStopWithControlBackspaceCheckbox',
         'popupBottomBarOpacityValue',
         'useAltForModelSwitcherRadio',
-        'useControlForModelSwitcherRadio'
+        'useControlForModelSwitcherRadio',
+        'rememberSidebarScrollPositionCheckbox'
     ], (data) => {
         applyVisibilitySettings(data);
     });
@@ -239,6 +244,9 @@ function findButton(args) {
             }
             if (changes.useControlForModelSwitcherRadio) {
                 updatedData.useControlForModelSwitcherRadio = changes.useControlForModelSwitcherRadio.newValue;
+            }
+            if (changes.rememberSidebarScrollPositionCheckbox) {
+                updatedData.rememberSidebarScrollPositionCheckbox = changes.rememberSidebarScrollPositionCheckbox.newValue;
             }
             applyVisibilitySettings(updatedData);
         }
@@ -1298,7 +1306,7 @@ function findButton(args) {
                     openMenuIfClosed(menuBtn);
                     setTimeout(() => tryClickMenuItem(document), 200);
                 }
-            },            
+            },
             [shortcutKeyPreviousThread]: () => {
                 /* ---- 1. find every “previous‑response” button via multiple selectors ---- */
                 const selectorList = [
@@ -1570,8 +1578,8 @@ function findButton(args) {
 
                 setTimeout(() => clickLowestMenuItem(), lowestMenuBtn.getAttribute('aria-expanded') === 'true' ? 0 : 200);
             },
-            
-            
+
+
 
 
         }; // Close keyFunctionMapping object
@@ -1581,7 +1589,6 @@ function findButton(args) {
         window.toggleSidebar = keyFunctionMappingAlt[shortcutKeyToggleSidebar];
         window.newConversation = keyFunctionMappingAlt[shortcutKeyNewConversation];
         window.globalScrollToBottom = keyFunctionMappingAlt[shortcutKeyClickNativeScrollToBottom];
-
 
 
         const isMac = /(Mac|iPhone|iPad|iPod)/i.test(navigator.userAgent);
@@ -1654,8 +1661,6 @@ function findButton(args) {
 
         });
 
-
-
         // Function to check if the specific Ctrl/Command + Key shortcut is enabled
         function isCtrlShortcutEnabled(key) {
             if (key === shortcutKeyClickSendButton) {
@@ -1666,10 +1671,6 @@ function findButton(args) {
             }
             return false;
         }
-
-
-
-
 
     });
 
@@ -2074,9 +2075,9 @@ div.bg-token-bg-elevated-secondary.sticky.top-0 {
 
 
 // ==================================================
-// @note Collapse GPT & Folders Toggle + IIFE Delay 
+// @note Collapse GPT & Folders Toggle + IIFE Delay
 // ==================================================
-
+/* Disabled for now due to conflicts with frequent changes to ChatGPT website.
 setTimeout(() => {
     (function () {
         // SVG icons
@@ -2356,7 +2357,7 @@ setTimeout(() => {
         }
     })();
 }, 500);
-
+≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡= */
 
 
 // ==================================================
@@ -2364,88 +2365,91 @@ setTimeout(() => {
 // ==================================================
 
 (function () {
-    setTimeout(function injectBottomBarStyles() {
-        if (window.moveTopBarToBottomCheckbox) {
+    chrome.storage.sync.get(
+        { moveTopBarToBottomCheckbox: false },
+        ({ moveTopBarToBottomCheckbox: enabled }) => {
+            if (!enabled) return;
 
-            // -------------------- Section 1. Utilities --------------------
-            function debounce(fn, wait = 80) {
-                let timeout;
-                return function (...args) {
-                    clearTimeout(timeout);
-                    timeout = setTimeout(() => fn.apply(this, args), wait);
-                };
-            }
+            setTimeout(function injectBottomBarStyles() {
 
-            async function waitForElement(selector, timeout = 12000, poll = 200) {
-                const start = Date.now();
-                let el;
-                while (!(el = document.querySelector(selector)) && (Date.now() - start < timeout)) {
-                    await new Promise(r => setTimeout(r, poll));
+                // -------------------- Section 1. Utilities --------------------
+                function debounce(fn, wait = 80) {
+                    let timeout;
+                    return function (...args) {
+                        clearTimeout(timeout);
+                        timeout = setTimeout(() => fn.apply(this, args), wait);
+                    };
                 }
-                return el;
-            }
 
-            async function waitForElements(selectors, timeout = 12000, poll = 200) {
-                const start = Date.now();
-                let results;
-                while (
-                    !(results = selectors.map(sel => document.querySelector(sel))).every(Boolean) &&
-                    (Date.now() - start < timeout)
-                ) {
-                    await new Promise(r => setTimeout(r, poll));
-                }
-                return results;
-            }
-
-            // ------------------------------------------------------------------------
-            // (A) One-time storage fetch approach:
-            //     Only fetch once from chrome.storage.sync to avoid repeated calls,
-            //     and keep the resolved value in a single Promise.
-            // ------------------------------------------------------------------------
-            let opacityValuePromise;
-            function ensureOpacityValueReady() {
-                // Return the already-fetched value if we have it
-                if (opacityValuePromise) return opacityValuePromise;
-
-                // Otherwise, build the one-time promise that fetches from storage
-                opacityValuePromise = new Promise((resolve) => {
-                    // If chrome.storage.sync is missing/invalid, fallback silently to 0.6
-                    if (!chrome?.storage?.sync) {
-                        window.popupBottomBarOpacityValue = 0.6;
-                        return resolve(window.popupBottomBarOpacityValue);
+                async function waitForElement(selector, timeout = 12000, poll = 200) {
+                    const start = Date.now();
+                    let el;
+                    while (!(el = document.querySelector(selector)) && (Date.now() - start < timeout)) {
+                        await new Promise(r => setTimeout(r, poll));
                     }
+                    return el;
+                }
 
-                    try {
-                        chrome.storage.sync.get({ popupBottomBarOpacityValue: 0.6 }, (res) => {
-                            if (chrome.runtime.lastError) {
-                                // console.error("Error:", chrome.runtime.lastError); // comment out if you want silence
-                                window.popupBottomBarOpacityValue = 0.6;
-                            } else {
-                                window.popupBottomBarOpacityValue =
-                                    typeof res.popupBottomBarOpacityValue === 'number'
-                                        ? res.popupBottomBarOpacityValue
-                                        : 0.6;
-                            }
+                async function waitForElements(selectors, timeout = 12000, poll = 200) {
+                    const start = Date.now();
+                    let results;
+                    while (
+                        !(results = selectors.map(sel => document.querySelector(sel))).every(Boolean) &&
+                        (Date.now() - start < timeout)
+                    ) {
+                        await new Promise(r => setTimeout(r, poll));
+                    }
+                    return results;
+                }
+
+                // ------------------------------------------------------------------------
+                // (A) One-time storage fetch approach:
+                //     Only fetch once from chrome.storage.sync to avoid repeated calls,
+                //     and keep the resolved value in a single Promise.
+                // ------------------------------------------------------------------------
+                let opacityValuePromise;
+                function ensureOpacityValueReady() {
+                    // Return the already-fetched value if we have it
+                    if (opacityValuePromise) return opacityValuePromise;
+
+                    // Otherwise, build the one-time promise that fetches from storage
+                    opacityValuePromise = new Promise((resolve) => {
+                        // If chrome.storage.sync is missing/invalid, fallback silently to 0.6
+                        if (!chrome?.storage?.sync) {
+                            window.popupBottomBarOpacityValue = 0.6;
+                            return resolve(window.popupBottomBarOpacityValue);
+                        }
+
+                        try {
+                            chrome.storage.sync.get({ popupBottomBarOpacityValue: 0.6 }, (res) => {
+                                if (chrome.runtime.lastError) {
+                                    // console.error("Error:", chrome.runtime.lastError); // comment out if you want silence
+                                    window.popupBottomBarOpacityValue = 0.6;
+                                } else {
+                                    window.popupBottomBarOpacityValue =
+                                        typeof res.popupBottomBarOpacityValue === 'number'
+                                            ? res.popupBottomBarOpacityValue
+                                            : 0.6;
+                                }
+                                resolve(window.popupBottomBarOpacityValue);
+                            });
+                        } catch (e) {
+                            // console.error("Failed chrome.storage.sync.get:", e); // comment out if you want silence
+                            window.popupBottomBarOpacityValue = 0.6;
                             resolve(window.popupBottomBarOpacityValue);
-                        });
-                    } catch (e) {
-                        // console.error("Failed chrome.storage.sync.get:", e); // comment out if you want silence
-                        window.popupBottomBarOpacityValue = 0.6;
-                        resolve(window.popupBottomBarOpacityValue);
-                    }
-                });
+                        }
+                    });
 
-                return opacityValuePromise;
-            }
+                    return opacityValuePromise;
+                }
 
-            function snapToBottom() {
-                const sc = typeof getScrollableContainer === 'function' && getScrollableContainer();
-                if (sc) sc.scrollTop = sc.scrollHeight; // native, one-line, zero-ms
-            }
+                function snapToBottom() {
+                    const sc = typeof getScrollableContainer === 'function' && getScrollableContainer();
+                    if (sc) sc.scrollTop = sc.scrollHeight; // native, one-line, zero-ms
+                }
 
-            // -------------------- Section 2. Main Logic & Reinject --------------------
-            setTimeout(() => {
-                if (window.moveTopBarToBottomCheckbox) {
+                // -------------------- Section 2. Main Logic & Reinject --------------------
+                setTimeout(() => {
                     (function () {
                         runMoveTopBarLogic();
                         // Stay alive if DOM changes (mutation-observe, auto re-inject)
@@ -2770,14 +2774,14 @@ setTimeout(() => {
 
 
                     })();
-                }
-            }, 500);
 
-            // -------------------- Section 7. Style Injection ("global") --------------------
+                }, 500);
 
-            (function injectBottomBarStyles() {
-                const style = document.createElement('style');
-                style.textContent = `
+                // -------------------- Section 7. Style Injection ("global") --------------------
+
+                (function injectBottomBarStyles() {
+                    const style = document.createElement('style');
+                    style.textContent = `
                     .draggable.sticky.top-0 {
                         opacity: 0 !important; pointer-events: none !important;
                         position: absolute !important; width: 1px !important; height: 1px !important; overflow: hidden !important;
@@ -2821,131 +2825,133 @@ setTimeout(() => {
 
 
                 `;
-                document.head.appendChild(style);
-            })();
-
-
-            // -------------------- Section 7.1. Bottom Bar Mutation Observer for Duplicate Buttons --------------------
-            (function () {
-                const PATH_PREFIXES = ['M15.6729', 'M8.85719'];
-                const SELECTOR = [
-                    'button',
-                    'a'
-                ].map(
-                    tag => PATH_PREFIXES.map(
-                        prefix => `${tag} svg > path[d^="${prefix}"]`
-                    ).join(',')
-                ).join(',');
-
-                function hideMatchedElements(container) {
-                    if (!container) return;
-                    // Find all matching paths in the container
-                    const paths = container.querySelectorAll(SELECTOR);
-                    paths.forEach(path => {
-                        let el = path.closest('button,a');
-                        if (el) {
-                            el.style.setProperty('visibility', 'hidden', 'important');
-                            el.style.setProperty('position', 'absolute', 'important');
-                            el.style.setProperty('width', '1px', 'important');
-                            el.style.setProperty('height', '1px', 'important');
-                            el.style.setProperty('overflow', 'hidden', 'important');
-                            // Optional: add a data attribute so you can track which elements were hidden
-                            el.setAttribute('data-ext-hidden', 'true');
-                        }
-                    });
-                }
-
-                // Setup mutation observer
-                function observeBottomBar() {
-                    const container = document.querySelector('#bottomBarContainer');
-                    if (!container) {
-                        // Try again soon if the container isn't present yet
-                        setTimeout(observeBottomBar, 500);
-                        return;
-                    }
-                    // Initial hide
-                    hideMatchedElements(container);
-                    // Create the observer
-                    const observer = new MutationObserver((mutationsList) => {
-                        mutationsList.forEach((mutation) => {
-                            // If children added/removed or subtree changed, re-hide
-                            if (mutation.addedNodes.length > 0 || mutation.type === 'childList') {
-                                hideMatchedElements(container);
-                            }
-                        });
-                    });
-                    observer.observe(container, {
-                        childList: true,
-                        subtree: true
-                    });
-                }
-
-                // Run
-                observeBottomBar();
-
-            })();
-
-
-
-            // -------------------- Section 8. Hide Disclaimers (live observation) --------------------
-            setTimeout(() => {
-                (function () {
-                    const observer = new MutationObserver(() => {
-                        document.querySelectorAll('div.text-token-text-secondary').forEach(el => {
-                            const txt = el.textContent.trim().replace(/\s+/g, ' ');
-                            if (txt.includes("Check important info")) {
-                                el.setAttribute('data-id', 'hide-this-warning');
-                            }
-                        });
-                    });
-                    observer.observe(document.body, { childList: true, subtree: true });
+                    document.head.appendChild(style);
                 })();
-            }, 100);
 
-            // -------------------- Section 9. Remove Composer Button Labels (lang-agnostic) --------------------
-            (function stripComposerLabels() {
-                const ACTION_WRAPPER = '[style*="--vt-composer-search-action"],[style*="--vt-composer-research-action"]';
-                const IMAGE_BUTTON = 'button[data-testid="composer-button-create-image"]';
 
-                const stripLabel = btn => {
-                    btn.querySelectorAll('span, div').forEach(node => {
-                        if (!node.querySelector('svg') && !node.dataset.labelStripped) {
-                            node.dataset.labelStripped = 'true';
-                            gsap.to(node, {
-                                opacity: 0,
-                                duration: 0.15,
-                                ease: 'sine.out',
-                                onComplete: () => node.remove()
-                            });
-                        }
-                    });
-                };
+                // -------------------- Section 7.1. Bottom Bar Mutation Observer for Duplicate Buttons --------------------
+                (function () {
+                    const PATH_PREFIXES = ['M15.6729', 'M8.85719'];
+                    const SELECTOR = [
+                        'button',
+                        'a'
+                    ].map(
+                        tag => PATH_PREFIXES.map(
+                            prefix => `${tag} svg > path[d^="${prefix}"]`
+                        ).join(',')
+                    ).join(',');
 
-                const scan = root => {
-                    root.querySelectorAll(ACTION_WRAPPER).forEach(wrp => {
-                        const btn = wrp.querySelector('button');
-                        if (btn) stripLabel(btn);
-                    });
-                    root.querySelectorAll(IMAGE_BUTTON).forEach(btn => stripLabel(btn));
-                };
-
-                // Initial label removal
-                scan(document);
-
-                // Watch for new buttons
-                new MutationObserver(mutations => {
-                    for (const { addedNodes } of mutations) {
-                        for (const node of addedNodes) {
-                            if (node.nodeType !== 1) continue;
-                            scan(node); // always scan deeply
-                        }
+                    function hideMatchedElements(container) {
+                        if (!container) return;
+                        // Find all matching paths in the container
+                        const paths = container.querySelectorAll(SELECTOR);
+                        paths.forEach(path => {
+                            let el = path.closest('button,a');
+                            if (el) {
+                                el.style.setProperty('visibility', 'hidden', 'important');
+                                el.style.setProperty('position', 'absolute', 'important');
+                                el.style.setProperty('width', '1px', 'important');
+                                el.style.setProperty('height', '1px', 'important');
+                                el.style.setProperty('overflow', 'hidden', 'important');
+                                // Optional: add a data attribute so you can track which elements were hidden
+                                el.setAttribute('data-ext-hidden', 'true');
+                            }
+                        });
                     }
-                }).observe(document.body, { childList: true, subtree: true });
+
+                    // Setup mutation observer
+                    function observeBottomBar() {
+                        const container = document.querySelector('#bottomBarContainer');
+                        if (!container) {
+                            // Try again soon if the container isn't present yet
+                            setTimeout(observeBottomBar, 500);
+                            return;
+                        }
+                        // Initial hide
+                        hideMatchedElements(container);
+                        // Create the observer
+                        const observer = new MutationObserver((mutationsList) => {
+                            mutationsList.forEach((mutation) => {
+                                // If children added/removed or subtree changed, re-hide
+                                if (mutation.addedNodes.length > 0 || mutation.type === 'childList') {
+                                    hideMatchedElements(container);
+                                }
+                            });
+                        });
+                        observer.observe(container, {
+                            childList: true,
+                            subtree: true
+                        });
+                    }
+
+                    // Run
+                    observeBottomBar();
+
+                })();
+
+
+
+                // -------------------- Section 8. Hide Disclaimers (live observation) --------------------
+                setTimeout(() => {
+                    (function () {
+                        const observer = new MutationObserver(() => {
+                            document.querySelectorAll('div.text-token-text-secondary').forEach(el => {
+                                const txt = el.textContent.trim().replace(/\s+/g, ' ');
+                                if (txt.includes("Check important info")) {
+                                    el.setAttribute('data-id', 'hide-this-warning');
+                                }
+                            });
+                        });
+                        observer.observe(document.body, { childList: true, subtree: true });
+                    })();
+                }, 100);
+
+                // -------------------- Section 9. Remove Composer Button Labels (lang-agnostic) --------------------
+                (function stripComposerLabels() {
+                    const ACTION_WRAPPER = '[style*="--vt-composer-search-action"],[style*="--vt-composer-research-action"]';
+                    const IMAGE_BUTTON = 'button[data-testid="composer-button-create-image"]';
+
+                    const stripLabel = btn => {
+                        btn.querySelectorAll('span, div').forEach(node => {
+                            if (!node.querySelector('svg') && !node.dataset.labelStripped) {
+                                node.dataset.labelStripped = 'true';
+                                gsap.to(node, {
+                                    opacity: 0,
+                                    duration: 0.15,
+                                    ease: 'sine.out',
+                                    onComplete: () => node.remove()
+                                });
+                            }
+                        });
+                    };
+
+                    const scan = root => {
+                        root.querySelectorAll(ACTION_WRAPPER).forEach(wrp => {
+                            const btn = wrp.querySelector('button');
+                            if (btn) stripLabel(btn);
+                        });
+                        root.querySelectorAll(IMAGE_BUTTON).forEach(btn => stripLabel(btn));
+                    };
+
+                    // Initial label removal
+                    scan(document);
+
+                    // Watch for new buttons
+                    new MutationObserver(mutations => {
+                        for (const { addedNodes } of mutations) {
+                            for (const node of addedNodes) {
+                                if (node.nodeType !== 1) continue;
+                                scan(node); // always scan deeply
+                            }
+                        }
+                    }).observe(document.body, { childList: true, subtree: true });
+
+
+                })();
+
             })();
-
-
         }
-    }, 100);
+    );
 })();
 
 
@@ -2955,37 +2961,39 @@ setTimeout(() => {
 // ==================================================
 
 (function () {
-    setTimeout(function injectNoBottomBarStyles() {
-        if (!window.moveTopBarToBottomCheckbox) {
-            const style = document.createElement('style');
-            style.textContent = `
+    chrome.storage.sync.get(
+        { moveTopBarToBottomCheckbox: false },
+        ({ moveTopBarToBottomCheckbox: enabled }) => {
+            if (enabled) return;  // Feature runs ONLY if NOT enabled
 
+            (function () {
+                setTimeout(function injectNoBottomBarStyles() {
+                    const style = document.createElement('style');
+                    style.textContent = `
+                        form.w-full[data-type="unified-composer"] {
+                            margin-bottom: -1em;
+                        }
+                    `;
+                    document.head.appendChild(style);
 
-        form.w-full[data-type="unified-composer"] {
-        margin-bottom: -1em;
+                    (function () {
+                        const observer = new MutationObserver(() => {
+                            document.querySelectorAll('div.text-token-text-secondary').forEach(el => {
+                                const txt = el.textContent.trim().replace(/\s+/g, ' ');
+                                if (txt.includes("Check important info")) {
+                                    el.setAttribute('data-id', 'hide-this-warning');
+                                }
+                            });
+                        });
+                        observer.observe(document.body, { childList: true, subtree: true });
+                    })();
+
+                }, 100);
+            })();
         }
-        `;
-            document.head.appendChild(style);
-        }
-
-        (function () {
-            const observer = new MutationObserver(() => {
-                document.querySelectorAll('div.text-token-text-secondary').forEach(el => {
-                    const txt = el.textContent.trim().replace(/\s+/g, ' ');
-                    if (txt.includes("Check important info")) {
-                        el.setAttribute('data-id', 'hide-this-warning');
-                    }
-                });
-            });
-            observer.observe(document.body, { childList: true, subtree: true });
-        })();
-
-
-    }, 100);
-
-
-
+    );
 })();
+
 
 
 
@@ -3262,3 +3270,155 @@ setTimeout(() => {
 //   `;
 //     document.head.appendChild(style);
 // })();
+
+// ====================================
+//  rememberSidebarScrollPositionCheckbox
+//  @note  Chat‑sidebar scroll restore – per‑tab & user‑toggleable
+// ====================================
+
+(function () {
+
+    chrome.storage.sync.get(
+        { rememberSidebarScrollPositionCheckbox: false },
+        ({ rememberSidebarScrollPositionCheckbox: enabled }) => {
+            if (!enabled) return;                          // feature disabled
+
+            (function () {
+                "use strict";
+
+                /* ── constants ─────────────────────────── */
+                const SELECTOR = 'nav[aria-label="Chat history"]';
+                const BASE_KEY = '__chat_sidebar_scroll__';
+                const SAVE_THROTTLE = 120;   // ms
+                const BOTTOM_NUDGE = 3;     // px above bottom
+                const LOOP_SLEEP = 100;   // ms between attempts
+                const NO_GROWTH_MS = 1000;  // stop after this long w/o growth
+
+                /* ── per‑tab ID ────────────────────────── */
+                const TAB_ID_KEY = '__chat_sidebar_tab_id__';
+                let tabId;
+                try { tabId = sessionStorage.getItem(TAB_ID_KEY); } catch { }
+                if (!tabId) {
+                    tabId = typeof crypto?.randomUUID === "function"
+                        ? crypto.randomUUID()
+                        : Date.now().toString(36) + Math.random().toString(36).slice(2);
+                    try { sessionStorage.setItem(TAB_ID_KEY, tabId); } catch { }
+                }
+                const STORAGE_KEY = `${BASE_KEY}_${tabId}`;
+
+                /* ── storage wrappers (fail‑safe) ──────── */
+                const getPos = () => new Promise(res => {
+                    try {
+                        const s = sessionStorage.getItem(STORAGE_KEY);
+                        if (s !== null) return res(Number(s) || 0);
+                    } catch { }
+                    try {
+                        chrome.storage.local.get([STORAGE_KEY], r =>
+                            res(Number(r[STORAGE_KEY]) || 0)
+                        );
+                    } catch { res(0); }
+                });
+
+                const setPos = v => {
+                    try { sessionStorage.setItem(STORAGE_KEY, v); } catch { }
+                    try { chrome.storage.local.set({ [STORAGE_KEY]: v }); } catch { }
+                };
+
+                /* ── tiny helpers ──────────────────────── */
+                const sleep = ms => new Promise(r => setTimeout(r, ms));
+                const throttle = (fn, ms) => {
+                    let last = 0, id = 0;
+                    return (...a) => {
+                        const now = Date.now();
+                        const call = () => fn(...a);
+                        if (now - last > ms) { last = now; call(); }
+                        else if (!id) id = setTimeout(() => { id = 0; last = Date.now(); call(); },
+                            ms - (now - last));
+                    };
+                };
+
+                /* ── restore loop ──────────────────────── */
+                async function restore(container, wanted) {
+                    if (!wanted) return;
+                    container.__restoring = true;
+
+                    let abort = false;
+                    const stop = () => { abort = true; };
+                    container.addEventListener("wheel", stop, { passive: true });
+                    container.addEventListener("touchstart", stop, { passive: true });
+
+                    await sleep(150);                      // let layout settle
+                    let lastH = container.scrollHeight;
+                    let lastGrowth = performance.now();
+
+                    while (!abort) {
+                        const maxReach = container.scrollHeight - container.clientHeight;
+
+                        if (maxReach >= wanted) {          // target reachable
+                            container.scrollTop = wanted;
+                            break;
+                        }
+
+                        container.scrollTop = Math.max(0, maxReach - BOTTOM_NUDGE);
+                        await sleep(LOOP_SLEEP);
+
+                        if (container.scrollHeight !== lastH) {
+                            lastH = container.scrollHeight;
+                            lastGrowth = performance.now();
+                        } else if (performance.now() - lastGrowth > NO_GROWTH_MS) {
+                            break;                          // stalled
+                        }
+                    }
+
+                    container.removeEventListener("wheel", stop);
+                    container.removeEventListener("touchstart", stop);
+                    container.__restoring = false;
+                }
+
+                /* ── attach to one sidebar ─────────────── */
+                function attach(container) {
+                    if (container.__scrollSyncAttached) return;
+                    container.__scrollSyncAttached = true;
+
+                    getPos().then(pos => {
+                        restore(container, pos);
+                        setTimeout(() => restore(container, pos), 400); // after transitions
+                    });
+
+                    container.addEventListener(
+                        "scroll",
+                        throttle(() => {
+                            if (!container.__restoring) setPos(container.scrollTop);
+                        }, SAVE_THROTTLE),
+                        { passive: true }
+                    );
+                }
+
+                /* ── watch DOM for sidebars ────────────── */
+                function init() {
+                    const el = document.querySelector(SELECTOR);
+                    if (el) attach(el);
+                }
+
+                new MutationObserver(muts => {
+                    for (const m of muts) {
+                        for (const n of m.addedNodes) {
+                            if (n.nodeType !== 1) continue;
+                            if (n.matches?.(SELECTOR)) attach(n);
+                            else {
+                                const el = n.querySelector?.(SELECTOR);
+                                if (el) attach(el);
+                            }
+                        }
+                    }
+                }).observe(document.documentElement, { childList: true, subtree: true });
+
+                if (document.readyState === "loading")
+                    document.addEventListener("DOMContentLoaded", init, { once: true });
+                else
+                    init();
+            })();
+        }
+    );
+
+})();

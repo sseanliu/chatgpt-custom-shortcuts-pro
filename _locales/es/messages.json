@@ -229,5 +229,11 @@
     },
     "label_regenerate": {
         "message": "Regenerar respuesta"
+    },
+    "label_rememberSidebarScrollPositionCheckbox": {
+        "message": "Recordar posición en barra lateral"
+    },
+    "tt_rememberSidebarScrollPositionCheckbox": {
+        "message": "Normalmente, la barra lateral vuelve arriba cuando la abres, cierras o recargas. Marca esto para regresar al mismo lugar."
     }
 }

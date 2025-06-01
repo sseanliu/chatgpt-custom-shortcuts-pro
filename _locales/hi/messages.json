@@ -229,5 +229,11 @@
     },
     "label_regenerate": {
         "message": "रिस्पॉन्स फिर से बनाएँ"
+    },
+    "label_rememberSidebarScrollPositionCheckbox": {
+        "message": "साइडबार स्क्रॉल स्थिति याद रखें"
+    },
+    "tt_rememberSidebarScrollPositionCheckbox": {
+        "message": "आमतौर पर, साइडबार खोलने, बंद करने या रीलोड करने पर ऊपर चला जाता है। पिछली जगह लौटने के लिए इसे चुनें।"
     }
 }

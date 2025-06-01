@@ -262,7 +262,8 @@ document.addEventListener('DOMContentLoaded', function () {
             'enableSendWithControlEnterCheckbox',
             'enableStopWithControlBackspaceCheckbox',
             'useAltForModelSwitcherRadio',
-            'useControlForModelSwitcherRadio'
+            'useControlForModelSwitcherRadio',
+            'rememberSidebarScrollPositionCheckbox'
         ],
         function (data) {
             const defaults = {
@@ -279,6 +280,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 enableStopWithControlBackspaceCheckbox: data.enableStopWithControlBackspaceCheckbox !== undefined ? data.enableStopWithControlBackspaceCheckbox : true, // Default to true
                 useAltForModelSwitcherRadio: data.useAltForModelSwitcherRadio !== undefined ? data.useAltForModelSwitcherRadio : true, // Default to true
                 useControlForModelSwitcherRadio: data.useControlForModelSwitcherRadio !== undefined ? data.useControlForModelSwitcherRadio : false, // Default to false
+                rememberSidebarScrollPositionCheckbox: data.rememberSidebarScrollPositionCheckbox !== undefined ? data.rememberSidebarScrollPositionCheckbox : false, // Default to false
             };
 
             // Update the checkbox and radio button states in the popup based on stored or default values
@@ -295,7 +297,7 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('enableStopWithControlBackspaceCheckbox').checked = defaults.enableStopWithControlBackspaceCheckbox;
             document.getElementById('useAltForModelSwitcherRadio').checked = defaults.useAltForModelSwitcherRadio;
             document.getElementById('useControlForModelSwitcherRadio').checked = defaults.useControlForModelSwitcherRadio;
-
+            document.getElementById('rememberSidebarScrollPositionCheckbox').checked = defaults.rememberSidebarScrollPositionCheckbox;
             // Store the defaults if the values are missing
             chrome.storage.sync.set(defaults);
         }
@@ -367,6 +369,7 @@ document.addEventListener('DOMContentLoaded', function () {
     handleStateChange('enableStopWithControlBackspaceCheckbox', 'enableStopWithControlBackspaceCheckbox');
     handleStateChange('useAltForModelSwitcherRadio', 'useAltForModelSwitcherRadio');
     handleStateChange('useControlForModelSwitcherRadio', 'useControlForModelSwitcherRadio');
+    handleStateChange('rememberSidebarScrollPositionCheckbox', 'rememberSidebarScrollPositionCheckbox');
 
     const shortcutKeys = [
         'shortcutKeyScrollUpOneMessage',
@@ -484,6 +487,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const sliderValueDisplay = document.getElementById('opacityValue');
     const previewIcon = document.getElementById('opacityPreviewIcon');
     const tooltipContainer = document.getElementById('opacity-tooltip-container');
+    
 
     chrome.storage.sync.get('popupBottomBarOpacityValue', ({ popupBottomBarOpacityValue }) => {
         const val = typeof popupBottomBarOpacityValue === 'number' ? popupBottomBarOpacityValue : 0.6;
