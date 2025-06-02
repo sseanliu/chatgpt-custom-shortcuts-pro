@@ -3422,3 +3422,86 @@ setTimeout(() => {
     );
 
 })();
+
+
+// ====================================
+//  @note Make sidebar Day Headers sticky
+//  This will ensure that the day headers in the sidebar remain visible
+//  while scrolling through the chat history
+// ====================================
+
+(() => {
+    const FLAG = '__stickyCssInjected';
+
+    function init() {
+        if (window[FLAG]) return;
+        window[FLAG] = true;
+
+        const container = document.querySelector('nav[aria-label="Chat history"]');
+        if (!container) return;
+
+        // Compute offset beneath the main sidebar header (if present)
+        const sidebarHeader = container.querySelector('#sidebar-header');
+        const offsetTop = sidebarHeader ? sidebarHeader.offsetHeight : 0;
+
+        // 1. Inject sticky-header CSS
+        const style = document.createElement('style');
+        style.textContent = `
+        nav[aria-label="Chat history"] h2.__menu-label {
+            position: sticky !important;
+            top: ${offsetTop}px !important;
+            background-color: var(--sidebar-surface-primary) !important;
+            z-index: 5 !important;
+            margin: 0 !important;
+            display: block !important;
+            padding-top: 5px !important;
+            padding-bottom: 3px !important;
+        }
+`;
+        document.head.appendChild(style);
+
+        // 2. Apply background-color inline to existing headers
+        const applyBg = el => {
+            el.style.backgroundColor = 'var(--sidebar-surface-primary)';
+        };
+        container.querySelectorAll('h2.__menu-label').forEach(applyBg);
+
+        // 3. Observe only the sidebar container for future <h2.__menu-label> insertions
+        const observer = new MutationObserver(mutations => {
+            for (const m of mutations) {
+                m.addedNodes.forEach(node => {
+                    if (node.nodeType !== 1) return;
+                    if (node.matches && node.matches('h2.__menu-label')) {
+                        applyBg(node);
+                    } else if (node.querySelectorAll) {
+                        node.querySelectorAll('h2.__menu-label').forEach(applyBg);
+                    }
+                });
+            }
+        });
+        observer.observe(container, { childList: true, subtree: true });
+    }
+
+    // If sidebar already exists, initialize immediately
+    if (document.querySelector('nav[aria-label="Chat history"]')) {
+        init();
+    } else {
+        // Otherwise, watch document.body until the sidebar is added
+        const watcher = new MutationObserver((mutations, obs) => {
+            for (const m of mutations) {
+                for (const node of m.addedNodes) {
+                    if (
+                        node.nodeType === 1 &&
+                        (node.matches('nav[aria-label="Chat history"]') ||
+                            (node.querySelector && node.querySelector('nav[aria-label="Chat history"]')))
+                    ) {
+                        obs.disconnect();
+                        init();
+                        return;
+                    }
+                }
+            }
+        });
+        watcher.observe(document.body, { childList: true, subtree: true });
+    }
+})();
