@@ -30,7 +30,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 el.setAttribute('data-tooltip', updatedTooltip);
             }
 
-            addTooltip(el);
             el.dataset.tooltipAttached = "true"; // prevent double attachment
         }
     });
@@ -127,12 +126,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }, 500);
     }
 
-    /**
-     * Tooltip functionality (fully restored with formatting and visibility logic)
-     */
-    const tooltipArea = document.querySelector('.tooltip-area');
-    let tooltipShown = false;
-    let fadeOutTimeout;
+    /** Tooltip functionality removed **/
 
     function formatTooltipText(text, maxChars = 50) {
         if (text.length <= maxChars) return text;
@@ -203,44 +197,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     
 
-    function addTooltip(element) {
-        element.addEventListener('mouseenter', () => {
-            clearTimeout(fadeOutTimeout);
-            const text = element.getAttribute('data-tooltip') || '';
-            tooltipArea.innerHTML = formatTooltipText(text);
-
-            if (!tooltipShown) {
-                tooltipArea.style.display = 'block';
-                tooltipArea.style.opacity = '1';
-                tooltipShown = true;
-            } else {
-                tooltipArea.style.opacity = '1';
-            }
-        });
-
-        element.addEventListener('mouseleave', () => {
-            clearTimeout(fadeOutTimeout);
-            tooltipArea.innerHTML = '';
-
-            fadeOutTimeout = setTimeout(() => {
-                const anyHovered = [...document.querySelectorAll('[data-tooltip]:hover')].length > 0;
-                if (!anyHovered) {
-                    tooltipArea.style.opacity = '0';
-                    setTimeout(() => {
-                        if (tooltipArea.style.opacity === '0') {
-                            tooltipArea.style.display = 'none';
-                            tooltipShown = false;
-                        }
-                    }, 500);
-                }
-            }, 500);
-        });
-    }
-
-
-    // Attach event handlers to all elements with .tooltip class
-    const tooltipElements = document.querySelectorAll('.tooltip');
-    tooltipElements.forEach(addTooltip);
+    // Tooltip functionality removed
 
     // End of Utility Functions
 
