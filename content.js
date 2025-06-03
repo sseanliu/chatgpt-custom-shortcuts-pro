@@ -107,7 +107,7 @@ function findButton(args) {
 }
 
 // Global helper to toggle visibility and expose setting values
-window.applyVisibilitySettings = function (data) {
+function applyVisibilitySettings(data) {
     if (data.hideArrowButtonsCheckbox) {
         ['upButton', 'downButton'].forEach(id => {
             const button = document.getElementById(id);
@@ -165,7 +165,10 @@ window.applyVisibilitySettings = function (data) {
     window.rememberSidebarScrollPositionCheckbox = data.hasOwnProperty('rememberSidebarScrollPositionCheckbox')
         ? data.rememberSidebarScrollPositionCheckbox === true
         : false;
-};
+}
+
+// Expose globally for use in other scripts/IIFEs
+window.applyVisibilitySettings = applyVisibilitySettings;
 
 
 // =====================================
@@ -191,7 +194,7 @@ window.applyVisibilitySettings = function (data) {
         'useControlForModelSwitcherRadio',
         'rememberSidebarScrollPositionCheckbox'
     ], (data) => {
-        window.applyVisibilitySettings(data);
+        applyVisibilitySettings(data);
     });
 
     // Listen for changes in Chrome storage and dynamically apply settings
@@ -237,7 +240,7 @@ window.applyVisibilitySettings = function (data) {
             if (changes.rememberSidebarScrollPositionCheckbox) {
                 updatedData.rememberSidebarScrollPositionCheckbox = changes.rememberSidebarScrollPositionCheckbox.newValue;
             }
-            window.applyVisibilitySettings(updatedData);
+            applyVisibilitySettings(updatedData);
         }
     });
 })();
@@ -380,7 +383,7 @@ window.applyVisibilitySettings = function (data) {
 
         // Get the values from Chrome storage
         chrome.storage.sync.get(['hideArrowButtonsCheckbox', 'hideCornerButtonsCheckbox'], function (data) {
-            window.applyVisibilitySettings(data);
+            applyVisibilitySettings(data);
         });
     }
 
