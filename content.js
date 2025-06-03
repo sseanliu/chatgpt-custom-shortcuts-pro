@@ -125,13 +125,6 @@ function findButton(args) {
             });
         }
 
-        // Check and hide the menu buttons if necessary
-        if (data.hideCornerButtonsCheckbox) {
-            ['copyAllButton', 'copyCodeButton'].forEach(id => {
-                const button = document.getElementById(id);
-                if (button) button.style.display = 'none';
-            });
-        }
 
         // Define default values globally
 
@@ -185,7 +178,6 @@ function findButton(args) {
     // Fetch initial values from Chrome storage
     chrome.storage.sync.get([
         'hideArrowButtonsCheckbox',
-        'hideCornerButtonsCheckbox',
         'moveTopBarToBottomCheckbox',
         'removeMarkdownOnCopyCheckbox',
         'selectMessagesSentByUserOrChatGptCheckbox',
@@ -208,9 +200,6 @@ function findButton(args) {
             const updatedData = {};
             if (changes.hideArrowButtonsCheckbox) {
                 updatedData.hideArrowButtonsCheckbox = changes.hideArrowButtonsCheckbox.newValue;
-            }
-            if (changes.hideCornerButtonsCheckbox) {
-                updatedData.hideCornerButtonsCheckbox = changes.hideCornerButtonsCheckbox.newValue;
             }
             if (changes.moveTopBarToBottomCheckbox) {
                 updatedData.moveTopBarToBottomCheckbox = changes.moveTopBarToBottomCheckbox.newValue;
@@ -322,110 +311,8 @@ function findButton(args) {
 
 
 
-    function createButton(icon, onClick, tooltipText, id) {
-        const button = document.createElement('button');
-        button.style.cssText = "width: 20px; height: 20px; border: none; background: none; margin-right: 16px; cursor: pointer;";
-
-        // Parse the SVG string into a DOM Node
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(icon, 'image/svg+xml');
-        const svgNode = doc.firstChild;
-
-        // Apply initial color
-        svgNode.setAttribute('fill', 'var(--text-secondary)');
-        button.appendChild(svgNode);
-
-        button.addEventListener('click', onClick);
-        button.id = id;
-
-        button.addEventListener('mouseenter', () => {
-            svgNode.setAttribute('fill', '#AB68FD'); // Change the fill color of the SVG
-        });
-
-        button.addEventListener('mouseleave', () => {
-            svgNode.setAttribute('fill', 'var(--text-secondary)'); // Change it back
-        });
-
-        if (tooltipText) {
-            addTooltip(button, tooltipText);
-        }
-
-        return button;
-    }
-
-    async function loadSVG(iconPath) {
-        const response = await fetch(chrome.runtime.getURL(iconPath));
-        const text = await response.text();
-        return text;
-    }
 
 
-    async function createMenu() {
-        // Load SVGs
-        const copyAllIconSVG = await loadSVG('icons/copy-all-text-icon.svg');
-        const copyCodeIconSVG = await loadSVG('icons/copy-all-code-icon.svg');
-
-        // Create buttons
-        const copyAllButton = createButton(copyAllIconSVG, copyAll, "Copy and Join All Responses", 'copyAllButton');
-        const copyCodeButton = createButton(copyCodeIconSVG, copyCode, "Copy and Join All Code Boxes", 'copyCodeButton');
-
-        // Position the buttons
-        copyAllButton.style.cssText = "display:none; position: fixed; zoom: .65; bottom: 6px; right: 100px; width: 32px; height: 32px; border: none; background: none; cursor: pointer; transition: opacity 1s;";
-        copyCodeButton.style.cssText = "display:none; position: fixed; zoom: .65; bottom: 6px; right: 60px; width: 32px; height: 32px; border: none; background: none; cursor: pointer; transition: opacity 1s;";
-
-        // Append buttons to the body
-        appendWithFragment(document.body, copyAllButton, copyCodeButton);
-
-        // Add opacity logic to the buttons
-        const copyButtons = [copyAllButton, copyCodeButton];
-
-        copyButtons.forEach(button => {
-            // Mouseover: make button fully visible
-            button.addEventListener('mouseover', () => {
-                button.style.opacity = "1";
-            });
-
-            // Mouseleave: fade the button
-            button.addEventListener('mouseleave', () => {
-                button.style.transition = "opacity 1s";
-                button.style.opacity = "0.2";
-            });
-
-            // Initial fade after a delay (3500ms)
-            setTimeout(() => {
-                button.style.transition = "opacity 1s";
-                button.style.opacity = "0.2";
-            }, 3500);
-        });
-
-        function applyVisibilitySettings(data) {
-            // Check and hide the up button if necessary
-            if (data.hideArrowButtonsCheckbox) {
-                const upButton = document.getElementById('upButton');
-                if (upButton) {
-                    upButton.style.display = 'none';
-                }
-            }
-
-            // Check and hide the menu buttons if necessary
-            if (data.hideCornerButtonsCheckbox) {
-                const copyAllButton = document.getElementById('copyAllButton');
-                const copyCodeButton = document.getElementById('copyCodeButton');
-
-                if (copyAllButton) copyAllButton.style.display = 'none';
-                if (copyCodeButton) copyCodeButton.style.display = 'none';
-            }
-
-        }
-
-        // Get the values from Chrome storage
-        chrome.storage.sync.get(['hideArrowButtonsCheckbox', 'hideCornerButtonsCheckbox'], function (data) {
-            applyVisibilitySettings(data);
-        });
-    }
-
-    // Call createMenu without awaiting it
-    createMenu();
 
     function showToast(message) {
         const toast = document.createElement('div');
@@ -768,6 +655,9 @@ function findButton(args) {
     const upButton = createScrollUpButton();
     const downButton = createScrollDownButton();
     appendWithFragment(document.body, upButton, downButton);
+
+    // Apply visibility settings now that buttons exist
+    chrome.storage.sync.get('hideArrowButtonsCheckbox', applyVisibilitySettings);
 
 
     // @note Keyboard shortcut defaults 

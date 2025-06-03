@@ -98,9 +98,6 @@
     "label_hide_arrows": {
         "message": "Сховати кнопки зі стрілками"
     },
-    "label_hide_corners": {
-        "message": "Сховати кнопки копіювання"
-    },
     "tt_scroll_up_one": {
         "message": "Прокрутити вверх на одне повідомлення (очистіть для вимкнення)."
     },
@@ -196,9 +193,6 @@
     },
     "tt_hide_arrows": {
         "message": "Сховати кнопки зі стрілками."
-    },
-    "tt_hide_corners": {
-        "message": "Сховати кнопки копіювання всього внизу справа."
     },
     "label_showModelPicker": {
         "message": "Показати вибір моделі"

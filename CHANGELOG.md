@@ -4,7 +4,11 @@ The full changelog and feature history is maintained here.
 
 Current Known Bugs:
 - Collapse sidebar GPT's and Folders is down for repairs
-- Copy and join all code boxes is including text outside of code boxes. This feature may be retired soon. 
+- Copy and join all code boxes is including text outside of code boxes. This feature may be retired soon.
+
+#### [6.3.2025]
+##### Removed
+- Legacy code for hidden "Copy All" buttons
 
 #### [5.29.2025]
 - Disabled collapse sidebar for time being.

@@ -98,9 +98,6 @@
     "label_hide_arrows": {
         "message": "矢印ボタン非表示"
     },
-    "label_hide_corners": {
-        "message": "'全てコピー'非表示"
-    },
     "tt_scroll_up_one": {
         "message": "1つずつ上にスクロール（削除で無効化）。"
     },
@@ -196,9 +193,6 @@
     },
     "tt_hide_arrows": {
         "message": "上下矢印ボタンを非表示。"
-    },
-    "tt_hide_corners": {
-        "message": "右下の'全てコピー'ボタン非表示。"
     },
     "label_showModelPicker": {
         "message": "モデル選択を表示"

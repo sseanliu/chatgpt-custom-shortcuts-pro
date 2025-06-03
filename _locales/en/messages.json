@@ -98,9 +98,6 @@
     "label_hide_arrows": {
         "message": "Hide Arrow Buttons"
     },
-    "label_hide_corners": {
-        "message": "Hide Copy All Buttons"
-    },
     "tt_scroll_up_one": {
         "message": "Scroll up one message at a time. To disable any shortcut, delete the assigned letter."
     },
@@ -196,9 +193,6 @@
     },
     "tt_hide_arrows": {
         "message": "Hide the up and down arrow buttons."
-    },
-    "tt_hide_corners": {
-        "message": "Hide the 'Copy All' buttons in the bottom right."
     },
     "label_showModelPicker": {
         "message": "Show Model Picker"
