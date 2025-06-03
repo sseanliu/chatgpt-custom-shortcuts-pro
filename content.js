@@ -116,9 +116,8 @@ function applyVisibilitySettings(data) {
         });
     }
 
-    window.moveTopBarToBottomCheckbox = data.hasOwnProperty('moveTopBarToBottomCheckbox')
-        ? data.moveTopBarToBottomCheckbox === true
-        : false;
+    // Normalize to boolean for easier checks throughout the script
+    window.moveTopBarToBottomCheckbox = Boolean(data.moveTopBarToBottomCheckbox);
 
     window.removeMarkdownOnCopyCheckbox = data.hasOwnProperty('removeMarkdownOnCopyCheckbox')
         ? data.removeMarkdownOnCopyCheckbox === true
@@ -547,7 +546,7 @@ window.applyVisibilitySettings = applyVisibilitySettings;
             let targetMessage = null;
 
             // Determine offset values based on checkbox state
-            const isBottom = window.moveTopBarToBottomCheckbox?.checked;
+            const isBottom = window.moveTopBarToBottomCheckbox;
             const messageThreshold = isBottom ? -48 : -30;      // 2nd # is if TopBarToBottom is checked, 1st  # when topbar in default position
             const scrollOffset = isBottom ? 43 : 25;            // 2nd # is if TopBarToBottom is checked, 1st  # when topbar in default position
 
@@ -638,7 +637,7 @@ window.applyVisibilitySettings = applyVisibilitySettings;
             const currentScrollTop = scrollContainer.scrollTop;
 
             // Determine offset values based on checkbox state
-            const isBottom = window.moveTopBarToBottomCheckbox?.checked;
+            const isBottom = window.moveTopBarToBottomCheckbox;
             const messageThreshold = isBottom ? 48 : 30;         // Mirror logic from upButton, reversed for downward scroll
             const scrollOffset = isBottom ? 43 : 25;             // Matching offset values
 

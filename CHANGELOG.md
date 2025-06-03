@@ -10,6 +10,10 @@ Current Known Bugs:
 - Collapse sidebar GPT's and Folders is down for repairs
 - Copy and join all code boxes is including text outside of code boxes. This feature may be retired soon.
 
+#### [6.4.2025]
+##### Fixed
+- Normalized TopBarToBottom flag as a boolean and updated scroll logic.
+
 #### [6.3.2025]
 ##### Changed
 - Refactored visibility settings logic for content script.
