@@ -246,7 +246,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     /**
      * Initializes default settings if not present in Chrome storage.
-     * Sets the radio button and checkbox states and stores them if they haven't been defined yet.
+     * Only writes default values for keys that are currently undefined.
      */
     chrome.storage.sync.get(
         [
@@ -269,21 +269,21 @@ document.addEventListener('DOMContentLoaded', function () {
             const defaults = {
                 hideArrowButtonsCheckbox: data.hideArrowButtonsCheckbox !== undefined ? data.hideArrowButtonsCheckbox : false,
                 hideCornerButtonsCheckbox: data.hideCornerButtonsCheckbox === undefined ? true : data.hideCornerButtonsCheckbox,
-                removeMarkdownOnCopyCheckbox: data.removeMarkdownOnCopyCheckbox !== undefined ? data.removeMarkdownOnCopyCheckbox : true, // Default to true
-                moveTopBarToBottomCheckbox: data.moveTopBarToBottomCheckbox !== undefined ? data.moveTopBarToBottomCheckbox : false, // Default to false
-                pageUpDownTakeover: data.pageUpDownTakeover !== undefined ? data.pageUpDownTakeover : true, // Default to true
-                selectMessagesSentByUserOrChatGptCheckbox: data.selectMessagesSentByUserOrChatGptCheckbox !== undefined ? data.selectMessagesSentByUserOrChatGptCheckbox : true, // Default to true
-                onlySelectUserCheckbox: data.onlySelectUserCheckbox !== undefined ? data.onlySelectUserCheckbox : false, // Default to false
-                onlySelectAssistantCheckbox: data.onlySelectAssistantCheckbox !== undefined ? data.onlySelectAssistantCheckbox : false, // Default to false
-                disableCopyAfterSelectCheckbox: data.disableCopyAfterSelectCheckbox !== undefined ? data.disableCopyAfterSelectCheckbox : false, // Default to false
-                enableSendWithControlEnterCheckbox: data.enableSendWithControlEnterCheckbox !== undefined ? data.enableSendWithControlEnterCheckbox : true, // Default to true
-                enableStopWithControlBackspaceCheckbox: data.enableStopWithControlBackspaceCheckbox !== undefined ? data.enableStopWithControlBackspaceCheckbox : true, // Default to true
-                useAltForModelSwitcherRadio: data.useAltForModelSwitcherRadio !== undefined ? data.useAltForModelSwitcherRadio : true, // Default to true
-                useControlForModelSwitcherRadio: data.useControlForModelSwitcherRadio !== undefined ? data.useControlForModelSwitcherRadio : false, // Default to false
-                rememberSidebarScrollPositionCheckbox: data.rememberSidebarScrollPositionCheckbox !== undefined ? data.rememberSidebarScrollPositionCheckbox : false, // Default to false
+                removeMarkdownOnCopyCheckbox: data.removeMarkdownOnCopyCheckbox !== undefined ? data.removeMarkdownOnCopyCheckbox : true,
+                moveTopBarToBottomCheckbox: data.moveTopBarToBottomCheckbox !== undefined ? data.moveTopBarToBottomCheckbox : false,
+                pageUpDownTakeover: data.pageUpDownTakeover !== undefined ? data.pageUpDownTakeover : true,
+                selectMessagesSentByUserOrChatGptCheckbox: data.selectMessagesSentByUserOrChatGptCheckbox !== undefined ? data.selectMessagesSentByUserOrChatGptCheckbox : true,
+                onlySelectUserCheckbox: data.onlySelectUserCheckbox !== undefined ? data.onlySelectUserCheckbox : false,
+                onlySelectAssistantCheckbox: data.onlySelectAssistantCheckbox !== undefined ? data.onlySelectAssistantCheckbox : false,
+                disableCopyAfterSelectCheckbox: data.disableCopyAfterSelectCheckbox !== undefined ? data.disableCopyAfterSelectCheckbox : false,
+                enableSendWithControlEnterCheckbox: data.enableSendWithControlEnterCheckbox !== undefined ? data.enableSendWithControlEnterCheckbox : true,
+                enableStopWithControlBackspaceCheckbox: data.enableStopWithControlBackspaceCheckbox !== undefined ? data.enableStopWithControlBackspaceCheckbox : true,
+                useAltForModelSwitcherRadio: data.useAltForModelSwitcherRadio !== undefined ? data.useAltForModelSwitcherRadio : true,
+                useControlForModelSwitcherRadio: data.useControlForModelSwitcherRadio !== undefined ? data.useControlForModelSwitcherRadio : false,
+                rememberSidebarScrollPositionCheckbox: data.rememberSidebarScrollPositionCheckbox !== undefined ? data.rememberSidebarScrollPositionCheckbox : false
             };
 
-            // Update the checkbox and radio button states in the popup based on stored or default values
+            // Update the popup's checkboxes and radio buttons based on stored or default values
             document.getElementById('hideArrowButtonsCheckbox').checked = defaults.hideArrowButtonsCheckbox;
             document.getElementById('hideCornerButtonsCheckbox').checked = defaults.hideCornerButtonsCheckbox;
             document.getElementById('removeMarkdownOnCopyCheckbox').checked = defaults.removeMarkdownOnCopyCheckbox;
@@ -298,8 +298,26 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('useAltForModelSwitcherRadio').checked = defaults.useAltForModelSwitcherRadio;
             document.getElementById('useControlForModelSwitcherRadio').checked = defaults.useControlForModelSwitcherRadio;
             document.getElementById('rememberSidebarScrollPositionCheckbox').checked = defaults.rememberSidebarScrollPositionCheckbox;
-            // Store the defaults if the values are missing
-            chrome.storage.sync.set(defaults);
+
+            // Only sync default values for keys that were not yet set in storage
+            const toSync = {};
+            if (data.hideArrowButtonsCheckbox === undefined) toSync.hideArrowButtonsCheckbox = defaults.hideArrowButtonsCheckbox;
+            if (data.hideCornerButtonsCheckbox === undefined) toSync.hideCornerButtonsCheckbox = defaults.hideCornerButtonsCheckbox;
+            if (data.removeMarkdownOnCopyCheckbox === undefined) toSync.removeMarkdownOnCopyCheckbox = defaults.removeMarkdownOnCopyCheckbox;
+            if (data.moveTopBarToBottomCheckbox === undefined) toSync.moveTopBarToBottomCheckbox = defaults.moveTopBarToBottomCheckbox;
+            if (data.pageUpDownTakeover === undefined) toSync.pageUpDownTakeover = defaults.pageUpDownTakeover;
+            if (data.selectMessagesSentByUserOrChatGptCheckbox === undefined) toSync.selectMessagesSentByUserOrChatGptCheckbox = defaults.selectMessagesSentByUserOrChatGptCheckbox;
+            if (data.onlySelectUserCheckbox === undefined) toSync.onlySelectUserCheckbox = defaults.onlySelectUserCheckbox;
+            if (data.onlySelectAssistantCheckbox === undefined) toSync.onlySelectAssistantCheckbox = defaults.onlySelectAssistantCheckbox;
+            if (data.disableCopyAfterSelectCheckbox === undefined) toSync.disableCopyAfterSelectCheckbox = defaults.disableCopyAfterSelectCheckbox;
+            if (data.enableSendWithControlEnterCheckbox === undefined) toSync.enableSendWithControlEnterCheckbox = defaults.enableSendWithControlEnterCheckbox;
+            if (data.enableStopWithControlBackspaceCheckbox === undefined) toSync.enableStopWithControlBackspaceCheckbox = defaults.enableStopWithControlBackspaceCheckbox;
+            if (data.useAltForModelSwitcherRadio === undefined) toSync.useAltForModelSwitcherRadio = defaults.useAltForModelSwitcherRadio;
+            if (data.useControlForModelSwitcherRadio === undefined) toSync.useControlForModelSwitcherRadio = defaults.useControlForModelSwitcherRadio;
+            if (data.rememberSidebarScrollPositionCheckbox === undefined) toSync.rememberSidebarScrollPositionCheckbox = defaults.rememberSidebarScrollPositionCheckbox;
+            if (Object.keys(toSync).length > 0) {
+                chrome.storage.sync.set(toSync);
+            }
         }
     );
 
