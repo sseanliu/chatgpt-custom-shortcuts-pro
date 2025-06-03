@@ -178,7 +178,6 @@ window.applyVisibilitySettings = function (data) {
     // Fetch initial values from Chrome storage
     chrome.storage.sync.get([
         'hideArrowButtonsCheckbox',
-        'hideCornerButtonsCheckbox',
         'moveTopBarToBottomCheckbox',
         'removeMarkdownOnCopyCheckbox',
         'selectMessagesSentByUserOrChatGptCheckbox',
@@ -201,9 +200,6 @@ window.applyVisibilitySettings = function (data) {
             const updatedData = {};
             if (changes.hideArrowButtonsCheckbox) {
                 updatedData.hideArrowButtonsCheckbox = changes.hideArrowButtonsCheckbox.newValue;
-            }
-            if (changes.hideCornerButtonsCheckbox) {
-                updatedData.hideCornerButtonsCheckbox = changes.hideCornerButtonsCheckbox.newValue;
             }
             if (changes.moveTopBarToBottomCheckbox) {
                 updatedData.moveTopBarToBottomCheckbox = changes.moveTopBarToBottomCheckbox.newValue;
@@ -718,6 +714,9 @@ window.applyVisibilitySettings = function (data) {
     const upButton = createScrollUpButton();
     const downButton = createScrollDownButton();
     appendWithFragment(document.body, upButton, downButton);
+
+    // Apply visibility settings now that buttons exist
+    chrome.storage.sync.get('hideArrowButtonsCheckbox', applyVisibilitySettings);
 
 
     // @note Keyboard shortcut defaults 

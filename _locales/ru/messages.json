@@ -98,9 +98,6 @@
     "label_hide_arrows": {
         "message": "Скрыть стрелки"
     },
-    "label_hide_corners": {
-        "message": "Скрыть кнопки 'Копировать всё'"
-    },
     "tt_scroll_up_one": {
         "message": "Прокрутка вверх по одному сообщению. Удалите клавишу для отключения."
     },
@@ -196,9 +193,6 @@
     },
     "tt_hide_arrows": {
         "message": "Скрывает кнопки-стрелки."
-    },
-    "tt_hide_corners": {
-        "message": "Скрывает кнопки 'Копировать всё' справа внизу."
     },
     "label_showModelPicker": {
         "message": "Показать выбор модели"

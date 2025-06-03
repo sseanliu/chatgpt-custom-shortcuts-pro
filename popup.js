@@ -251,7 +251,6 @@ document.addEventListener('DOMContentLoaded', function () {
     chrome.storage.sync.get(
         [
             'hideArrowButtonsCheckbox',
-            'hideCornerButtonsCheckbox',
             'removeMarkdownOnCopyCheckbox',
             'moveTopBarToBottomCheckbox',
             'pageUpDownTakeover',
@@ -268,7 +267,6 @@ document.addEventListener('DOMContentLoaded', function () {
         function (data) {
             const defaults = {
                 hideArrowButtonsCheckbox: data.hideArrowButtonsCheckbox !== undefined ? data.hideArrowButtonsCheckbox : false,
-                hideCornerButtonsCheckbox: data.hideCornerButtonsCheckbox === undefined ? true : data.hideCornerButtonsCheckbox,
                 removeMarkdownOnCopyCheckbox: data.removeMarkdownOnCopyCheckbox !== undefined ? data.removeMarkdownOnCopyCheckbox : true,
                 moveTopBarToBottomCheckbox: data.moveTopBarToBottomCheckbox !== undefined ? data.moveTopBarToBottomCheckbox : false,
                 pageUpDownTakeover: data.pageUpDownTakeover !== undefined ? data.pageUpDownTakeover : true,
@@ -285,7 +283,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Update the popup's checkboxes and radio buttons based on stored or default values
             document.getElementById('hideArrowButtonsCheckbox').checked = defaults.hideArrowButtonsCheckbox;
-            document.getElementById('hideCornerButtonsCheckbox').checked = defaults.hideCornerButtonsCheckbox;
             document.getElementById('removeMarkdownOnCopyCheckbox').checked = defaults.removeMarkdownOnCopyCheckbox;
             document.getElementById('moveTopBarToBottomCheckbox').checked = defaults.moveTopBarToBottomCheckbox;
             document.getElementById('pageUpDownTakeover').checked = defaults.pageUpDownTakeover;
@@ -302,7 +299,6 @@ document.addEventListener('DOMContentLoaded', function () {
             // Only sync default values for keys that were not yet set in storage
             const toSync = {};
             if (data.hideArrowButtonsCheckbox === undefined) toSync.hideArrowButtonsCheckbox = defaults.hideArrowButtonsCheckbox;
-            if (data.hideCornerButtonsCheckbox === undefined) toSync.hideCornerButtonsCheckbox = defaults.hideCornerButtonsCheckbox;
             if (data.removeMarkdownOnCopyCheckbox === undefined) toSync.removeMarkdownOnCopyCheckbox = defaults.removeMarkdownOnCopyCheckbox;
             if (data.moveTopBarToBottomCheckbox === undefined) toSync.moveTopBarToBottomCheckbox = defaults.moveTopBarToBottomCheckbox;
             if (data.pageUpDownTakeover === undefined) toSync.pageUpDownTakeover = defaults.pageUpDownTakeover;
@@ -375,7 +371,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Apply the handler to each checkbox and radio button
     handleStateChange('hideArrowButtonsCheckbox', 'hideArrowButtonsCheckbox');
-    handleStateChange('hideCornerButtonsCheckbox', 'hideCornerButtonsCheckbox');
     handleStateChange('removeMarkdownOnCopyCheckbox', 'removeMarkdownOnCopyCheckbox');
     handleStateChange('moveTopBarToBottomCheckbox', 'moveTopBarToBottomCheckbox');
     handleStateChange('pageUpDownTakeover', 'pageUpDownTakeover');

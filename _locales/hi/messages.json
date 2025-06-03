@@ -98,9 +98,6 @@
     "label_hide_arrows": {
         "message": "ऊपर/नीचे बटन छुपाएँ"
     },
-    "label_hide_corners": {
-        "message": "कॉपी ऑल बटन छुपाएँ"
-    },
     "tt_scroll_up_one": {
         "message": "एक-एक संदेश ऊपर स्क्रॉल करें। बंद करने के लिए शॉर्टकट हटाएँ।"
     },
@@ -196,9 +193,6 @@
     },
     "tt_hide_arrows": {
         "message": "ऊपर-नीचे वाले एरो बटन छुपाएँ।"
-    },
-    "tt_hide_corners": {
-        "message": "'कॉपी ऑल' बटन छुपाएँ।"
     },
     "label_showModelPicker": {
         "message": "मॉडल पिकर दिखाएं"

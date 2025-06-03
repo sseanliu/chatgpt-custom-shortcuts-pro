@@ -98,9 +98,6 @@
     "label_hide_arrows": {
         "message": "Ocultar botones de flecha"
     },
-    "label_hide_corners": {
-        "message": "Ocultar botones 'Copiar todo'"
-    },
     "tt_scroll_up_one": {
         "message": "Sube un mensaje cada vez. Borra el atajo para desactivar."
     },
@@ -196,9 +193,6 @@
     },
     "tt_hide_arrows": {
         "message": "Oculta los botones de flecha."
-    },
-    "tt_hide_corners": {
-        "message": "Oculta botones 'Copiar todo' en esquina inferior derecha."
     },
     "label_showModelPicker": {
         "message": "Mostrar selector de modelo"
