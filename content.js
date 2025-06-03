@@ -273,12 +273,6 @@ function findButton(args) {
         parent.appendChild(fragment);
     }
 
-    const loadCSS = (href) => {
-        let link = document.createElement("link");
-        link.href = href;
-        link.rel = "stylesheet";
-        document.head.appendChild(link);
-    };
 
 
     // --- Begin MutationObserver Message Cache ---
@@ -346,9 +340,6 @@ function findButton(args) {
             svgNode.setAttribute('fill', 'var(--text-secondary)'); // Change it back
         });
 
-        if (tooltipText) {
-            addTooltip(button, tooltipText);
-        }
 
         return button;
     }
@@ -440,20 +431,6 @@ function findButton(args) {
         }, 3500);
     }
 
-    function addTooltip(element, tooltipText) {
-        const tooltip = document.createElement('div');
-        tooltip.innerText = tooltipText;
-        tooltip.style.cssText = "position: absolute; bottom: 50%; right: 100%; transform: translateX(-10px) translateY(50%); margin-right: 10-px; background-color: #2A2B32; color: #ECECF1; border-radius: 5px; padding: 5px; font-size: 12px; text-align: center; white-space: nowrap; visibility: hidden; opacity: 0; transition: opacity 0.3s";
-        element.appendChild(tooltip);
-        element.addEventListener('mouseenter', () => {
-            tooltip.style.visibility = 'visible';
-            tooltip.style.opacity = '1';
-        });
-        element.addEventListener('mouseleave', () => {
-            tooltip.style.visibility = 'hidden';
-            tooltip.style.opacity = '0';
-        });
-    }
 
     function copyAll() {
         const proseElements = document.querySelectorAll('.prose');
