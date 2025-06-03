@@ -7,8 +7,8 @@ Current Known Bugs:
 - Copy and join all code boxes is including text outside of code boxes. This feature may be retired soon.
 
 #### [6.3.2025]
-##### Removed
-- Legacy code for hidden "Copy All" buttons
+##### Changed
+- Refactored visibility settings logic for content script.
 
 #### [5.29.2025]
 - Disabled collapse sidebar for time being.

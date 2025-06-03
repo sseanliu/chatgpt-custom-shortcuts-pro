@@ -106,6 +106,66 @@ function findButton(args) {
     return btns.length ? btns[btns.length - 1] : null;
 }
 
+// Global helper to toggle visibility and expose setting values
+window.applyVisibilitySettings = function (data) {
+    if (data.hideArrowButtonsCheckbox) {
+        ['upButton', 'downButton'].forEach(id => {
+            const button = document.getElementById(id);
+            if (button) button.style.display = 'none';
+        });
+    }
+
+    if (data.hideCornerButtonsCheckbox) {
+        ['copyAllButton', 'copyCodeButton'].forEach(id => {
+            const button = document.getElementById(id);
+            if (button) button.style.display = 'none';
+        });
+    }
+
+    window.moveTopBarToBottomCheckbox = data.hasOwnProperty('moveTopBarToBottomCheckbox')
+        ? data.moveTopBarToBottomCheckbox === true
+        : false;
+
+    window.removeMarkdownOnCopyCheckbox = data.hasOwnProperty('removeMarkdownOnCopyCheckbox')
+        ? data.removeMarkdownOnCopyCheckbox === true
+        : true;
+
+    window.selectMessagesSentByUserOrChatGptCheckbox = data.hasOwnProperty('selectMessagesSentByUserOrChatGptCheckbox')
+        ? data.selectMessagesSentByUserOrChatGptCheckbox === true
+        : true;
+
+    window.onlySelectUserCheckbox = data.hasOwnProperty('onlySelectUserCheckbox')
+        ? data.onlySelectUserCheckbox === true
+        : false;
+
+    window.onlySelectAssistantCheckbox = data.hasOwnProperty('onlySelectAssistantCheckbox')
+        ? data.onlySelectAssistantCheckbox === true
+        : false;
+
+    window.disableCopyAfterSelectCheckbox = data.hasOwnProperty('disableCopyAfterSelectCheckbox')
+        ? data.disableCopyAfterSelectCheckbox === true
+        : false;
+
+    window.enableSendWithControlEnterCheckbox = data.hasOwnProperty('enableSendWithControlEnterCheckbox')
+        ? data.enableSendWithControlEnterCheckbox === true
+        : true;
+
+    window.enableStopWithControlBackspaceCheckbox = data.hasOwnProperty('enableStopWithControlBackspaceCheckbox')
+        ? data.enableStopWithControlBackspaceCheckbox === true
+        : true;
+
+    window.useAltForModelSwitcherRadio = data.hasOwnProperty('useAltForModelSwitcherRadio')
+        ? data.useAltForModelSwitcherRadio === true
+        : true;
+
+    window.useControlForModelSwitcherRadio = data.hasOwnProperty('useControlForModelSwitcherRadio')
+        ? data.useControlForModelSwitcherRadio === true
+        : false;
+
+    window.rememberSidebarScrollPositionCheckbox = data.hasOwnProperty('rememberSidebarScrollPositionCheckbox')
+        ? data.rememberSidebarScrollPositionCheckbox === true
+        : false;
+};
 
 
 // =====================================
@@ -114,66 +174,6 @@ function findButton(args) {
 
 (function () {
     'use strict';
-
-    // Function to apply visibility and configuration settings
-    function applyVisibilitySettings(data) {
-        // Check and hide the up and down buttons if necessary
-        if (data.hideArrowButtonsCheckbox) {
-            ['upButton', 'downButton'].forEach(id => {
-                const button = document.getElementById(id);
-                if (button) button.style.display = 'none';
-            });
-        }
-
-
-        // Define default values globally
-
-        window.moveTopBarToBottomCheckbox = data.hasOwnProperty('moveTopBarToBottomCheckbox')
-            ? data.moveTopBarToBottomCheckbox === true
-            : false; // Default to false
-
-
-        window.removeMarkdownOnCopyCheckbox = data.hasOwnProperty('removeMarkdownOnCopyCheckbox')
-            ? data.removeMarkdownOnCopyCheckbox === true
-            : true;  // Default to true
-
-        window.selectMessagesSentByUserOrChatGptCheckbox = data.hasOwnProperty('selectMessagesSentByUserOrChatGptCheckbox')
-            ? data.selectMessagesSentByUserOrChatGptCheckbox === true
-            : true;  // Default to true
-
-        window.onlySelectUserCheckbox = data.hasOwnProperty('onlySelectUserCheckbox')
-            ? data.onlySelectUserCheckbox === true
-            : false; // Default to false
-
-        window.onlySelectAssistantCheckbox = data.hasOwnProperty('onlySelectAssistantCheckbox')
-            ? data.onlySelectAssistantCheckbox === true
-            : false; // Default to false
-
-        window.disableCopyAfterSelectCheckbox = data.hasOwnProperty('disableCopyAfterSelectCheckbox')
-            ? data.disableCopyAfterSelectCheckbox === true
-            : false; // Default to false
-
-        window.enableSendWithControlEnterCheckbox = data.hasOwnProperty('enableSendWithControlEnterCheckbox')
-            ? data.enableSendWithControlEnterCheckbox === true
-            : true;  // Default to true
-
-        window.enableStopWithControlBackspaceCheckbox = data.hasOwnProperty('enableStopWithControlBackspaceCheckbox')
-            ? data.enableStopWithControlBackspaceCheckbox === true
-            : true;  // Default to true
-
-        window.useAltForModelSwitcherRadio = data.hasOwnProperty('useAltForModelSwitcherRadio')
-            ? data.useAltForModelSwitcherRadio === true
-            : true;  // Default to true
-
-        window.useControlForModelSwitcherRadio = data.hasOwnProperty('useControlForModelSwitcherRadio')
-            ? data.useControlForModelSwitcherRadio === true
-            : false; // Default to false
-
-        window.rememberSidebarScrollPositionCheckbox = data.hasOwnProperty('rememberSidebarScrollPositionCheckbox')
-            ? data.rememberSidebarScrollPositionCheckbox === true
-            : false; // Default to false
-    }
-
 
     // Fetch initial values from Chrome storage
     chrome.storage.sync.get([
@@ -191,7 +191,7 @@ function findButton(args) {
         'useControlForModelSwitcherRadio',
         'rememberSidebarScrollPositionCheckbox'
     ], (data) => {
-        applyVisibilitySettings(data);
+        window.applyVisibilitySettings(data);
     });
 
     // Listen for changes in Chrome storage and dynamically apply settings
@@ -237,7 +237,7 @@ function findButton(args) {
             if (changes.rememberSidebarScrollPositionCheckbox) {
                 updatedData.rememberSidebarScrollPositionCheckbox = changes.rememberSidebarScrollPositionCheckbox.newValue;
             }
-            applyVisibilitySettings(updatedData);
+            window.applyVisibilitySettings(updatedData);
         }
     });
 })();
@@ -262,12 +262,6 @@ function findButton(args) {
         parent.appendChild(fragment);
     }
 
-    const loadCSS = (href) => {
-        let link = document.createElement("link");
-        link.href = href;
-        link.rel = "stylesheet";
-        document.head.appendChild(link);
-    };
 
 
     // --- Begin MutationObserver Message Cache ---
@@ -311,8 +305,87 @@ function findButton(args) {
 
 
 
+    function createButton(icon, onClick, tooltipText, id) {
+        const button = document.createElement('button');
+        button.style.cssText = "width: 20px; height: 20px; border: none; background: none; margin-right: 16px; cursor: pointer;";
+
+        // Parse the SVG string into a DOM Node
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(icon, 'image/svg+xml');
+        const svgNode = doc.firstChild;
+
+        // Apply initial color
+        svgNode.setAttribute('fill', 'var(--text-secondary)');
+        button.appendChild(svgNode);
+
+        button.addEventListener('click', onClick);
+        button.id = id;
+
+        button.addEventListener('mouseenter', () => {
+            svgNode.setAttribute('fill', '#AB68FD'); // Change the fill color of the SVG
+        });
+
+        button.addEventListener('mouseleave', () => {
+            svgNode.setAttribute('fill', 'var(--text-secondary)'); // Change it back
+        });
 
 
+        return button;
+    }
+
+    async function loadSVG(iconPath) {
+        const response = await fetch(chrome.runtime.getURL(iconPath));
+        const text = await response.text();
+        return text;
+    }
+
+
+    async function createMenu() {
+        // Load SVGs
+        const copyAllIconSVG = await loadSVG('icons/copy-all-text-icon.svg');
+        const copyCodeIconSVG = await loadSVG('icons/copy-all-code-icon.svg');
+
+        // Create buttons
+        const copyAllButton = createButton(copyAllIconSVG, copyAll, "Copy and Join All Responses", 'copyAllButton');
+        const copyCodeButton = createButton(copyCodeIconSVG, copyCode, "Copy and Join All Code Boxes", 'copyCodeButton');
+
+        // Position the buttons
+        copyAllButton.style.cssText = "display:none; position: fixed; zoom: .65; bottom: 6px; right: 100px; width: 32px; height: 32px; border: none; background: none; cursor: pointer; transition: opacity 1s;";
+        copyCodeButton.style.cssText = "display:none; position: fixed; zoom: .65; bottom: 6px; right: 60px; width: 32px; height: 32px; border: none; background: none; cursor: pointer; transition: opacity 1s;";
+
+        // Append buttons to the body
+        appendWithFragment(document.body, copyAllButton, copyCodeButton);
+
+        // Add opacity logic to the buttons
+        const copyButtons = [copyAllButton, copyCodeButton];
+
+        copyButtons.forEach(button => {
+            // Mouseover: make button fully visible
+            button.addEventListener('mouseover', () => {
+                button.style.opacity = "1";
+            });
+
+            // Mouseleave: fade the button
+            button.addEventListener('mouseleave', () => {
+                button.style.transition = "opacity 1s";
+                button.style.opacity = "0.2";
+            });
+
+            // Initial fade after a delay (3500ms)
+            setTimeout(() => {
+                button.style.transition = "opacity 1s";
+                button.style.opacity = "0.2";
+            }, 3500);
+        });
+
+        // Get the values from Chrome storage
+        chrome.storage.sync.get(['hideArrowButtonsCheckbox', 'hideCornerButtonsCheckbox'], function (data) {
+            window.applyVisibilitySettings(data);
+        });
+    }
+
+    // Call createMenu without awaiting it
+    createMenu();
 
     function showToast(message) {
         const toast = document.createElement('div');
@@ -327,20 +400,6 @@ function findButton(args) {
         }, 3500);
     }
 
-    function addTooltip(element, tooltipText) {
-        const tooltip = document.createElement('div');
-        tooltip.innerText = tooltipText;
-        tooltip.style.cssText = "position: absolute; bottom: 50%; right: 100%; transform: translateX(-10px) translateY(50%); margin-right: 10-px; background-color: #2A2B32; color: #ECECF1; border-radius: 5px; padding: 5px; font-size: 12px; text-align: center; white-space: nowrap; visibility: hidden; opacity: 0; transition: opacity 0.3s";
-        element.appendChild(tooltip);
-        element.addEventListener('mouseenter', () => {
-            tooltip.style.visibility = 'visible';
-            tooltip.style.opacity = '1';
-        });
-        element.addEventListener('mouseleave', () => {
-            tooltip.style.visibility = 'hidden';
-            tooltip.style.opacity = '0';
-        });
-    }
 
     function copyAll() {
         const proseElements = document.querySelectorAll('.prose');
