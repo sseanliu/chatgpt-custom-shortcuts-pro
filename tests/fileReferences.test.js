@@ -17,8 +17,12 @@ while ((match = scriptRegex.exec(popupHtml))) {
   checkFileExists(match[1]);
 }
 
-// Parse manifest.json
-const manifest = JSON.parse(fs.readFileSync(path.join(root, 'manifest.json'), 'utf8'));
+// Parse manifest.json (strip BOM if present)
+let manifestContent = fs.readFileSync(path.join(root, 'manifest.json'), 'utf8');
+if (manifestContent.charCodeAt(0) === 0xFEFF) {
+  manifestContent = manifestContent.slice(1);
+}
+const manifest = JSON.parse(manifestContent);
 
 if (manifest.icons) {
   Object.values(manifest.icons).forEach(checkFileExists);
