@@ -20,28 +20,22 @@ ChatGPT Custom Shortcuts Pro
 // @note Global Functions
 // =====================================
 
-// Ensure GSAP and plugins are globally available
-if (typeof window.gsap !== "undefined" &&
-    typeof window.ScrollToPlugin !== "undefined" &&
-    typeof window.Observer !== "undefined" &&
-    typeof window.Flip !== "undefined") {
-
-    // Assign GSAP to the window object if not already assigned
-    window.gsap = gsap;
-    window.ScrollToPlugin = ScrollToPlugin;
-    window.Observer = Observer;
-    window.Flip = Flip;
-
-    // Register all GSAP plugins
-    gsap.registerPlugin(window.ScrollToPlugin, window.Observer, window.Flip);
-    console.log("GSAP and plugins registered successfully.");
-
-} else {
-    console.warn("GSAP is not loaded yet. Retrying in 100ms...");
-    setTimeout(checkGSAP, 100); // Retry in 100ms
+// Verify GSAP libraries before registration
+function checkGSAP() {
+    if (typeof window.gsap !== 'undefined' &&
+        typeof window.ScrollToPlugin !== 'undefined' &&
+        typeof window.Observer !== 'undefined' &&
+        typeof window.Flip !== 'undefined') {
+        window.gsap.registerPlugin(window.ScrollToPlugin, window.Observer, window.Flip);
+        window.ScrollToPlugin.config({ autoKill: true });
+        console.log('GSAP and plugins registered successfully.');
+    } else {
+        console.warn('GSAP is not loaded yet. Retrying in 100ms...');
+        setTimeout(checkGSAP, 100);
+    }
 }
 
-ScrollToPlugin.config({ autoKill: true });
+checkGSAP();
 
 // Shared scroll state object
 const ScrollState = {
@@ -256,8 +250,6 @@ window.applyVisibilitySettings = applyVisibilitySettings;
 
     // appendWithFragment: Appends multiple elements to a parent element using a document fragment to improve performance.
 
-    gsap.registerPlugin(ScrollToPlugin);
-    ScrollToPlugin.config({ autoKill: true });
 
     function appendWithFragment(parent, ...elements) {
         const fragment = document.createDocumentFragment();
