@@ -106,6 +106,66 @@ function findButton(args) {
     return btns.length ? btns[btns.length - 1] : null;
 }
 
+// Global helper to toggle visibility and expose setting values
+window.applyVisibilitySettings = function (data) {
+    if (data.hideArrowButtonsCheckbox) {
+        ['upButton', 'downButton'].forEach(id => {
+            const button = document.getElementById(id);
+            if (button) button.style.display = 'none';
+        });
+    }
+
+    if (data.hideCornerButtonsCheckbox) {
+        ['copyAllButton', 'copyCodeButton'].forEach(id => {
+            const button = document.getElementById(id);
+            if (button) button.style.display = 'none';
+        });
+    }
+
+    window.moveTopBarToBottomCheckbox = data.hasOwnProperty('moveTopBarToBottomCheckbox')
+        ? data.moveTopBarToBottomCheckbox === true
+        : false;
+
+    window.removeMarkdownOnCopyCheckbox = data.hasOwnProperty('removeMarkdownOnCopyCheckbox')
+        ? data.removeMarkdownOnCopyCheckbox === true
+        : true;
+
+    window.selectMessagesSentByUserOrChatGptCheckbox = data.hasOwnProperty('selectMessagesSentByUserOrChatGptCheckbox')
+        ? data.selectMessagesSentByUserOrChatGptCheckbox === true
+        : true;
+
+    window.onlySelectUserCheckbox = data.hasOwnProperty('onlySelectUserCheckbox')
+        ? data.onlySelectUserCheckbox === true
+        : false;
+
+    window.onlySelectAssistantCheckbox = data.hasOwnProperty('onlySelectAssistantCheckbox')
+        ? data.onlySelectAssistantCheckbox === true
+        : false;
+
+    window.disableCopyAfterSelectCheckbox = data.hasOwnProperty('disableCopyAfterSelectCheckbox')
+        ? data.disableCopyAfterSelectCheckbox === true
+        : false;
+
+    window.enableSendWithControlEnterCheckbox = data.hasOwnProperty('enableSendWithControlEnterCheckbox')
+        ? data.enableSendWithControlEnterCheckbox === true
+        : true;
+
+    window.enableStopWithControlBackspaceCheckbox = data.hasOwnProperty('enableStopWithControlBackspaceCheckbox')
+        ? data.enableStopWithControlBackspaceCheckbox === true
+        : true;
+
+    window.useAltForModelSwitcherRadio = data.hasOwnProperty('useAltForModelSwitcherRadio')
+        ? data.useAltForModelSwitcherRadio === true
+        : true;
+
+    window.useControlForModelSwitcherRadio = data.hasOwnProperty('useControlForModelSwitcherRadio')
+        ? data.useControlForModelSwitcherRadio === true
+        : false;
+
+    window.rememberSidebarScrollPositionCheckbox = data.hasOwnProperty('rememberSidebarScrollPositionCheckbox')
+        ? data.rememberSidebarScrollPositionCheckbox === true
+        : false;
+};
 
 
 // =====================================
@@ -114,73 +174,6 @@ function findButton(args) {
 
 (function () {
     'use strict';
-
-    // Function to apply visibility and configuration settings
-    function applyVisibilitySettings(data) {
-        // Check and hide the up and down buttons if necessary
-        if (data.hideArrowButtonsCheckbox) {
-            ['upButton', 'downButton'].forEach(id => {
-                const button = document.getElementById(id);
-                if (button) button.style.display = 'none';
-            });
-        }
-
-        // Check and hide the menu buttons if necessary
-        if (data.hideCornerButtonsCheckbox) {
-            ['copyAllButton', 'copyCodeButton'].forEach(id => {
-                const button = document.getElementById(id);
-                if (button) button.style.display = 'none';
-            });
-        }
-
-        // Define default values globally
-
-        window.moveTopBarToBottomCheckbox = data.hasOwnProperty('moveTopBarToBottomCheckbox')
-            ? data.moveTopBarToBottomCheckbox === true
-            : false; // Default to false
-
-
-        window.removeMarkdownOnCopyCheckbox = data.hasOwnProperty('removeMarkdownOnCopyCheckbox')
-            ? data.removeMarkdownOnCopyCheckbox === true
-            : true;  // Default to true
-
-        window.selectMessagesSentByUserOrChatGptCheckbox = data.hasOwnProperty('selectMessagesSentByUserOrChatGptCheckbox')
-            ? data.selectMessagesSentByUserOrChatGptCheckbox === true
-            : true;  // Default to true
-
-        window.onlySelectUserCheckbox = data.hasOwnProperty('onlySelectUserCheckbox')
-            ? data.onlySelectUserCheckbox === true
-            : false; // Default to false
-
-        window.onlySelectAssistantCheckbox = data.hasOwnProperty('onlySelectAssistantCheckbox')
-            ? data.onlySelectAssistantCheckbox === true
-            : false; // Default to false
-
-        window.disableCopyAfterSelectCheckbox = data.hasOwnProperty('disableCopyAfterSelectCheckbox')
-            ? data.disableCopyAfterSelectCheckbox === true
-            : false; // Default to false
-
-        window.enableSendWithControlEnterCheckbox = data.hasOwnProperty('enableSendWithControlEnterCheckbox')
-            ? data.enableSendWithControlEnterCheckbox === true
-            : true;  // Default to true
-
-        window.enableStopWithControlBackspaceCheckbox = data.hasOwnProperty('enableStopWithControlBackspaceCheckbox')
-            ? data.enableStopWithControlBackspaceCheckbox === true
-            : true;  // Default to true
-
-        window.useAltForModelSwitcherRadio = data.hasOwnProperty('useAltForModelSwitcherRadio')
-            ? data.useAltForModelSwitcherRadio === true
-            : true;  // Default to true
-
-        window.useControlForModelSwitcherRadio = data.hasOwnProperty('useControlForModelSwitcherRadio')
-            ? data.useControlForModelSwitcherRadio === true
-            : false; // Default to false
-
-        window.rememberSidebarScrollPositionCheckbox = data.hasOwnProperty('rememberSidebarScrollPositionCheckbox')
-            ? data.rememberSidebarScrollPositionCheckbox === true
-            : false; // Default to false
-    }
-
 
     // Fetch initial values from Chrome storage
     chrome.storage.sync.get([
@@ -199,7 +192,7 @@ function findButton(args) {
         'useControlForModelSwitcherRadio',
         'rememberSidebarScrollPositionCheckbox'
     ], (data) => {
-        applyVisibilitySettings(data);
+        window.applyVisibilitySettings(data);
     });
 
     // Listen for changes in Chrome storage and dynamically apply settings
@@ -248,7 +241,7 @@ function findButton(args) {
             if (changes.rememberSidebarScrollPositionCheckbox) {
                 updatedData.rememberSidebarScrollPositionCheckbox = changes.rememberSidebarScrollPositionCheckbox.newValue;
             }
-            applyVisibilitySettings(updatedData);
+            window.applyVisibilitySettings(updatedData);
         }
     });
 })();
@@ -389,29 +382,9 @@ function findButton(args) {
             }, 3500);
         });
 
-        function applyVisibilitySettings(data) {
-            // Check and hide the up button if necessary
-            if (data.hideArrowButtonsCheckbox) {
-                const upButton = document.getElementById('upButton');
-                if (upButton) {
-                    upButton.style.display = 'none';
-                }
-            }
-
-            // Check and hide the menu buttons if necessary
-            if (data.hideCornerButtonsCheckbox) {
-                const copyAllButton = document.getElementById('copyAllButton');
-                const copyCodeButton = document.getElementById('copyCodeButton');
-
-                if (copyAllButton) copyAllButton.style.display = 'none';
-                if (copyCodeButton) copyCodeButton.style.display = 'none';
-            }
-
-        }
-
         // Get the values from Chrome storage
         chrome.storage.sync.get(['hideArrowButtonsCheckbox', 'hideCornerButtonsCheckbox'], function (data) {
-            applyVisibilitySettings(data);
+            window.applyVisibilitySettings(data);
         });
     }
 
