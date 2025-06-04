@@ -73,6 +73,9 @@ function getScrollableContainer() {
     return document.scrollingElement || document.documentElement;
 }
 
+let upButton;
+let downButton;
+
 // Utility function: findButton tries aria-label, data-testid, then SVG path fallback
 // Purpose: Allows all button lookups to use a single resilient API.
 // Finds ALL matching buttons, prioritizing testId, then SVG path, then aria-label (best for multi-language)
@@ -100,13 +103,113 @@ function findButton(args) {
     return btns.length ? btns[btns.length - 1] : null;
 }
 
+function scrollOneMessageUp(button) {
+    resetScrollState();
+
+    const messages = document.querySelectorAll('[data-testid^="conversation-turn-"]');
+    let targetMessage = null;
+
+    const isBottom = window.moveTopBarToBottomCheckbox;
+    const messageThreshold = isBottom ? -48 : -30;
+    const scrollOffset = isBottom ? 43 : 25;
+
+    for (let i = messages.length - 1; i >= 0; i--) {
+        const messageTop = messages[i].getBoundingClientRect().top;
+        if (messageTop < messageThreshold) {
+            targetMessage = messages[i];
+            break;
+        }
+    }
+
+    const scrollContainer = getScrollableContainer();
+    if (!scrollContainer) return;
+
+    if (targetMessage) {
+        gsap.to(scrollContainer, {
+            duration: .4,
+            scrollTo: { y: targetMessage.offsetTop - scrollOffset },
+            ease: 'power4.out'
+        });
+    } else {
+        gsap.to(scrollContainer, {
+            duration: .6,
+            scrollTo: { y: 0 },
+            ease: 'power4.out'
+        });
+    }
+
+    if (button) feedbackAnimation(button);
+}
+
+function scrollOneMessageDown(button) {
+    resetScrollState();
+
+    const messages = Array.from(document.querySelectorAll('[data-testid^="conversation-turn-"]'));
+    const scrollContainer = getScrollableContainer();
+    if (!scrollContainer || !messages.length) return;
+
+    gsap.set(scrollContainer, { scrollTo: '+=0' });
+    gsap.killTweensOf(scrollContainer);
+
+    const currentScrollTop = scrollContainer.scrollTop;
+
+    const isBottom = window.moveTopBarToBottomCheckbox;
+    const messageThreshold = isBottom ? 48 : 30;
+    const scrollOffset = isBottom ? 43 : 25;
+
+    let targetMessage = null;
+    for (let i = 0; i < messages.length; i++) {
+        if (messages[i].offsetTop > currentScrollTop + messageThreshold) {
+            targetMessage = messages[i];
+            break;
+        }
+    }
+
+    if (targetMessage) {
+        gsap.to(scrollContainer, {
+            duration: 0.4,
+            scrollTo: { y: targetMessage.offsetTop - scrollOffset },
+            ease: 'power4.out'
+        });
+    } else {
+        gsap.to(scrollContainer, {
+            duration: 0.6,
+            scrollTo: { y: scrollContainer.scrollHeight - scrollContainer.clientHeight },
+            ease: 'power4.out'
+        });
+    }
+
+    if (button) feedbackAnimation(button);
+}
+
+function ensureScrollButtons() {
+    if (!upButton && !downButton) {
+        upButton = createScrollUpButton();
+        downButton = createScrollDownButton();
+        appendWithFragment(document.body, upButton, downButton);
+    }
+}
+
+function removeScrollButtons() {
+    ['upButton', 'downButton'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el && el.parentElement) {
+            el.parentElement.removeChild(el);
+        }
+    });
+    upButton = null;
+    downButton = null;
+}
+
 // Global helper to toggle visibility and expose setting values
 function applyVisibilitySettings(data) {
-    if (data.hideArrowButtonsCheckbox) {
-        ['upButton', 'downButton'].forEach(id => {
-            const button = document.getElementById(id);
-            if (button) button.style.display = 'none';
-        });
+    if (data.hasOwnProperty('hideArrowButtonsCheckbox')) {
+        window.hideArrowButtonsCheckbox = Boolean(data.hideArrowButtonsCheckbox);
+        if (window.hideArrowButtonsCheckbox) {
+            removeScrollButtons();
+        } else {
+            ensureScrollButtons();
+        }
     }
 
     // Normalize to boolean for easier checks throughout the script
@@ -616,17 +719,15 @@ window.applyVisibilitySettings = applyVisibilitySettings;
         }, 100); // Start fading and scaling after a brief delay
     }
 
-    // Create scroll up and down buttons
-    const upButton = createScrollUpButton();
-    const downButton = createScrollDownButton();
-    appendWithFragment(document.body, upButton, downButton);
 
-    // Apply visibility settings now that buttons exist
-    chrome.storage.sync.get('hideArrowButtonsCheckbox', applyVisibilitySettings);
+    
 
-
-    // @note Keyboard shortcut defaults 
-    chrome.storage.sync.get(['shortcutKeyScrollUpOneMessage', 'shortcutKeyScrollDownOneMessage', 'shortcutKeyCopyLowest', 'shortcutKeyEdit', 'shortcutKeySendEdit', 'shortcutKeyCopyAllResponses', 'shortcutKeyCopyAllCodeBlocks', 'shortcutKeyClickNativeScrollToBottom', 'shortcutKeyScrollToTop', 'shortcutKeyNewConversation', 'shortcutKeySearchConversationHistory', 'shortcutKeyToggleSidebar', 'shortcutKeyActivateInput', 'shortcutKeySearchWeb', 'shortcutKeyPreviousThread', 'shortcutKeyNextThread', 'selectThenCopy', 'shortcutKeyToggleSidebarFoldersButton', 'shortcutKeyClickSendButton', 'shortcutKeyClickStopButton', 'shortcutKeyToggleModelSelector', 'shortcutKeyRegenerate'], (data) => {
+    // @note Keyboard shortcut defaults
+    chrome.storage.sync.get(['hideArrowButtonsCheckbox', 'shortcutKeyScrollUpOneMessage', 'shortcutKeyScrollDownOneMessage', 'shortcutKeyCopyLowest', 'shortcutKeyEdit', 'shortcutKeySendEdit', 'shortcutKeyCopyAllResponses', 'shortcutKeyCopyAllCodeBlocks', 'shortcutKeyClickNativeScrollToBottom', 'shortcutKeyScrollToTop', 'shortcutKeyNewConversation', 'shortcutKeySearchConversationHistory', 'shortcutKeyToggleSidebar', 'shortcutKeyActivateInput', 'shortcutKeySearchWeb', 'shortcutKeyPreviousThread', 'shortcutKeyNextThread', 'selectThenCopy', 'shortcutKeyToggleSidebarFoldersButton', 'shortcutKeyClickSendButton', 'shortcutKeyClickStopButton', 'shortcutKeyToggleModelSelector', 'shortcutKeyRegenerate'], (data) => {
+        window.hideArrowButtonsCheckbox = Boolean(data.hideArrowButtonsCheckbox);
+        if (!window.hideArrowButtonsCheckbox) {
+            ensureScrollButtons();
+        }
         const shortcutKeyScrollUpOneMessage = data.shortcutKeyScrollUpOneMessage || 'a';
         const shortcutKeyScrollDownOneMessage = data.shortcutKeyScrollDownOneMessage || 'f';
         const shortcutKeyCopyLowest = data.shortcutKeyCopyLowest || 'c';
@@ -761,12 +862,10 @@ window.applyVisibilitySettings = applyVisibilitySettings;
         // Alt Key Function Maps
         const keyFunctionMappingAlt = {
             [shortcutKeyScrollUpOneMessage]: () => {
-                upButton.click();
-                feedbackAnimation(upButton);
+                scrollOneMessageUp(upButton);
             },
             [shortcutKeyScrollDownOneMessage]: () => {
-                downButton.click();
-                feedbackAnimation(downButton);
+                scrollOneMessageDown(downButton);
             },
 
             [shortcutKeyCopyAllResponses]: copyAll,
