@@ -4,16 +4,10 @@ ChatGPT Custom Shortcuts Pro
 - Privacy Statement: This extension does not collect, monitor, or track user activity.
 */
 
-
-
 // =====================================
 // @note To Do List
 // =====================================
-/* 
-1. Implement Settings Sliders for Scroll Speed using https://refreshless.com/nouislider/examples/#section-click-pips
-2. 
-*/
-
+// 1. Implement Settings Sliders for Scroll Speed using https://refreshless.com/nouislider/examples/#section-click-pips
 
 
 // =====================================
@@ -188,8 +182,6 @@ window.applyVisibilitySettings = applyVisibilitySettings;
         parent.appendChild(fragment);
     }
 
-
-
     // --- Begin MutationObserver Message Cache ---
     // Purpose: Keeps a live, up-to-date cache of message elements.
     window.cachedConversationTurns = [];
@@ -227,10 +219,6 @@ window.applyVisibilitySettings = applyVisibilitySettings;
     if (observerContainer) {
         msgObserver.observe(observerContainer, { childList: true, subtree: true });
     }
-    // --- End MutationObserver Message Cache ---
-
-
-
 
     function showToast(message) {
         const toast = document.createElement('div');
@@ -244,7 +232,6 @@ window.applyVisibilitySettings = applyVisibilitySettings;
             document.body.removeChild(toast);
         }, 3500);
     }
-
 
     function copyAll() {
         const proseElements = document.querySelectorAll('.prose');
@@ -661,14 +648,11 @@ window.applyVisibilitySettings = applyVisibilitySettings;
             return regions;
         }
 
-
         function stripMarkdownOutsideCodeblocks(text) {
             return splitByCodeFences(text)
                 .map(seg => seg.isCode ? seg.text : removeMarkdown(seg.text))
                 .join('');
         }
-
-
 
         function removeMarkdown(text) {
             return text
@@ -691,10 +675,6 @@ window.applyVisibilitySettings = applyVisibilitySettings;
                 .replace(/\n{3,}/g, "\n\n")
                 .trim();
         }
-
-
-
-
 
         // Define the mappings for Ctrl+Key shortcuts dynamically
         const keyFunctionMappingCtrl = {
@@ -1887,292 +1867,6 @@ div.bg-token-bg-elevated-secondary.sticky.top-0 {
 
 
 // ==================================================
-// @note Collapse GPT & Folders Toggle + IIFE Delay
-// ==================================================
-/* Disabled for now due to conflicts with frequent changes to ChatGPT website.
-setTimeout(() => {
-    (function () {
-        // SVG icons
-        const collapsedIcon = `
-        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" style="fill: var(--text-secondary, #e8eaed);">
-            <path d="M480-120 300-300l58-58 122 122 122-122 58 58-180 180ZM358-598l-58-58 180-180 180 180-58 58-122-122-122 122Z"/>
-        </svg>
-    `;
-        const expandedIcon = `
-        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" style="fill: var(--text-secondary, #e8eaed);">
-            <path d="m356-160-56-56 180-180 180 180-56 56-124-124-124 124Zm124-404L300-744l56-56 124 124 124-124 56 56-180 180Z"/>
-        </svg>
-    `;
-
-        // Inject basic styles for the toggle button
-        const styleElement = document.createElement('style');
-        styleElement.textContent = `
-        .gpts-projects-heading {
-            pointer-events: auto !important;
-            cursor: pointer !important;
-            font-size: 0.7em !important;
-            text-align: center;
-            padding: 10px;
-            border-radius: 4px;
-            transition: background-color 0.3s ease, color 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            z-index: 9999;
-            margin: 0 auto;
-            padding-left: 6px;
-            padding-right: 6px;
-            position: relative;
-        }
-        .gpts-projects-heading:hover {
-            background-color: var(--sidebar-surface-secondary);
-            font-size: 0.7em;
-            border-radius: 8px;
-        }
-
-        .bg-token-message-surface {
-            background-color: var(--main-surface-secondary) !important;
-        }
-    `;
-        document.head.appendChild(styleElement);
-
-        // WeakMap of original display styles
-        const originalStyles = new WeakMap();
-
-        // Track last known state so we can re-apply to new elements
-        let lastSidebarState = 'expanded';
-
-        // Store the user’s preference
-        function updateSidebarState(state) {
-            lastSidebarState = state; // Avoid re-fetching from storage
-            try {
-                chrome.storage.sync.set({ sidebarState: state });
-            } catch (err) {
-                // Silently fail since this error is expected
-            }
-        }
-
-
-        // Elements to be toggled
-        function getTogglableElements() {
-            const additionalLinks = Array.from(document.querySelectorAll("a.no-draggable.group.rounded-lg"));
-            const elementsToToggle = [
-                document.querySelector("ul.flex.flex-col.screen-arch\\:mb-3"),
-                document.querySelector(".flex.flex-col.gap-2.text-token-text-primary.text-sm.false.mt-5.pb-2"),
-                document.querySelector(".z-20.screen-arch\\:sticky.screen-arch\\:top-\\[var\\(--sticky-title-offset\\)\\].select-none.overflow-clip.text-ellipsis.break-all.pt-7.text-xs.font-semibold.text-token-text-primary.screen-arch\\:-mr-2.screen-arch\\:h-10.screen-arch\\:min-w-\\[50cqw\\].screen-arch\\:-translate-x-2.screen-arch\\:bg-\\[var\\(--sidebar-surface\\)\\].screen-arch\\:py-1.screen-arch\\:pl-2.screen-arch\\:text-token-text-secondary"),
-                document.querySelector("a[data-testid='explore-gpts-button']"),
-                document.querySelector("h2#snorlax-heading"),
-                document.querySelector("body > div.relative.flex.h-full.w-full.overflow-hidden.transition-colors.z-0 > div.z-\\[21\\].flex-shrink-0.overflow-x-hidden.bg-token-sidebar-surface-primary.max-md\\:\\!w-0 > div > div > div > nav > div.flex-col.flex-1.transition-opacity.duration-500.relative.-mr-2.pr-2.overflow-y-auto > div > div:nth-child(3)"),
-                document.querySelector("a.flex.h-9.w-full.items-center"),
-                document.querySelector(".z-20.screen-arch\\:sticky.screen-arch\\:top-\\[var\\(--sticky-title-offset\\)\\]"),
-                document.querySelector("div.bg-token-border-light.my-2.ms-2.h-px.w-7"),
-                document.querySelector("a.group.flex.gap-2.p-2\\.5.text-sm.cursor-pointer.hover\\:bg-token-sidebar-surface-secondary")
-            ].filter(Boolean);
-
-            return elementsToToggle.concat(additionalLinks);
-        }
-
-        // Collapse or expand an array of elements
-        function setElementsVisibility(els, expand) {
-            els.forEach(el => {
-                if (!originalStyles.has(el)) {
-                    originalStyles.set(el, { display: window.getComputedStyle(el).display });
-                }
-                if (expand) {
-                    gsap.set(el, {
-                        display: originalStyles.get(el).display,
-                        opacity: 0,
-                        height: 'auto',
-                        overflow: 'hidden'
-                    });
-                    const fullHeight = el.offsetHeight;
-                    gsap.set(el, { height: 0 });
-                    gsap.to(el, {
-                        height: fullHeight,
-                        opacity: 1,
-                        duration: 0.4,
-                        ease: 'power2.inOut',
-                        onComplete: () => gsap.set(el, { height: 'auto' })
-                    });
-                } else {
-                    gsap.set(el, { overflow: 'hidden' });
-                    gsap.to(el, {
-                        height: 0,
-                        opacity: 0,
-                        duration: 0.4,
-                        ease: 'power2.inOut',
-                        onComplete: () => gsap.set(el, { display: 'none' })
-                    });
-                }
-            });
-        }
-
-        // Immediately apply stored state to elements upon load
-        function applySavedStateOnce(button) {
-            function fallbackExpand() {
-                lastSidebarState = 'expanded';
-                button.innerHTML = expandedIcon;
-                const els = getTogglableElements();
-                els.forEach(el => {
-                    if (!originalStyles.has(el)) {
-                        originalStyles.set(el, { display: window.getComputedStyle(el).display });
-                    }
-                    gsap.set(el, { display: originalStyles.get(el).display, height: 'auto' });
-                });
-            }
-
-            try {
-                if (typeof chrome !== 'undefined' &&
-                    chrome.storage &&
-                    chrome.storage.sync &&
-                    typeof chrome.storage.sync.get === 'function') {
-                    chrome.storage.sync.get(['sidebarState'], ({ sidebarState }) => {
-                        lastSidebarState = sidebarState || 'expanded';
-                        const isExpanded = lastSidebarState !== 'collapsed';
-                        button.innerHTML = isExpanded ? expandedIcon : collapsedIcon;
-
-                        const els = getTogglableElements();
-                        els.forEach(el => {
-                            if (!originalStyles.has(el)) {
-                                originalStyles.set(el, { display: window.getComputedStyle(el).display });
-                            }
-                            if (!isExpanded) {
-                                gsap.set(el, { display: 'none', height: 0 });
-                            } else {
-                                gsap.set(el, { display: originalStyles.get(el).display, height: 'auto' });
-                            }
-                        });
-                    });
-                } else {
-                    fallbackExpand();
-                }
-            } catch (e) {
-                fallbackExpand();
-            }
-        }
-
-
-        // Create and attach the toggle button
-        function attachToggleButton() {
-            // Match the new topbar container
-            const targetContainer = document.querySelector('#sidebar-header.flex.justify-between.h-header-height');
-            if (!targetContainer) return false;
-
-            // Avoid duplicates (search entire header)
-            if (targetContainer.querySelector('.gpts-projects-heading')) return false;
-
-            // Get the close-sidebar span (first child)
-            const closeSidebarSpan = targetContainer.querySelector('span.flex[data-state="closed"]');
-            if (!closeSidebarSpan) return false;
-
-            // Get the right-side button group (should be the next sibling)
-            const rightButtonsDiv = targetContainer.querySelector('div.flex');
-            if (!rightButtonsDiv) return false;
-
-            // Create toggle button
-            const button = document.createElement('div');
-            button.classList.add('gpts-projects-heading');
-            button.setAttribute('data-collapseSidebarFolders', 'true');
-            button.innerHTML = expandedIcon; // default
-
-            // Expose button globally
-            window.toggleSidebarFoldersButton = button;
-
-            // Apply saved state once
-            applySavedStateOnce(button);
-
-            // Set click behavior
-            button.addEventListener('click', () => {
-                const els = getTogglableElements();
-                const currentlyExpanded = lastSidebarState !== 'collapsed';
-                gsap.to(button, {
-                    scale: 0.7,
-                    opacity: 0,
-                    duration: 0.4,
-                    ease: 'power1.inOut',
-                    onComplete: () => {
-                        button.innerHTML = currentlyExpanded ? collapsedIcon : expandedIcon;
-                        gsap.fromTo(button, { scale: 0.7, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.2 });
-                    }
-                });
-                setElementsVisibility(els, !currentlyExpanded);
-                updateSidebarState(currentlyExpanded ? 'collapsed' : 'expanded');
-            });
-
-            // Insert button after close-sidebar span, before the right buttons div
-            // (i.e. as the new second child of the header)
-            closeSidebarSpan.insertAdjacentElement('afterend', button);
-
-            return true;
-        }
-
-
-
-        // MutationObserver to attach the button as soon as container is found
-        function observeUntilButtonAttached() {
-            const observer = new MutationObserver(() => {
-                if (attachToggleButton()) observer.disconnect();
-            });
-            observer.observe(document.documentElement, { childList: true, subtree: true });
-
-            // Try immediately in case container is already present
-            attachToggleButton();
-        }
-
-        // Re-apply collapse if new elements show up after the user chose "collapsed"
-        // + If the button goes missing, re-attach it
-        function keepObservingForNewElements() {
-            const newElsObserver = new MutationObserver(() => {
-                // Always re-attach the button if it goes missing (re-render)
-                if (!document.querySelector('.gpts-projects-heading')) {
-                    attachToggleButton();
-                }
-
-                const newEls = getTogglableElements();
-                newEls.forEach(el => {
-                    if (!originalStyles.has(el)) {
-                        originalStyles.set(el, { display: window.getComputedStyle(el).display });
-                    }
-
-                    // If the sidebar is collapsed, hide newly appeared items
-                    if (lastSidebarState === 'collapsed') {
-                        gsap.set(el, { display: 'none', height: 0 });
-                    } else {
-                        // If expanded, ensure they're shown
-                        gsap.set(el, {
-                            display: originalStyles.get(el).display,
-                            height: 'auto',
-                            opacity: 1
-                        });
-                    }
-                });
-            });
-
-            // Observe entire DOM for newly inserted nodes
-            newElsObserver.observe(document.documentElement, { childList: true, subtree: true });
-
-            // Try attaching button immediately in case container already exists
-            attachToggleButton();
-        }
-
-
-        // Initialize once DOM is at least parsed
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => {
-                observeUntilButtonAttached();
-                keepObservingForNewElements();
-            });
-        } else {
-            observeUntilButtonAttached();
-            keepObservingForNewElements();
-        }
-    })();
-}, 500);
-*/
-
-
-// ==================================================
 // @note TopBarToBottom Feature
 // ==================================================
 
@@ -2807,7 +2501,6 @@ setTimeout(() => {
 
 
 
-
 // ==============================================================
 // @note Auto-click 'try again' after 'Something went wrong'
 // ==============================================================
@@ -2856,6 +2549,8 @@ setTimeout(() => {
         }
     }).observe(document.body, { childList: true, subtree: true });
 })();
+
+
 
 // =====================================
 // @note Alt+1 to Alt+5 to select model
@@ -3029,59 +2724,6 @@ setTimeout(() => {
 
 
 
-// =====================================
-// @note Kill horizontal scroll bars
-// =====================================
-//
-
-/*  Inject once from your extension  */
-// (() => {
-//     const style = document.createElement("style");
-//     style.textContent = `
-//   /* Table wrapper: fills chat bubble, local scrolling if too wide */
-//   [class*="_tableContainer_"], [class*="_tableWrapper_"] {
-//     display: block !important;
-//     width: 100% !important;
-//     max-width: inherit !important;
-//     box-sizing: border-box !important;
-//     overflow-x: auto !important;
-//     padding: 0 !important;
-//     margin: 0 !important;
-//   }
-//
-//   /* Table: fills wrapper, columns auto-size to content, allows overflow for wide tables */
-//   [class*="_tableWrapper_"] > table {
-//     width: 100% !important;
-//     min-width: 100% !important;
-//     box-sizing: border-box !important;
-//     table-layout: auto !important;
-//   }
-//
-//   /* Cells: allow normal wrap, but never squash below 20ch */
-//   [class*="_tableWrapper_"] th,
-//   [class*="_tableWrapper_"] td {
-//     width: auto !important;
-//     min-width: 20ch !important;          /* never less than 20 chars wide */
-//     max-width: 1px;                      /* try to shrink if crowded, but min still applies */
-//     word-break: break-word !important;
-//     overflow-wrap: anywhere !important;
-//     text-overflow: ellipsis !important;
-//     white-space: normal !important;
-//     box-sizing: border-box !important;
-//     padding: 0.5em 1em !important;       /* visually matches code blocks */
-//   }
-//
-//   /* Remove legacy/fixed size classes from the site */
-//   [class*="_tableWrapper_"] th[data-col-size],
-//   [class*="_tableWrapper_"] td[data-col-size] {
-//     width: auto !important;
-//     min-width: 20ch !important;
-//     max-width: none !important;
-//   }
-//   `;
-//     document.head.appendChild(style);
-// })();
-
 // ====================================
 //  rememberSidebarScrollPositionCheckbox
 //  @note  Chat‑sidebar scroll restore – per‑tab & user‑toggleable
@@ -3233,6 +2875,7 @@ setTimeout(() => {
     );
 
 })();
+
 
 
 // ====================================
