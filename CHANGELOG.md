@@ -4,14 +4,6 @@ The full changelog and feature history is maintained here.
 
 Current Known Bugs:
 
-#### [6.7.2025]
-##### Fixed
-- Do not create scroll arrows when hide option is enabled and keep shortcuts working.
-
-#### [6.6.2025]
-##### Fixed
-- Scroll arrows no longer flash when hidden via settings.
-
 #### [6.5.2025]
 ##### Removed
 - Permanently removed "Copy All" buttons; features remain accessible via keyboard shortcuts.
