@@ -2682,10 +2682,9 @@ setTimeout(() => {
                         // ---------- Section 6 • Text Truncation ----------
 
                         function applyOneLineEllipsis(el) {
-                            const imp = v => ['important', v];
-                            el.style.setProperty('white-space', 'nowrap', ...imp());
-                            el.style.setProperty('overflow', 'hidden', ...imp());
-                            el.style.setProperty('text-overflow', 'ellipsis', ...imp());
+                            el.style.setProperty('white-space', 'nowrap', 'important');
+                            el.style.setProperty('overflow', 'hidden', 'important');
+                            el.style.setProperty('text-overflow', 'ellipsis', 'important');
                             // keep the current font‑size; no shrinking logic
                         }
 
