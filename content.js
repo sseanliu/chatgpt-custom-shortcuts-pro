@@ -102,55 +102,29 @@ function findButton(args) {
 
 // Global helper to toggle visibility and expose setting values
 function applyVisibilitySettings(data) {
-    if (data.hideArrowButtonsCheckbox) {
-        ['upButton', 'downButton'].forEach(id => {
-            const button = document.getElementById(id);
-            if (button) button.style.display = 'none';
-        });
+    // Key: global window property
+    // Value: [defaultIfUndefined, defaultIfMissing]
+    const settingsMap = {
+        moveTopBarToBottomCheckbox: false,
+        hideArrowButtonsCheckbox: false,
+        removeMarkdownOnCopyCheckbox: true,
+        selectMessagesSentByUserOrChatGptCheckbox: true,
+        onlySelectUserCheckbox: false,
+        onlySelectAssistantCheckbox: false,
+        disableCopyAfterSelectCheckbox: false,
+        enableSendWithControlEnterCheckbox: true,
+        enableStopWithControlBackspaceCheckbox: true,
+        useAltForModelSwitcherRadio: true,
+        useControlForModelSwitcherRadio: false,
+        rememberSidebarScrollPositionCheckbox: false,
+    };
+
+    for (const key in settingsMap) {
+        // If present in data, use its boolean value, otherwise fallback to default.
+        window[key] = data.hasOwnProperty(key)
+            ? Boolean(data[key])
+            : settingsMap[key];
     }
-
-    // Normalize to boolean for easier checks throughout the script
-    window.moveTopBarToBottomCheckbox = Boolean(data.moveTopBarToBottomCheckbox);
-
-    window.removeMarkdownOnCopyCheckbox = data.hasOwnProperty('removeMarkdownOnCopyCheckbox')
-        ? data.removeMarkdownOnCopyCheckbox === true
-        : true;
-
-    window.selectMessagesSentByUserOrChatGptCheckbox = data.hasOwnProperty('selectMessagesSentByUserOrChatGptCheckbox')
-        ? data.selectMessagesSentByUserOrChatGptCheckbox === true
-        : true;
-
-    window.onlySelectUserCheckbox = data.hasOwnProperty('onlySelectUserCheckbox')
-        ? data.onlySelectUserCheckbox === true
-        : false;
-
-    window.onlySelectAssistantCheckbox = data.hasOwnProperty('onlySelectAssistantCheckbox')
-        ? data.onlySelectAssistantCheckbox === true
-        : false;
-
-    window.disableCopyAfterSelectCheckbox = data.hasOwnProperty('disableCopyAfterSelectCheckbox')
-        ? data.disableCopyAfterSelectCheckbox === true
-        : false;
-
-    window.enableSendWithControlEnterCheckbox = data.hasOwnProperty('enableSendWithControlEnterCheckbox')
-        ? data.enableSendWithControlEnterCheckbox === true
-        : true;
-
-    window.enableStopWithControlBackspaceCheckbox = data.hasOwnProperty('enableStopWithControlBackspaceCheckbox')
-        ? data.enableStopWithControlBackspaceCheckbox === true
-        : true;
-
-    window.useAltForModelSwitcherRadio = data.hasOwnProperty('useAltForModelSwitcherRadio')
-        ? data.useAltForModelSwitcherRadio === true
-        : true;
-
-    window.useControlForModelSwitcherRadio = data.hasOwnProperty('useControlForModelSwitcherRadio')
-        ? data.useControlForModelSwitcherRadio === true
-        : false;
-
-    window.rememberSidebarScrollPositionCheckbox = data.hasOwnProperty('rememberSidebarScrollPositionCheckbox')
-        ? data.rememberSidebarScrollPositionCheckbox === true
-        : false;
 }
 
 // Expose globally for use in other scripts/IIFEs
@@ -187,48 +161,13 @@ window.applyVisibilitySettings = applyVisibilitySettings;
     chrome.storage.onChanged.addListener((changes, area) => {
         if (area === 'sync') {
             const updatedData = {};
-            if (changes.hideArrowButtonsCheckbox) {
-                updatedData.hideArrowButtonsCheckbox = changes.hideArrowButtonsCheckbox.newValue;
-            }
-            if (changes.moveTopBarToBottomCheckbox) {
-                updatedData.moveTopBarToBottomCheckbox = changes.moveTopBarToBottomCheckbox.newValue;
-            }
-            if (changes.removeMarkdownOnCopyCheckbox) {
-                updatedData.removeMarkdownOnCopyCheckbox = changes.removeMarkdownOnCopyCheckbox.newValue;
-            }
-            if (changes.selectMessagesSentByUserOrChatGptCheckbox) {
-                updatedData.selectMessagesSentByUserOrChatGptCheckbox = changes.selectMessagesSentByUserOrChatGptCheckbox.newValue;
-            }
-            if (changes.onlySelectUserCheckbox) {
-                updatedData.onlySelectUserCheckbox = changes.onlySelectUserCheckbox.newValue;
-            }
-            if (changes.onlySelectAssistantCheckbox) {
-                updatedData.onlySelectAssistantCheckbox = changes.onlySelectAssistantCheckbox.newValue;
-            }
-            if (changes.disableCopyAfterSelectCheckbox) {
-                updatedData.disableCopyAfterSelectCheckbox = changes.disableCopyAfterSelectCheckbox.newValue;
-            }
-            if (changes.enableSendWithControlEnterCheckbox) {
-                updatedData.enableSendWithControlEnterCheckbox = changes.enableSendWithControlEnterCheckbox.newValue;
-            }
-            if (changes.enableStopWithControlBackspaceCheckbox) {
-                updatedData.enableStopWithControlBackspaceCheckbox = changes.enableStopWithControlBackspaceCheckbox.newValue;
-            }
-            if (changes.popupBottomBarOpacityValue) {
-                updatedData.popupBottomBarOpacityValue = changes.popupBottomBarOpacityValue.newValue;
-            }
-            if (changes.useAltForModelSwitcherRadio) {
-                updatedData.useAltForModelSwitcherRadio = changes.useAltForModelSwitcherRadio.newValue;
-            }
-            if (changes.useControlForModelSwitcherRadio) {
-                updatedData.useControlForModelSwitcherRadio = changes.useControlForModelSwitcherRadio.newValue;
-            }
-            if (changes.rememberSidebarScrollPositionCheckbox) {
-                updatedData.rememberSidebarScrollPositionCheckbox = changes.rememberSidebarScrollPositionCheckbox.newValue;
+            for (const key in changes) {
+                updatedData[key] = changes[key].newValue;
             }
             applyVisibilitySettings(updatedData);
         }
     });
+
 })();
 
 
@@ -433,70 +372,77 @@ window.applyVisibilitySettings = applyVisibilitySettings;
         return separator.replace(/\\n/g, '\n').replace(/\\t/g, '\t').replace(/\\r/g, '\r');
     }
 
+    function goUpOneMessage(feedbackTarget = null) {
+        resetScrollState(); // Reset the shared scroll state
+
+        const messages = document.querySelectorAll('[data-testid^="conversation-turn-"]');
+        let targetMessage = null;
+
+        // Offset values based on checkbox state
+        const isBottom = window.moveTopBarToBottomCheckbox;
+        const messageThreshold = isBottom ? -48 : -30;
+        const scrollOffset = isBottom ? 43 : 25;
+
+        for (let i = messages.length - 1; i >= 0; i--) {
+            const messageTop = messages[i].getBoundingClientRect().top;
+            if (messageTop < messageThreshold) {
+                targetMessage = messages[i];
+                break;
+            }
+        }
+
+        const scrollContainer = getScrollableContainer();
+        if (!scrollContainer) return;
+
+        if (targetMessage) {
+            gsap.to(scrollContainer, {
+                duration: .4,
+                scrollTo: {
+                    y: targetMessage.offsetTop - scrollOffset
+                },
+                ease: "power4.out"
+            });
+        } else {
+            gsap.to(scrollContainer, {
+                duration: .6,
+                scrollTo: {
+                    y: 0
+                },
+                ease: "power4.out"
+            });
+        }
+
+        if (feedbackTarget) feedbackAnimation(feedbackTarget);
+    }
+
     function createScrollUpButton() {
+        // Gate button creation based on window.hideArrowButtonsCheckbox
+        if (window.hideArrowButtonsCheckbox) return;
+
         if (!window.gsap || !window.ScrollToPlugin) {
             console.error("GSAP or ScrollToPlugin is missing.");
             return;
         }
 
-
         const upButton = document.createElement('button');
-        upButton.classList.add('chatGPT-scroll-btn', 'cursor-pointer', 'absolute', 'right-6', 'z-10', 'rounded-full', 'border', 'border-gray-200', 'bg-gray-50', 'text-gray-600', 'dark:border-white/10', 'dark:bg-white/10', 'dark:text-gray-200');
+        upButton.classList.add(
+            'chatGPT-scroll-btn', 'cursor-pointer', 'absolute', 'right-6', 'z-10',
+            'rounded-full', 'border', 'border-gray-200', 'bg-gray-50', 'text-gray-600',
+            'dark:border-white/10', 'dark:bg-white/10', 'dark:text-gray-200'
+        );
         upButton.style.cssText = "display: flex; align-items: center; justify-content: center; background-color: var(--main-surface-tertiary); color: var(--text-primary); opacity: 0.8; width: 25.33px; height: 25.33px; border-radius: 50%; position: fixed; top: 196px; right: 26px; z-index: 10000; transition: opacity 1s;";
         upButton.id = 'upButton';
 
         upButton.innerHTML = `
-        <svg width="16" height="16" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-2xl" style="transform: scale(0.75);">
-            <path fill-rule="evenodd" clip-rule="evenodd" d="M15.1918 8.90615C15.6381 8.45983 16.3618 8.45983 16.8081 8.90615L21.9509 14.049C22.3972 14.4953 22.3972 15.2189 21.9509 15.6652C21.5046 16.1116 20.781 16.1116 20.3347 15.6652L17.1428 12.4734V22.2857C17.1428 22.9169 16.6311 23.4286 15.9999 23.4286C15.3688 23.4286 14.8571 22.9169 14.8571 22.2857V12.4734L11.6652 15.6652C11.2189 16.1116 10.4953 16.1116 10.049 15.6652C9.60265 15.2189 9.60265 14.4953 10.049 14.049L15.1918 8.90615Z" fill="currentColor"></path>
-        </svg>
-    `;
+            <svg width="16" height="16" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-2xl" style="transform: scale(0.75);">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M15.1918 8.90615C15.6381 8.45983 16.3618 8.45983 16.8081 8.90615L21.9509 14.049C22.3972 14.4953 22.3972 15.2189 21.9509 15.6652C21.5046 16.1116 20.781 16.1116 20.3347 15.6652L17.1428 12.4734V22.2857C17.1428 22.9169 16.6311 23.4286 15.9999 23.4286C15.3688 23.4286 14.8571 22.9169 14.8571 22.2857V12.4734L11.6652 15.6652C11.2189 16.1116 10.4953 16.1116 10.049 15.6652C9.60265 15.2189 9.60265 14.4953 10.049 14.049L15.1918 8.90615Z" fill="currentColor"></path>
+            </svg>
+        `;
 
         upButton.onclick = function () {
-            resetScrollState(); // Reset the shared scroll state
-
-            const messages = document.querySelectorAll('[data-testid^="conversation-turn-"]');
-            let targetMessage = null;
-
-            // Determine offset values based on checkbox state
-            const isBottom = window.moveTopBarToBottomCheckbox;
-            const messageThreshold = isBottom ? -48 : -30;      // 2nd # is if TopBarToBottom is checked, 1st  # when topbar in default position
-            const scrollOffset = isBottom ? 43 : 25;            // 2nd # is if TopBarToBottom is checked, 1st  # when topbar in default position
-
-            for (let i = messages.length - 1; i >= 0; i--) {
-                const messageTop = messages[i].getBoundingClientRect().top;
-
-                if (messageTop < messageThreshold) {
-                    targetMessage = messages[i];
-                    break;
-                }
-            }
-
-            const scrollContainer = getScrollableContainer();
-            if (!scrollContainer) return;
-
-            if (targetMessage) {
-                gsap.to(scrollContainer, {
-                    duration: .4,
-                    scrollTo: {
-                        y: targetMessage.offsetTop - scrollOffset
-                    },
-                    ease: "power4.out"
-                });
-            } else {
-                gsap.to(scrollContainer, {
-                    duration: .6,
-                    scrollTo: {
-                        y: 0
-                    },
-                    ease: "power4.out"
-                });
-            }
-
-            feedbackAnimation(upButton);
+            goUpOneMessage(upButton);
         };
 
-
-        // Mouseover and mouseleave events for opacity change
         upButton.addEventListener('mouseover', () => {
             upButton.style.opacity = "1";
         });
@@ -506,7 +452,6 @@ window.applyVisibilitySettings = applyVisibilitySettings;
             upButton.style.opacity = "0.2";
         });
 
-        // Fade out the button after 3500ms
         setTimeout(() => {
             upButton.style.transition = "opacity 1s";
             upButton.style.opacity = "0.2";
@@ -515,75 +460,77 @@ window.applyVisibilitySettings = applyVisibilitySettings;
         return upButton;
     }
 
+
+    function goDownOneMessage(feedbackTarget = null) {
+        resetScrollState();
+
+        const messages = Array.from(document.querySelectorAll('[data-testid^="conversation-turn-"]'));
+        const scrollContainer = getScrollableContainer();
+        if (!scrollContainer || !messages.length) return;
+
+        gsap.set(scrollContainer, { scrollTo: '+=0' });
+        gsap.killTweensOf(scrollContainer);
+
+        const currentScrollTop = scrollContainer.scrollTop;
+
+        // Offset values based on checkbox state
+        const isBottom = window.moveTopBarToBottomCheckbox;
+        const messageThreshold = isBottom ? 48 : 30;
+        const scrollOffset = isBottom ? 43 : 25;
+
+        let targetMessage = null;
+        for (let i = 0; i < messages.length; i++) {
+            if (messages[i].offsetTop > currentScrollTop + messageThreshold) {
+                targetMessage = messages[i];
+                break;
+            }
+        }
+
+        if (targetMessage) {
+            gsap.to(scrollContainer, {
+                duration: 0.4,
+                scrollTo: { y: targetMessage.offsetTop - scrollOffset },
+                ease: "power4.out"
+            });
+        } else {
+            gsap.to(scrollContainer, {
+                duration: 0.6,
+                scrollTo: { y: scrollContainer.scrollHeight - scrollContainer.clientHeight },
+                ease: "power4.out"
+            });
+        }
+
+        if (feedbackTarget) feedbackAnimation(feedbackTarget);
+    }
+
     function createScrollDownButton() {
+        // Gate button creation based on window.hideArrowButtonsCheckbox
+        if (window.hideArrowButtonsCheckbox) return;
+
         if (!window.gsap || !window.ScrollToPlugin) {
             console.error("GSAP or ScrollToPlugin is missing.");
             return;
         }
 
-        gsap.registerPlugin(ScrollToPlugin);
-
         const downButton = document.createElement('button');
-        downButton.classList.add('chatGPT-scroll-btn', 'cursor-pointer', 'absolute', 'right-6', 'z-10', 'rounded-full', 'border', 'border-gray-200', 'bg-gray-50', 'text-gray-600', 'dark:border-white/10', 'dark:bg-white/10', 'dark:text-gray-200');
+        downButton.classList.add(
+            'chatGPT-scroll-btn', 'cursor-pointer', 'absolute', 'right-6', 'z-10',
+            'rounded-full', 'border', 'border-gray-200', 'bg-gray-50', 'text-gray-600',
+            'dark:border-white/10', 'dark:bg-white/10', 'dark:text-gray-200'
+        );
         downButton.style.cssText = "display: flex; align-items: center; justify-content: center; background-color: var(--main-surface-tertiary); color: var(--text-primary); opacity: 0.8; width: 25.33px; height: 25.33px; border-radius: 50%; position: fixed; top: 228px; right: 26px; z-index: 10000; transition: opacity 1s;";
         downButton.id = 'downButton';
 
         downButton.innerHTML = `
-        <svg width="16" height="16" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-2xl" style="transform: scale(0.75);">
-            <path fill-rule="evenodd" clip-rule="evenodd" d="M16.8081 23.0938C16.3618 23.5402 15.6381 23.5402 15.1918 23.0938L10.049 17.951C9.60265 17.5047 9.60265 16.7811 10.049 16.3348C10.4953 15.8884 11.219 15.8884 11.6653 16.3348L14.8571 19.5266V9.71429C14.8571 9.0831 15.3688 8.57143 15.9999 8.57143C16.6311 8.57143 17.1428 9.0831 17.1428 9.71429V19.5266L20.3347 16.3348C20.781 15.8884 21.5046 15.8884 21.9509 16.3348C22.3972 16.7811 22.3972 17.5047 21.9509 17.951L16.8081 23.0938Z" fill="currentColor"></path>
-        </svg>
-    `;
-
+            <svg width="16" height="16" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-2xl" style="transform: scale(0.75);">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M16.8081 23.0938C16.3618 23.5402 15.6381 23.5402 15.1918 23.0938L10.049 17.951C9.60265 17.5047 9.60265 16.7811 10.049 16.3348C10.4953 15.8884 11.219 15.8884 11.6653 16.3348L14.8571 19.5266V9.71429C14.8571 9.0831 15.3688 8.57143 15.9999 8.57143C16.6311 8.57143 17.1428 9.0831 17.1428 9.71429V19.5266L20.3347 16.3348C20.781 15.8884 21.5046 15.8884 21.9509 16.3348C22.3972 16.7811 22.3972 17.5047 21.9509 17.951L16.8081 23.0938Z" fill="currentColor"></path>
+            </svg>
+        `;
 
         downButton.onclick = function () {
-            resetScrollState();
-
-            const messages = Array.from(document.querySelectorAll('[data-testid^="conversation-turn-"]'));
-            const scrollContainer = getScrollableContainer();
-            if (!scrollContainer || !messages.length) return;
-
-            // First, forcibly update to the tween’s current position
-            gsap.set(scrollContainer, { scrollTo: '+=0' });
-            gsap.killTweensOf(scrollContainer);
-
-            const currentScrollTop = scrollContainer.scrollTop;
-
-            // Determine offset values based on checkbox state
-            const isBottom = window.moveTopBarToBottomCheckbox;
-            const messageThreshold = isBottom ? 48 : 30;         // Mirror logic from upButton, reversed for downward scroll
-            const scrollOffset = isBottom ? 43 : 25;             // Matching offset values
-
-            // Find the first message whose offsetTop is just beyond currentScrollTop + threshold
-            let targetMessage = null;
-            for (let i = 0; i < messages.length; i++) {
-                if (messages[i].offsetTop > currentScrollTop + messageThreshold) {
-                    targetMessage = messages[i];
-                    break;
-                }
-            }
-
-            if (targetMessage) {
-                gsap.to(scrollContainer, {
-                    duration: 0.4,
-                    scrollTo: { y: targetMessage.offsetTop - scrollOffset },
-                    ease: "power4.out"
-                });
-            } else {
-                gsap.to(scrollContainer, {
-                    duration: 0.6,
-                    scrollTo: { y: scrollContainer.scrollHeight - scrollContainer.clientHeight },
-                    ease: "power4.out"
-                });
-            }
-
-            feedbackAnimation(downButton);
+            goDownOneMessage(downButton);
         };
 
-
-
-
-
-        // Mouseover and mouseleave events for opacity change
         downButton.addEventListener('mouseover', () => {
             downButton.style.opacity = "1";
         });
@@ -593,7 +540,6 @@ window.applyVisibilitySettings = applyVisibilitySettings;
             downButton.style.opacity = "0.2";
         });
 
-        // Fade out the button after 3500ms
         setTimeout(() => {
             downButton.style.transition = "opacity 1s";
             downButton.style.opacity = "0.2";
@@ -601,6 +547,7 @@ window.applyVisibilitySettings = applyVisibilitySettings;
 
         return downButton;
     }
+
 
     function feedbackAnimation(button) {
         // Reset any ongoing transitions to ensure a clean start
@@ -616,39 +563,49 @@ window.applyVisibilitySettings = applyVisibilitySettings;
         }, 100); // Start fading and scaling after a brief delay
     }
 
-    // Create scroll up and down buttons
-    const upButton = createScrollUpButton();
-    const downButton = createScrollDownButton();
-    appendWithFragment(document.body, upButton, downButton);
-
-    // Apply visibility settings now that buttons exist
-    chrome.storage.sync.get('hideArrowButtonsCheckbox', applyVisibilitySettings);
+    chrome.storage.sync.get(null, function (data) {
+        applyVisibilitySettings(data);
+        const upButton = createScrollUpButton();
+        const downButton = createScrollDownButton();
+        appendWithFragment(document.body, upButton, downButton);
+    });
 
 
     // @note Keyboard shortcut defaults 
     chrome.storage.sync.get(['shortcutKeyScrollUpOneMessage', 'shortcutKeyScrollDownOneMessage', 'shortcutKeyCopyLowest', 'shortcutKeyEdit', 'shortcutKeySendEdit', 'shortcutKeyCopyAllResponses', 'shortcutKeyCopyAllCodeBlocks', 'shortcutKeyClickNativeScrollToBottom', 'shortcutKeyScrollToTop', 'shortcutKeyNewConversation', 'shortcutKeySearchConversationHistory', 'shortcutKeyToggleSidebar', 'shortcutKeyActivateInput', 'shortcutKeySearchWeb', 'shortcutKeyPreviousThread', 'shortcutKeyNextThread', 'selectThenCopy', 'shortcutKeyToggleSidebarFoldersButton', 'shortcutKeyClickSendButton', 'shortcutKeyClickStopButton', 'shortcutKeyToggleModelSelector', 'shortcutKeyRegenerate'], (data) => {
-        const shortcutKeyScrollUpOneMessage = data.shortcutKeyScrollUpOneMessage || 'a';
-        const shortcutKeyScrollDownOneMessage = data.shortcutKeyScrollDownOneMessage || 'f';
-        const shortcutKeyCopyLowest = data.shortcutKeyCopyLowest || 'c';
-        const shortcutKeyEdit = data.shortcutKeyEdit || 'e';
-        const shortcutKeySendEdit = data.shortcutKeySendEdit || 'd';
-        const shortcutKeyCopyAllResponses = data.shortcutKeyCopyAllResponses || '[';
-        const shortcutKeyCopyAllCodeBlocks = data.shortcutKeyCopyAllCodeBlocks || ']';
-        const shortcutKeyClickNativeScrollToBottom = data.shortcutKeyClickNativeScrollToBottom || 'z';
-        const shortcutKeyScrollToTop = data.shortcutKeyScrollToTop || 't';
-        const shortcutKeyNewConversation = data.shortcutKeyNewConversation || 'n';
-        const shortcutKeySearchConversationHistory = data.shortcutKeySearchConversationHistory || 'k';
-        const shortcutKeyToggleSidebar = data.shortcutKeyToggleSidebar || 's';
-        const shortcutKeyActivateInput = data.shortcutKeyActivateInput || 'w';
-        const shortcutKeySearchWeb = data.shortcutKeySearchWeb || 'q';
-        const shortcutKeyPreviousThread = data.shortcutKeyPreviousThread || 'j';
-        const shortcutKeyNextThread = data.shortcutKeyNextThread || ';';
-        const selectThenCopy = data.selectThenCopy || 'x';
-        const shortcutKeyToggleSidebarFoldersButton = data.shortcutKeyToggleSidebarFoldersButton || '';
-        const shortcutKeyClickSendButton = data.shortcutKeyClickSendButton || 'Enter';
-        const shortcutKeyClickStopButton = data.shortcutKeyClickStopButton || 'Backspace';
-        const shortcutKeyToggleModelSelector = data.shortcutKeyToggleModelSelector || '/';
-        const shortcutKeyRegenerate = data.shortcutKeyRegenerate || 'r';
+        const shortcutDefaults = {
+            shortcutKeyScrollUpOneMessage: 'a',
+            shortcutKeyScrollDownOneMessage: 'f',
+            shortcutKeyCopyLowest: 'c',
+            shortcutKeyEdit: 'e',
+            shortcutKeySendEdit: 'd',
+            shortcutKeyCopyAllResponses: '[',
+            shortcutKeyCopyAllCodeBlocks: ']',
+            shortcutKeyClickNativeScrollToBottom: 'z',
+            shortcutKeyScrollToTop: 't',
+            shortcutKeyNewConversation: 'n',
+            shortcutKeySearchConversationHistory: 'k',
+            shortcutKeyToggleSidebar: 's',
+            shortcutKeyActivateInput: 'w',
+            shortcutKeySearchWeb: 'q',
+            shortcutKeyPreviousThread: 'j',
+            shortcutKeyNextThread: ';',
+            selectThenCopy: 'x',
+            shortcutKeyToggleSidebarFoldersButton: '',
+            shortcutKeyClickSendButton: 'Enter',
+            shortcutKeyClickStopButton: 'Backspace',
+            shortcutKeyToggleModelSelector: '/',
+            shortcutKeyRegenerate: 'r'
+        };
+
+        const shortcuts = {};
+        for (const key in shortcutDefaults) {
+            shortcuts[key] = data[key] || shortcutDefaults[key];
+        }
+
+        const modelToggleKey = shortcuts.shortcutKeyToggleModelSelector.toLowerCase();
+
+        const isMac = /(Mac|iPhone|iPad|iPod)/i.test(navigator.userAgent);
 
         let scrollCompleted = false;
 
@@ -760,18 +717,26 @@ window.applyVisibilitySettings = applyVisibilitySettings;
 
         // Alt Key Function Maps
         const keyFunctionMappingAlt = {
-            [shortcutKeyScrollUpOneMessage]: () => {
-                upButton.click();
-                feedbackAnimation(upButton);
+            [shortcuts.shortcutKeyScrollUpOneMessage]: () => {
+                const upButton = document.getElementById('upButton');
+                if (upButton) {
+                    upButton.click();
+                    // feedbackAnimation is already called inside the click handler, so this is redundant.
+                } else {
+                    goUpOneMessage(); // Call the scroll function directly, no feedback since no button.
+                }
             },
-            [shortcutKeyScrollDownOneMessage]: () => {
-                downButton.click();
-                feedbackAnimation(downButton);
+            [shortcuts.shortcutKeyScrollDownOneMessage]: () => {
+                const downButton = document.getElementById('downButton');
+                if (downButton) {
+                    downButton.click(); // feedback is triggered in the click handler
+                } else {
+                    goDownOneMessage(); // function is available even when button is hidden
+                }
             },
-
-            [shortcutKeyCopyAllResponses]: copyAll,
-            [shortcutKeyCopyAllCodeBlocks]: copyCode,
-            [shortcutKeyCopyLowest]: () => {
+            [shortcuts.shortcutKeyCopyAllResponses]: copyAll,
+            [shortcuts.shortcutKeyCopyAllCodeBlocks]: copyCode,
+            [shortcuts.shortcutKeyCopyLowest]: () => {
                 const copyPath = 'M7 5C7 3.34315';
 
                 // Find all visible copy buttons (by SVG path)
@@ -816,7 +781,7 @@ window.applyVisibilitySettings = applyVisibilitySettings;
                         .catch(() => {/* silent fail */ });
                 }, 500);
             },
-            [shortcutKeyEdit]: () => {
+            [shortcuts.shortcutKeyEdit]: () => {
                 setTimeout(() => {
                     try {
                         const allButtons = Array.from(
@@ -865,7 +830,7 @@ window.applyVisibilitySettings = applyVisibilitySettings;
                     }
                 }, 50);
             },
-            [shortcutKeySendEdit]: () => {
+            [shortcuts.shortcutKeySendEdit]: () => {
                 try {
                     const containers = document.querySelectorAll('div.flex.justify-end.gap-2');
 
@@ -892,7 +857,7 @@ window.applyVisibilitySettings = applyVisibilitySettings;
                     // Fail silently
                 }
             },
-            [shortcutKeyNewConversation]: function newConversation() {
+            [shortcuts.shortcutKeyNewConversation]: function newConversation() {
                 // 1) Fire the native “New Chat” shortcut first (Ctrl/Cmd + Shift + O)
                 const isMac = /Mac|iPod|iPhone|iPad/.test(navigator.platform);
                 const eventInit = {
@@ -933,7 +898,7 @@ window.applyVisibilitySettings = applyVisibilitySettings;
                     }
                 }
             },
-            [shortcutKeySearchConversationHistory]: () => {
+            [shortcuts.shortcutKeySearchConversationHistory]: () => {
                 // 1) Fire the native “Search Conversation History” shortcut first (Ctrl/Cmd + K)
                 const isMac = /Mac|iPod|iPhone|iPad/.test(navigator.platform);
                 const eventInit = {
@@ -973,7 +938,7 @@ window.applyVisibilitySettings = applyVisibilitySettings;
                     return;
                 }
             },
-            [shortcutKeyClickNativeScrollToBottom]: () => {      // @note // native scroll to bottom
+            [shortcuts.shortcutKeyClickNativeScrollToBottom]: () => {      // @note // native scroll to bottom
                 const scrollContainer = getScrollableContainer();
 
                 if (!scrollContainer) return;
@@ -992,7 +957,7 @@ window.applyVisibilitySettings = applyVisibilitySettings;
                     ease: "sine.out"
                 });
             },
-            [shortcutKeyScrollToTop]: () => {
+            [shortcuts.shortcutKeyScrollToTop]: () => {
                 const scrollContainer = getScrollableContainer();
 
                 if (!scrollContainer) return;
@@ -1009,7 +974,7 @@ window.applyVisibilitySettings = applyVisibilitySettings;
                     ease: "sine.out"
                 });
             },
-            [shortcutKeyToggleSidebar]: function toggleSidebar() {
+            [shortcuts.shortcutKeyToggleSidebar]: function toggleSidebar() {
                 // 1) fire native Ctrl+Shift+S (or Cmd+Shift+S on macOS)
                 const isMac = /Mac|iPod|iPhone|iPad/.test(navigator.platform);
                 const eventInit = {
@@ -1070,7 +1035,7 @@ window.applyVisibilitySettings = applyVisibilitySettings;
                     }
                 }
             },
-            [shortcutKeyActivateInput]: function activateInput() {
+            [shortcuts.shortcutKeyActivateInput]: function activateInput() {
                 const selectors = [
                     '#prompt-textarea[contenteditable="true"]',
                     'div[contenteditable="true"][id="prompt-textarea"]',
@@ -1101,7 +1066,7 @@ window.applyVisibilitySettings = applyVisibilitySettings;
                 document.dispatchEvent(new KeyboardEvent('keydown', eventInit));
                 document.dispatchEvent(new KeyboardEvent('keyup', eventInit));
             },
-            [shortcutKeySearchWeb]: () => {
+            [shortcuts.shortcutKeySearchWeb]: () => {
                 // Menu-opening button
                 const TOOL_MENU_BTN_SEL = 'button#system-hint-button[aria-haspopup="menu"]';
                 // The unique SVG path for the "search the web" tool
@@ -1162,7 +1127,7 @@ window.applyVisibilitySettings = applyVisibilitySettings;
                     setTimeout(() => tryClickMenuItem(document), 200);
                 }
             },
-            [shortcutKeyPreviousThread]: () => {
+            [shortcuts.shortcutKeyPreviousThread]: () => {
                 /* ---- 1. find every “previous‑response” button via multiple selectors ---- */
                 const selectorList = [
                     'button svg path[d*="L9.41421 12"]',           // existing stable fragment
@@ -1207,7 +1172,7 @@ window.applyVisibilitySettings = applyVisibilitySettings;
                 /* ---- 4. click after one paint so the override is active ---- */
                 requestAnimationFrame(() => target.click());
             },
-            [shortcutKeyNextThread]: () => {
+            [shortcuts.shortcutKeyNextThread]: () => {
                 /* ---- 1. find every “next‑response” button via multiple selectors ---- */
                 const selectorList = [
                     'button[aria-label="Next response"]',
@@ -1252,7 +1217,7 @@ window.applyVisibilitySettings = applyVisibilitySettings;
                 /* ---- 5. click after one paint so the override takes effect ---- */
                 requestAnimationFrame(() => target.click());
             },
-            [selectThenCopy]: (() => {
+            [shortcuts.selectThenCopy]: (() => {
                 window.selectThenCopyState = window.selectThenCopyState || {
                     lastSelectedIndex: -1
                 };
@@ -1357,7 +1322,7 @@ window.applyVisibilitySettings = applyVisibilitySettings;
                     }, 50);
                 };
             })(),
-            [shortcutKeyToggleSidebarFoldersButton]: () => {
+            [shortcuts.shortcutKeyToggleSidebarFoldersButton]: () => {
                 try {
                     const btn = window.toggleSidebarFoldersButton;
 
@@ -1371,10 +1336,10 @@ window.applyVisibilitySettings = applyVisibilitySettings;
                     // Catch errors silently
                 }
             },
-            [shortcutKeyToggleModelSelector]: () => {
+            [shortcuts.shortcutKeyToggleModelSelector]: () => {
                 window.toggleModelSelector();
             },
-            [shortcutKeyRegenerate]: () => {
+            [shortcuts.shortcutKeyRegenerate]: () => {
                 const REGEN_BTN_PATH = 'M3.06957 10.8763';
                 const MENU_BTN_SELECTOR = `button[id^="radix-"] svg path[d^="${REGEN_BTN_PATH}"]`;
                 const MENUITEM_SELECTOR = `div[role="menuitem"] svg path[d^="${REGEN_BTN_PATH}"]`;
@@ -1433,20 +1398,14 @@ window.applyVisibilitySettings = applyVisibilitySettings;
 
                 setTimeout(() => clickLowestMenuItem(), lowestMenuBtn.getAttribute('aria-expanded') === 'true' ? 0 : 200);
             },
-
-
-
-
         }; // Close keyFunctionMapping object
 
 
         // Assign the functions to the window object for global access
-        window.toggleSidebar = keyFunctionMappingAlt[shortcutKeyToggleSidebar];
-        window.newConversation = keyFunctionMappingAlt[shortcutKeyNewConversation];
-        window.globalScrollToBottom = keyFunctionMappingAlt[shortcutKeyClickNativeScrollToBottom];
+        window.toggleSidebar = keyFunctionMappingAlt[shortcuts.shortcutKeyToggleSidebar];
+        window.newConversation = keyFunctionMappingAlt[shortcuts.shortcutKeyNewConversation];
+        window.globalScrollToBottom = keyFunctionMappingAlt[shortcuts.shortcutKeyClickNativeScrollToBottom];
 
-
-        const isMac = /(Mac|iPhone|iPad|iPod)/i.test(navigator.userAgent);
 
         document.addEventListener('keydown', (event) => {
             if (
@@ -1470,7 +1429,6 @@ window.applyVisibilitySettings = applyVisibilitySettings;
 
             // Handle Alt-based shortcuts (only if Alt is enabled for model switching or not a model-switch combo)
             if (isAltPressed && !isCtrlPressed) {
-                const modelToggleKey = shortcutKeyToggleModelSelector.toLowerCase();
 
                 // Always open menu for Alt+W (or whatever your toggle key is)
                 if (keyIdentifier === modelToggleKey) {
@@ -1496,7 +1454,6 @@ window.applyVisibilitySettings = applyVisibilitySettings;
             // Handle Ctrl/Command‑based shortcuts (model‑menu **toggle** only)
             // Number‑key selection is left to the IIFE so we don’t duplicate logic.
             if (isCtrlPressed && !isAltPressed) {
-                const modelToggleKey = shortcutKeyToggleModelSelector.toLowerCase();
 
                 // If user chose Ctrl/Cmd for the model switcher, only intercept the toggle key (e.g. Ctrl + W).
                 if (window.useControlForModelSwitcherRadio === true && keyIdentifier === modelToggleKey) {
@@ -1518,10 +1475,10 @@ window.applyVisibilitySettings = applyVisibilitySettings;
 
         // Function to check if the specific Ctrl/Command + Key shortcut is enabled
         function isCtrlShortcutEnabled(key) {
-            if (key === shortcutKeyClickSendButton) {
+            if (key === shortcuts.shortcutKeyClickSendButton) {
                 return window.enableSendWithControlEnterCheckbox === true;
             }
-            if (key === shortcutKeyClickStopButton) {
+            if (key === shortcuts.shortcutKeyClickStopButton) {
                 return window.enableStopWithControlBackspaceCheckbox === true;
             }
             return false;
