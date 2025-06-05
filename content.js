@@ -1,14 +1,8 @@
 /* 
 ChatGPT Custom Shortcuts Pro
-- Full Changelog: https://github.com/bwhurd/chatgpt-custom-shortcuts-pro#Changelog
+- Full Changelog: https://bwhurd.github.io/chatgpt-custom-shortcuts-pro/CHANGELOG.html
 - Privacy Statement: This extension does not collect, monitor, or track user activity.
 */
-
-// =====================================
-// @note To Do List
-// =====================================
-// 1. Implement Settings Sliders for Scroll Speed using https://refreshless.com/nouislider/examples/#section-click-pips
-
 
 // =====================================
 // @note Global Functions
