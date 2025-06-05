@@ -198,6 +198,21 @@ window.applyVisibilitySettings = applyVisibilitySettings;
         }, 3500);
     }
 
+    function ensureForceHoverStyle() {
+        if (!document.getElementById('force-hover-style')) {
+            const style = document.createElement('style');
+            style.id = 'force-hover-style';
+            style.textContent = `
+.force-hover,
+.force-hover * {
+    pointer-events: auto !important;
+    opacity: 1 !important;
+    mask-position: 0 0 !important;
+}`;
+            document.head.appendChild(style);
+        }
+    }
+
     function copyAll() {
         const proseElements = document.querySelectorAll('.prose');
         if (proseElements.length === 0) {
@@ -1093,22 +1108,8 @@ window.applyVisibilitySettings = applyVisibilitySettings;
                 /* ---- 3. ensure it’s interactable even when masked ---- */
                 const wrapper = target.closest('[class*="group-hover"]');
                 if (wrapper) {
-                    // (a) add persistent hover class
                     wrapper.classList.add('force-hover');
-                    // (b) inject CSS override once
-                    if (!document.getElementById('force-hover-style')) {
-                        const s = document.createElement('style');
-                        s.id = 'force-hover-style';
-                        s.textContent = `
-            .force-hover,
-            .force-hover * {
-                pointer-events: auto !important;
-                opacity: 1 !important;
-                mask-position: 0 0 !important;
-            }`;
-                        document.head.appendChild(s);
-                    }
-                    // (c) dispatch events some RSC bundles wait for
+                    ensureForceHoverStyle();
                     ['pointerover', 'pointerenter', 'mouseover']
                         .forEach(evt => wrapper.dispatchEvent(new MouseEvent(evt, { bubbles: true })));
                 }
@@ -1142,18 +1143,7 @@ window.applyVisibilitySettings = applyVisibilitySettings;
                 const wrapper = target.closest('[class*="group-hover"]');
                 if (wrapper) {
                     wrapper.classList.add('force-hover');
-                    if (!document.getElementById('force-hover-style')) {
-                        const style = document.createElement('style');
-                        style.id = 'force-hover-style';
-                        style.textContent = `
-.force-hover,
-.force-hover * {
-    pointer-events: auto !important;
-    opacity: 1 !important;
-    mask-position: 0 0 !important;
-}`;
-                        document.head.appendChild(style);
-                    }
+                    ensureForceHoverStyle();
                     ['pointerover', 'pointerenter', 'mouseover']
                         .forEach(evt => wrapper.dispatchEvent(new MouseEvent(evt, { bubbles: true })));
                 }
