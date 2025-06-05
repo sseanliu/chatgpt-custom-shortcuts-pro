@@ -1868,6 +1868,10 @@ div[data-testid="accounts-profile-button"] div.truncate {
         ({ moveTopBarToBottomCheckbox: enabled }) => {
             if (!enabled) return;
 
+            const isCodex = location.hostname.endsWith('chatgpt.com') &&
+                location.pathname.startsWith('/codex');
+            if (isCodex) return;
+
             setTimeout(function injectBottomBarStyles() {
 
                 // -------------------- Section 1. Utilities --------------------
