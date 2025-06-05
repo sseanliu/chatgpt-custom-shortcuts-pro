@@ -596,7 +596,6 @@ window.applyVisibilitySettings = applyVisibilitySettings;
 
         const isMac = /(Mac|iPhone|iPad|iPod)/i.test(navigator.userAgent);
 
-        let scrollCompleted = false;
 
         function splitByCodeFences(text) {
             const lines = text.split(/\r?\n/);
