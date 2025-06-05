@@ -1476,16 +1476,6 @@ window.applyVisibilitySettings = applyVisibilitySettings;
 
 (function () {
     function applyInitialTransitions() {
-        // Hide .pe-3 upgrades
-        // Delayed pass to catch late .pe-3 upgrade elements before observer
-        setTimeout(() => {
-            document.querySelectorAll('.pe-3').forEach(container => {
-                const path = container.querySelector('svg path[d^="M12.5001"]');
-                if (path) {
-                    gsap.set(container, { opacity: 0, display: 'none' });
-                }
-            });
-        }, 300);
 
         // Animate sticky topbar
         const sticky = document.querySelector('.sticky.top-0');
@@ -1592,11 +1582,6 @@ window.applyVisibilitySettings = applyVisibilitySettings;
             for (const m of muts) {
                 for (const n of m.addedNodes) {
                     if (n.nodeType !== 1) continue;
-
-                    // Late-loaded upgrade div
-                    if (n.matches('.pe-3') && n.querySelector('svg path[d^="M12.5001"]')) {
-                        gsap.set(n, { opacity: 0, display: 'none' });
-                    }
 
                     // Late-loaded conversation edit buttons
                     if (n.matches('.group\\/conversation-turn .absolute')) {
@@ -1771,23 +1756,8 @@ div[data-id="hide-this-warning"] {
     mask-position: 0% 0% !important;
 }
 
-/* Hide sidebar SVG button */
-.pe-3:has(svg path[d^="M12.5001"]) {
-    display:none !important;
-}
-
-/* Hide sidebar upgrade button SVG */
-div.bg-token-bg-elevated-secondary:has(a span svg path[d^="M12.5001"]) {
-    display: none !important;
-}
-
-/* Hide the upgrade button in the top right corner */
-div.bg-token-bg-elevated-secondary div[tabindex="0"][data-fill] {
-    display: none !important;
-}
-
-/* Hide bottom sticky upgrade bar */
-div.bg-token-bg-elevated-secondary.sticky.bottom-0 {
+/* Hide upgrade button in sidebar Robust selector: fully hide 'View plans' section without impacting other elements */
+div.bg-token-bg-elevated-secondary.sticky.bottom-0 > div:has(svg path[d^="M12.5001"]) {
     display: none !important;
 }
 
@@ -1805,6 +1775,28 @@ div.bg-token-bg-elevated-secondary.sticky.top-0 {
     min-height: 40px !important;
     height: 40px !important;
 }
+
+/* Reduce padding of bottom sticky sidebar (user settings button container) */
+/* ReferenceLocation 101 = location for the logic to hide the user settings button when the moveTop bar to bottom enable is enabled */
+.bg-token-bg-elevated-secondary.sticky.bottom-0 {
+    padding-top: 2px !important;
+    padding-bottom: 2px !important;
+}
+
+/* accounts-profile-button to make it smaller */
+div[data-testid="accounts-profile-button"] {
+    padding-top: 2px !important;
+    padding-bottom: 2px !important;
+}
+
+div[data-testid="accounts-profile-button"] div.truncate {
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    max-width: 100% !important;
+}
+
+
 `;
     document.head.appendChild(style);
 
@@ -2326,7 +2318,10 @@ div.bg-token-bg-elevated-secondary.sticky.top-0 {
                     }
 
 
-
+                    /* ReferenceLocation 101 hide the user setting button in sidebar, but ONLY when moveTopBarToBottomCheckbox feature is enabled */
+                    .bg-token-bg-elevated-secondary.sticky.bottom-0 {
+                        display: none !important;
+                    }
 
 
                 `;
