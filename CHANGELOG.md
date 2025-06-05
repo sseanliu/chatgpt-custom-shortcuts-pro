@@ -4,6 +4,10 @@ The full changelog and feature history is maintained here.
 
 Current Known Bugs:
 
+#### [6.6.2025]
+##### Fixed
+- Handle missing arrow buttons when appending elements.
+
 #### [6.5.2025]
 ##### Removed
 - Permanently removed "Copy All" buttons; features remain accessible via keyboard shortcuts.

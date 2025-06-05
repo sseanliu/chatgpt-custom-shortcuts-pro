@@ -178,7 +178,9 @@ window.applyVisibilitySettings = applyVisibilitySettings;
 
     function appendWithFragment(parent, ...elements) {
         const fragment = document.createDocumentFragment();
-        elements.forEach(element => fragment.appendChild(element));
+        elements
+            .filter(el => el !== null && el !== undefined)
+            .forEach(el => fragment.appendChild(el));
         parent.appendChild(fragment);
     }
 
