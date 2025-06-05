@@ -184,43 +184,6 @@ window.applyVisibilitySettings = applyVisibilitySettings;
         parent.appendChild(fragment);
     }
 
-    // --- Begin MutationObserver Message Cache ---
-    // Purpose: Keeps a live, up-to-date cache of message elements.
-    window.cachedConversationTurns = [];
-
-    function getConversationTurns() {
-        return Array.from(
-            document.querySelectorAll('[data-testid^="conversation-turn-"], [class*="conversation-turn"]')
-        );
-    }
-    window.cachedConversationTurns = getConversationTurns();
-
-    const msgObserver = new MutationObserver(mutations => {
-        for (const m of mutations) {
-            for (const node of m.addedNodes) {
-                if (node.nodeType !== Node.ELEMENT_NODE) continue;
-                if (node.matches && node.matches('[data-testid^="conversation-turn-"], [class*="conversation-turn"]')) {
-                    const turnId = node.getAttribute('data-testid');
-                    if (turnId && !window.cachedConversationTurns.some(e => e.getAttribute('data-testid') === turnId)) {
-                        window.cachedConversationTurns.push(node);
-                    }
-                } else if (node.querySelectorAll) {
-                    const turns = node.querySelectorAll('[data-testid^="conversation-turn-"], [class*="conversation-turn"]');
-                    turns.forEach(el => {
-                        const id = el.getAttribute('data-testid');
-                        if (id && !window.cachedConversationTurns.some(e => e.getAttribute('data-testid') === id)) {
-                            window.cachedConversationTurns.push(el);
-                        }
-                    });
-                }
-            }
-        }
-    });
-    // Attach observer to scroll container or body
-    const observerContainer = getScrollableContainer() || document.body;
-    if (observerContainer) {
-        msgObserver.observe(observerContainer, { childList: true, subtree: true });
-    }
 
     function showToast(message) {
         const toast = document.createElement('div');

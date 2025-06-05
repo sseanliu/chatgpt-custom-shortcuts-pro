@@ -7,6 +7,9 @@ The full changelog and feature history is maintained here.
 - Automatically disable TopBarToBottom on Codex pages.
 - Handle missing arrow buttons when appending elements.
 
+##### Removed
+- Unused message caching logic.
+
 #### [6.4.2025]
 ##### Fixed
 - Ensure GSAP plugins register only after libraries load.
