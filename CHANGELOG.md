@@ -2,15 +2,10 @@
 
 The full changelog and feature history is maintained here.
 
-Current Known Bugs:
-
-#### [6.8.2025]
-##### Fixed
-- Automatically disable TopBarToBottom on Codex pages.
-
 #### [6.5.2025]
-##### Removed
 - Permanently removed "Copy All" buttons; features remain accessible via keyboard shortcuts.
+- Automatically disable TopBarToBottom on Codex pages.
+- Handle missing arrow buttons when appending elements.
 
 #### [6.4.2025]
 ##### Fixed
