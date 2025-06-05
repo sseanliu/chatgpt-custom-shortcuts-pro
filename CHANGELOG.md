@@ -6,6 +6,7 @@ The full changelog and feature history is maintained here.
 - Permanently removed "Copy All" buttons; features remain accessible via keyboard shortcuts.
 - Automatically disable TopBarToBottom on Codex pages.
 - Handle missing arrow buttons when appending elements.
+- Removed NEW badges from Model Picker shortcuts.
 
 ##### Removed
 - Unused message caching logic.
