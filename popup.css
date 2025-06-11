@@ -644,8 +644,9 @@ body {
 
 
 .p-card {
-  margin: 0 0 0.75rem 0;
+  background: #fff;
   border-radius: 12px;
+  margin-bottom: 0.75rem;
   padding: 0.75rem 0;
 }
 
