@@ -1,5 +1,9 @@
 # Changelog
 
+#### [6.18.2025]
+##### Changed
+- Tweak card spacing for iOS look.
+
 #### [6.17.2025]
 ##### Fixed
 - Restore message selection radio inputs.
