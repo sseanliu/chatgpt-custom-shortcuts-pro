@@ -23,6 +23,7 @@
 - Reduce shortcut row min-height to 2.75rem.
 - Refined settings card headers with Puppertino subhead styling.
 - Set popup background to `var(--p-silver-100)` for gray page tone.
+- Overrode Puppertino text classes with smaller font sizes for iOS.
 
 
 

@@ -742,3 +742,32 @@ h1 {
         font-size: .70rem
     }
 }
+
+/* Font size overrides */
+body.p-layout {
+  font-size: 14px;
+}
+.p-layout h1 {
+  font-size: 22px;
+}
+.p-layout h2 {
+  font-size: 20px;
+}
+.p-layout h3 {
+  font-size: 18px;
+}
+.p-headline {
+  font-size: 17px;
+}
+.p-subhead {
+  font-size: 15px;
+}
+.p-callout {
+  font-size: 15px;
+}
+.p-footnote {
+  font-size: 13px;
+}
+.p-caption {
+  font-size: 12px;
+}
