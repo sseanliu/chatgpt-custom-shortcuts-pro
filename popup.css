@@ -659,29 +659,17 @@ body {
 
 
 .p-card {
-    margin-bottom: 2rem;
+  margin: 0 0 0.75rem 0;
+  border-radius: 12px;
+  padding: 0.75rem 0;
 }
-
-
-
 
 .p-card .shortcut-item {
-    margin-bottom: 1px;
+  padding: 0.5rem 1rem;
 }
-
-
 
 .p-card .shortcut-item:not(:last-child) {
-    border-bottom: 1px solid var(--p-bd-card);
-}
-
-.p-card .shortcut-item:first-child {
-    padding-top: 0;
-}
-
-.p-card .shortcut-item:last-child {
-    padding-bottom: 0;
-    margin-bottom: 0;
+  border-bottom: 1px solid var(--p-bd-card);
 }
 /*────────  Cupertino‑style segmented control  ────────*/
 
