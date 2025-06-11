@@ -2,6 +2,9 @@
 
 The full changelog and feature history is maintained here.
 
+#### [6.11.2025]
+- Adjusted shortcut card margins for improved spacing.
+
 #### [6.5.2025]
 - Permanently removed "Copy All" buttons; features remain accessible via keyboard shortcuts.
 - Automatically disable TopBarToBottom on Codex pages.
