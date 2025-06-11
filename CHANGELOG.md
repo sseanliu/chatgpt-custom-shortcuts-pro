@@ -2,6 +2,10 @@
 
 The full changelog and feature history is maintained here.
 
+#### [6.12.2025]
+##### Changed
+- Switched tabs and copy-behavior controls to Puppertino scripts.
+
 #### [6.5.2025]
 - Permanently removed "Copy All" buttons; features remain accessible via keyboard shortcuts.
 - Automatically disable TopBarToBottom on Codex pages.
