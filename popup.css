@@ -12,14 +12,15 @@
 }
 
 body {
+
   width: 100%;
   min-height: 100vh;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  background: var(--bg-primary);
   font-size: 1rem;
-  font-family: -apple-system, "Inter", sans-serif;
+  background: var(--p-silver-100);
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
 }
 
 
@@ -132,8 +133,8 @@ h1 {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.5rem 0;
-  min-height: 3.5rem;
+  padding: 0.5rem 1rem;
+  min-height: 2.75rem;
 }
 
 /* Shortcut Name */
@@ -208,10 +209,6 @@ h1 {
     margin-left: 2px;
 }
 
-.p-form-switch {
-  margin-left: var(--p-h-spacing);
-  margin-right: var(--p-h-spacing);
-}
 
 
 @keyframes pulse-highlight {
@@ -591,9 +588,10 @@ h1 {
 
 
 .p-card-header {
-  font-weight: 700;
-  color: var(--p-dark-700);
-  margin-bottom: 0.7rem;
+  font-weight: 600;
+  color: var(--p-silver-700);
+  text-transform: uppercase;
+  margin-bottom: 0.4rem;
 }
 
 .shortcut-row {
@@ -634,8 +632,9 @@ h1 {
 
 
 .p-card {
-  margin: 0 0 0.75rem 0;
+  background: #fff;
   border-radius: 12px;
+  margin-bottom: 0.75rem;
   padding: 0.75rem 0;
 }
 
