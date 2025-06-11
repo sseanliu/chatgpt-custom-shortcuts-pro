@@ -1,5 +1,9 @@
 # Changelog
 
+#### [6.18.2025]
+##### Removed
+- Cleaned popup.css rules duplicated from Puppertino defaults.
+
 #### [6.17.2025]
 ##### Fixed
 - Restore message selection radio inputs.
