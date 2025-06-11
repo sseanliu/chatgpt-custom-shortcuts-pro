@@ -11,27 +11,28 @@
     </title>
 </head>
 
-<body>
+    <body>
     <!-- Puppertino and icons CSS -->
 
-    <div class="shortcut-container">
+    <div class="p-layout">
+        <div class="shortcut-container">
         <h1 class="i18n" data-i18n="popup_title">
             ChatGPT Custom Shortcuts Pro
         </h1>
         <div class="tooltip-area">
         </div>
-        <div class="p-tabs-container" id="settings-tabs" style="margin-bottom: 0;">
-            <div class="p-tabs" style="margin-bottom: 0;">
-                <button class="p-tab p-is-active">
+        <div class="p-tabs-container" id="settings-tabs">
+            <div class="p-tabs">
+                <button class="p-tab p-is-active" data-panel="panel-shortcuts">
                     <span class="material-symbols-outlined" style="vertical-align:middle">keyboard_alt</span>
                     Shortcuts
                 </button>
 
-                <button class="p-tab">
+                <button class="p-tab" data-panel="panel-experimental">
                     <span class="material-symbols-outlined" style="vertical-align:middle">science</span>
                     Experimental
                 </button>
-                <button class="p-tab">
+                <button class="p-tab" data-panel="panel-changelog">
                     <span class="material-symbols-outlined" style="vertical-align:middle">article</span>
                     Changelog
                 </button>
@@ -570,9 +571,9 @@
                 </div>
             </div>
         </div>
-
-
     </div>
+    </div>
+
     <!-- SCRIPTS -->
 
     <script src="popup.js" defer></script>

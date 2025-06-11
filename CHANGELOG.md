@@ -2,6 +2,9 @@
 
 The full changelog and feature history is maintained here.
 
+#### [6.13.2025]
+- Wrap popup contents in Puppertino layout container.
+
 #### [6.12.2025]
 - Align popup font sizes with Puppertino layout tokens.
 - Restore default card spacing.
