@@ -289,9 +289,13 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('removeMarkdownOnCopyCheckbox').checked = defaults.removeMarkdownOnCopyCheckbox;
             document.getElementById('moveTopBarToBottomCheckbox').checked = defaults.moveTopBarToBottomCheckbox;
             document.getElementById('pageUpDownTakeover').checked = defaults.pageUpDownTakeover;
-            document.getElementById('selectMessagesSentByUserOrChatGptCheckbox').checked = defaults.selectMessagesSentByUserOrChatGptCheckbox;
-            document.getElementById('onlySelectUserCheckbox').checked = defaults.onlySelectUserCheckbox;
-            document.getElementById('onlySelectAssistantCheckbox').checked = defaults.onlySelectAssistantCheckbox;
+            const selectionAnchors = document.querySelectorAll('.message-selection-group a');
+            let activeSelection = 'selectMessagesSentByUserOrChatGptCheckbox';
+            if (defaults.onlySelectUserCheckbox) activeSelection = 'onlySelectUserCheckbox';
+            if (defaults.onlySelectAssistantCheckbox) activeSelection = 'onlySelectAssistantCheckbox';
+            selectionAnchors.forEach(a => {
+                a.classList.toggle('active', a.dataset.setting === activeSelection);
+            });
             document.getElementById('disableCopyAfterSelectCheckbox').checked = defaults.disableCopyAfterSelectCheckbox;
             document.getElementById('enableSendWithControlEnterCheckbox').checked = defaults.enableSendWithControlEnterCheckbox;
             document.getElementById('enableStopWithControlBackspaceCheckbox').checked = defaults.enableStopWithControlBackspaceCheckbox;
@@ -317,17 +321,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 let obj = {};
 
                 if ([
-                    'selectMessagesSentByUserOrChatGptCheckbox',
-                    'onlySelectUserCheckbox',
-                    'onlySelectAssistantCheckbox'
-                ].includes(storageKey)) {
-                    obj = {
-                        selectMessagesSentByUserOrChatGptCheckbox: false,
-                        onlySelectUserCheckbox: false,
-                        onlySelectAssistantCheckbox: false
-                    };
-                    obj[storageKey] = isChecked;
-                } else if ([
                     'useAltForModelSwitcherRadio',
                     'useControlForModelSwitcherRadio'
                 ].includes(storageKey)) {
@@ -361,15 +354,34 @@ document.addEventListener('DOMContentLoaded', function () {
     handleStateChange('removeMarkdownOnCopyCheckbox', 'removeMarkdownOnCopyCheckbox');
     handleStateChange('moveTopBarToBottomCheckbox', 'moveTopBarToBottomCheckbox');
     handleStateChange('pageUpDownTakeover', 'pageUpDownTakeover');
-    handleStateChange('selectMessagesSentByUserOrChatGptCheckbox', 'selectMessagesSentByUserOrChatGptCheckbox');
-    handleStateChange('onlySelectUserCheckbox', 'onlySelectUserCheckbox');
-    handleStateChange('onlySelectAssistantCheckbox', 'onlySelectAssistantCheckbox');
     handleStateChange('disableCopyAfterSelectCheckbox', 'disableCopyAfterSelectCheckbox');
     handleStateChange('enableSendWithControlEnterCheckbox', 'enableSendWithControlEnterCheckbox');
     handleStateChange('enableStopWithControlBackspaceCheckbox', 'enableStopWithControlBackspaceCheckbox');
     handleStateChange('useAltForModelSwitcherRadio', 'useAltForModelSwitcherRadio');
     handleStateChange('useControlForModelSwitcherRadio', 'useControlForModelSwitcherRadio');
     handleStateChange('rememberSidebarScrollPositionCheckbox', 'rememberSidebarScrollPositionCheckbox');
+
+    document.querySelectorAll('.message-selection-group a').forEach(anchor => {
+        if (!anchor.dataset.listenerAttached) {
+            anchor.addEventListener('click', () => {
+                const key = anchor.dataset.setting;
+                const obj = {
+                    selectMessagesSentByUserOrChatGptCheckbox: false,
+                    onlySelectUserCheckbox: false,
+                    onlySelectAssistantCheckbox: false
+                };
+                obj[key] = true;
+                chrome.storage.sync.set(obj, () => {
+                    if (chrome.runtime.lastError) {
+                        console.error('Error saving option:', chrome.runtime.lastError);
+                    } else {
+                        showToast('Options saved. Reload page to apply changes.');
+                    }
+                });
+            });
+            anchor.dataset.listenerAttached = 'true';
+        }
+    });
 
     const shortcutKeys = [
         'shortcutKeyScrollUpOneMessage',
@@ -542,46 +554,3 @@ document.addEventListener('DOMContentLoaded', function () {
     }, 50); // delay lets i18n/localization update labels first
 
 });
-
-(function () {
-    window.addEventListener('DOMContentLoaded', function () {
-        document.querySelectorAll('.p-tabs-container').forEach(function (container) {
-            const tabs = container.querySelectorAll('.p-tab');
-            const panels = container.querySelectorAll('.p-panel');
-            tabs.forEach(function (tab, i) {
-                tab.addEventListener('click', function () {
-                    tabs.forEach(t => t.classList.remove('p-is-active'));
-                    panels.forEach(p => p.classList.remove('p-is-active'));
-                    tab.classList.add('p-is-active');
-                    panels[i].classList.add('p-is-active');
-                });
-            });
-        });
-    });
-})();
-
-
-(function () {
-    document.addEventListener('DOMContentLoaded', () => {
-        document
-            .querySelectorAll('.message-selection-group .p-segment input[type="radio"]')
-            .forEach(input => {
-                input.addEventListener('change', () => {
-                    const group = input.closest('.message-selection-group');
-                    group.querySelectorAll('.p-segment').forEach(seg =>
-                        seg.classList.toggle('p-is-active', seg.querySelector('input').checked)
-                    );
-                });
-            });
-
-        /* set initial highlight */
-        document
-            .querySelectorAll('.message-selection-group .p-segment')
-            .forEach(seg =>
-                seg.classList.toggle(
-                    'p-is-active',
-                    seg.querySelector('input').checked
-                )
-            );
-      });
-})();
