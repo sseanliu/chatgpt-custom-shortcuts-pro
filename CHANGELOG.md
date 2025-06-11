@@ -19,6 +19,7 @@
 - Tweak card spacing for iOS look.
 - Cleaned popup.css rules duplicated from Puppertino defaults.
 - Align settings rows using Puppertino baseline layout and spacing tokens.
+- Removed custom margin-left from `.p-form-switch` for consistent toggle alignment.
 
 
 #### [6.5.2025]
