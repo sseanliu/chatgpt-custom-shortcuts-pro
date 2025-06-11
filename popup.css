@@ -36,7 +36,7 @@ body {
   justify-content: center;
   align-items: flex-start;
   background: var(--bg-primary);
-  font-size: 1.15rem;
+  font-size: 1rem;
   font-family: -apple-system, "Inter", sans-serif;
 }
 
