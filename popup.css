@@ -17,9 +17,6 @@ body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
   background: var(--bg-primary);
   font-size: 1rem;
   font-family: -apple-system, "Inter", sans-serif;
@@ -466,13 +463,6 @@ h1 {
 
 
 /* --- Remove horizontal scrollbars from popup window and all containers --- */
-html,
-body {
-    width: 100% !important;
-    max-width: 100%;
-    overflow-x: hidden !important;
-}
-
 .shortcut-container,
 .shortcut-grid {
     overflow-x: hidden;
