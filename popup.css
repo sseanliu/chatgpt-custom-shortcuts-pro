@@ -162,14 +162,8 @@ h1 {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: var(--bg-secondary);
-    padding: 0.75rem;
-    border: 1px solid var(--border-light);
-    border-radius: 6px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    padding: 0.75rem 1rem;
     min-height: 3.5rem;
-    /* Adjust as desired */
-
 }
 
 /* Shortcut Name */
@@ -546,6 +540,7 @@ body {
     font-weight: 700;
     color: var(--text-primary);
     margin-bottom: 0.7rem;
+    padding: 0 1rem;
 }
 
 .shortcut-row {
@@ -592,25 +587,22 @@ body {
 
 
 
-.p-card-header {
-    margin-bottom: 0.85rem;
-}
-
 .p-card .shortcut-item {
-    border: none;
-    border-radius: 0;
-    background: transparent;
-    box-shadow: none;
     margin-bottom: 1px;
 }
 
 
-.p-card .shortcut-item:not(:last-child) {
-    border-bottom: 1px solid #f5f5f7;
 
+.p-card .shortcut-item:not(:last-child) {
+    border-bottom: 1px solid var(--p-bd-card);
+}
+
+.p-card .shortcut-item:first-child {
+    padding-top: 0;
 }
 
 .p-card .shortcut-item:last-child {
+    padding-bottom: 0;
     margin-bottom: 0;
 }
 /*────────  Cupertino‑style segmented control  ────────*/
