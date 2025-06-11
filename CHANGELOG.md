@@ -1,5 +1,9 @@
 # Changelog
 
+#### [6.14.2025]
+- Simplified card CSS to inherit Puppertino defaults.
+
+
 The full changelog and feature history is maintained here.
 
 #### [6.13.2025]
