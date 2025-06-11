@@ -142,7 +142,6 @@ h1 {
 .shortcut-grid {
     display: flex;
     flex-direction: column;
-    gap: 6px;
 }
 
 .full-width,
@@ -156,7 +155,6 @@ h1 {
 .shortcut-column {
     display: flex;
     flex-direction: column;
-    gap: 10px;
 }
 
 /* Shortcut Block */
@@ -185,7 +183,6 @@ h1 {
 /* Key Input */
 .shortcut-keys {
     display: flex;
-    gap: 5px;
     align-items: center;
 }
 
@@ -301,7 +298,6 @@ h1 {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 2px;
 }
 
 
@@ -403,7 +399,6 @@ h1 {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 4px;
 
     /* Scale down entire stack if needed */
     transform: scale(0.85);
@@ -567,7 +562,6 @@ body {
 
 .shortcut-keys {
     display: flex;
-    gap: 6px;
     align-items: center;
 }
 
@@ -659,7 +653,6 @@ body {
 .select-copy-row {
     display: grid;
     grid-template-columns: max-content 1fr;
-    column-gap: 1.4rem;
     align-items: center;
 }
 

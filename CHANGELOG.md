@@ -1,5 +1,9 @@
 # Changelog
 
+#### [6.16.2025]
+- Converted shortcut rows to Puppertino form markup.
+- Removed custom gap spacing to use default layout.
+
 #### [6.15.2025]
 - Removed custom switch width to restore Puppertino default size.
 - Fixed top bar option label targeting correct checkbox.
