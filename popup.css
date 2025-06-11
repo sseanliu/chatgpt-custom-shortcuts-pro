@@ -591,18 +591,15 @@ body {
 
 /* Card spacing & layout */
 
+
 .p-card {
-    margin-top: 30px;
-    padding: 20px 0;
-    border-radius: 25px;
+    margin-bottom: 2rem;
 }
 
 
 
 
 .p-card-header {
-    font-size: 1.34rem;
-    font-weight: 700;
     margin-bottom: 0.85rem;
 }
 
@@ -611,13 +608,7 @@ body {
     border-radius: 0;
     background: transparent;
     box-shadow: none;
-    padding: 0.19rem 0 0.16rem 0;
     margin-bottom: 1px;
-    min-height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
 }
 
 
