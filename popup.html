@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -117,7 +117,7 @@
 
 
                             <div class="shortcut-card" data-cat="agent">
-                                <div class="shortcut-card-header">
+                                <div class="shortcut-card-header" data-i18n="label_model_tools">
                                     Model + Tools
                                 </div>
 
@@ -171,61 +171,88 @@
                                 </div>
                             </div>
 
-                            <!-- Select + Copy Behavior -->
-                            <div class="shortcut-item select-copy-row">
-                                <!-- left label -->
-                                <div class="shortcut-label tooltip" data-tooltip="__MSG_tt_select_copy_behavior__">
-                                    <span class="i18n" data-i18n="label_select_copy_behavior">
-                                        Select + Copy Behavior
-                                    </span>
+                            <div class="shortcut-card" data-cat="copy">
+                                <div class="shortcut-card-header i18n" data-i18n="label_copy">
+                                    Copy
                                 </div>
                             
-                                <!-- pill group -->
-                                <div class="p-segmented-controls message-selection-group">
-                            
-                                    <input type="radio" id="select-all" name="messageSelection" value="all" checked>
-                                    <label for="select-all" class="p-segment tooltip" data-tooltip="__MSG_tt_select_all__">
-                                        <span class="material-symbols-outlined">forum</span>
-                                        <span class="segment-text">User&nbsp;&amp;&nbsp;Assistant</span>
-                                    </label>
-                            
-                                    <input type="radio" id="select-assistant" name="messageSelection" value="assistant">
-                                    <label for="select-assistant" class="p-segment tooltip" data-tooltip="__MSG_tt_select_assistant__">
-                                        <span class="material-symbols-outlined">3p</span>
-                                        <span class="segment-text">Assistant</span>
-                                    </label>
-                            
-                                    <input type="radio" id="select-user" name="messageSelection" value="user">
-                                    <label for="select-user" class="p-segment tooltip" data-tooltip="__MSG_tt_select_user__">
-                                        <span class="material-symbols-outlined">mode_comment</span>
-                                        <span class="segment-text">User</span>
-                                    </label>
-                            
+                                <!-- Copy Lowest Shortcut -->
+                                <div class="shortcut-item">
+                                    <div class="shortcut-label tooltip" data-tooltip="__MSG_tt_copy_lowest__">
+                                        <span class="i18n" data-i18n="label_copy_lowest">Copy</span>
+                                    </div>
+                                    <div class="shortcut-keys">
+                                        <input class="key-input" id="shortcutKeyCopyLowest" name="shortcutKeyCopyLowest"  type="text" value="c" />
+                                    </div>
                                 </div>
-                            </div>
-                              
-                              
                             
-                            <!-- Disable Auto‑Copy after Selection (own row) -->
-                            <div class="shortcut-item shortcut-toggle-row auto-copy-toggle">
-                                <div class="toggle-label-col">
-                                    <span class="i18n" data-i18n="label_disable_autocopy">
-                                        Disable Auto‑Copy
-                                    </span>
+                                <!-- Select Then Copy Shortcut -->
+                                <div class="shortcut-item">
+                                    <div class="shortcut-label tooltip" data-tooltip="__MSG_tt_select_copy__">
+                                        <span class="i18n" data-i18n="label_select_copy">Select &amp; Copy</span>
+                                    </div>
+                                    <div class="shortcut-keys">
+                                        <input class="key-input" id="selectThenCopy" name="selectThenCopy"  type="text" value="x" />
+                                    </div>
                                 </div>
-                                <div class="toggle-switch-col">
-                                    <label class="p-form-switch tooltip" data-tooltip="__MSG_tt_disable_autocopy__">
+                            
+                                <!-- Remove Markdown on Copy Checkbox -->
+                                <div class="shortcut-item">
+                                    <div class="shortcut-label tooltip" data-tooltip="__MSG_tt_strip_md__">
+                                        <span class="i18n" data-i18n="label_strip_md">Remove Markdown on Copy</span>
+                                    </div>
+                                    <label class="p-form-switch">
+                                        <input type="checkbox" id="removeMarkdownOnCopyCheckbox"
+                                            name="removeMarkdownOnCopyCheckbox" class="material-checkbox" />
+                                        <span></span>
+                                    </label>
+                                </div>
+                            
+                                <!-- Select + Copy Behavior -->
+                                <div class="shortcut-item select-copy-row">
+                                    <div class="shortcut-label tooltip" data-tooltip="__MSG_tt_select_copy_behavior__">
+                                        <span class="i18n" data-i18n="label_select_copy_behavior">Select + Copy Behavior</span>
+                                    </div>
+                                    <div class="shortcut-keys">
+                                        <div class="p-segmented-controls message-selection-group" role="radiogroup"
+                                            aria-labelledby="label_select_copy_behavior">
+                                            <input type="radio" id="select-all" name="messageSelection" value="all" />
+                                            <label for="select-all" class="p-segment tooltip" data-tooltip="__MSG_tt_select_all__">
+                                                <span class="material-symbols-outlined">forum</span>
+                                                <span class="segment-text">User&nbsp;&amp;&nbsp;Assistant</span>
+                                            </label>
+                                            <input type="radio" id="select-assistant" name="messageSelection" value="assistant" />
+                                            <label for="select-assistant" class="p-segment tooltip" data-tooltip="__MSG_tt_select_assistant__">
+                                                <span class="material-symbols-outlined">3p</span>
+                                                <span class="segment-text">Assistant</span>
+                                            </label>
+                                            <input type="radio" id="select-user" name="messageSelection" value="user" />
+                                            <label for="select-user" class="p-segment tooltip" data-tooltip="__MSG_tt_select_user__">
+                                                <span class="material-symbols-outlined">mode_comment</span>
+                                                <span class="segment-text">User</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            
+                                <!-- Disable Auto‑Copy after Selection -->
+                                <div class="shortcut-item shortcut-toggle-row auto-copy-toggle">
+                                    <div class="shortcut-label tooltip" data-tooltip="__MSG_tt_disable_autocopy__">
+                                        <span class="i18n" data-i18n="label_disable_autocopy">Disable Auto‑Copy</span>
+                                    </div>
+                                    <label class="p-form-switch">
                                         <input type="checkbox" id="disableCopyAfterSelectCheckbox" name="disableCopyAfterSelectCheckbox"
-                                            class="material-checkbox">
+                                            class="material-checkbox" />
                                         <span></span>
                                     </label>
                                 </div>
                             </div>
+                            
 
 
 
                             <div class="shortcut-card" data-cat="navigation">
-                                <div class="shortcut-card-header">
+                                <div class="shortcut-card-header" data-i18n="label_chat_navigation">
                                     Chat Navigation
                                 </div>
 
@@ -321,7 +348,7 @@
                             </div>
 
                             <div class="shortcut-card" data-cat="message">
-                                <div class="shortcut-card-header">
+                                <div class="shortcut-card-header" data-i18n="label_message_actions">
                                     Message Actions
                                 </div>
 
@@ -393,16 +420,16 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="shortcut-card" data-cat="copy">
-                                <div class="shortcut-card-header">
-                                    Copy Actions
+                            <div class="shortcut-card" data-cat="joinAndCopy">
+                                <div class="shortcut-card-header" data-i18n="label_join_all">
+                                    Join &amp; Copy
                                 </div>
 
                                 <!-- Join & Copy All Responses -->
                                 <div class="shortcut-item">
                                     <div class="shortcut-label tooltip" data-tooltip="__MSG_tt_join_all__">
                                         <span class="i18n" data-i18n="label_join_all">
-                                            Join &amp; Copy All Responses
+                                            Join All Responses
                                         </span>
                                     </div>
                                     <div class="shortcut-keys">
@@ -454,7 +481,7 @@
                                 </div>
                             </div>
                             <div class="shortcut-card" data-cat="interface">
-                                <div class="shortcut-card-header">
+                                <div class="shortcut-card-header" data-i18n="label_interface_options">
                                     Interface Options
                                 </div>
 
@@ -486,9 +513,8 @@
                                 <div style="flex: 0 0 auto;">
                                     <div class="shortcut-label tooltip" data-tooltip="__MSG_tt_send_top_bar__"
                                         style="margin-bottom: 4px;">
-                                        <span class="i18n" data-i18n="label_send_top_bar">
-                                            Send Top Bar to Bottom
-                                        </span>
+                                        <label for="enableSendFromTopBar" data-i18n="label_send_top_bar">
+                                            Send Top Bar To Bottom </label>
                                     </div>
                                 </div>
                                 <!-- Center: Opacity slider block wrapped in tooltip -->
