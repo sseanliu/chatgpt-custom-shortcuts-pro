@@ -60,6 +60,9 @@ const defaults = {
 };
 
 ids.forEach(id => {
+    if (!Object.prototype.hasOwnProperty.call(defaults, id)) {
+        throw new Error(`Missing default for checkbox ID: ${id}`);
+    }
     // Default when storage is empty
     let state = {};
     let result = loadPopup(state);
