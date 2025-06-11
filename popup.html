@@ -578,24 +578,7 @@
     <script src="popup.js" defer></script>
     <script src="lib/puppertino/tabs.js"></script>
     <script src="lib/puppertino/segmented_controls.js"></script>
-    <script src="lib/feather/feather.min.js"></script>
-    <script>
-        // CATEGORY FILTER FUNCTIONALITY
-        document.querySelectorAll('#shortcut-filter .p-segment').forEach(btn => {
-            btn.addEventListener('click', e => {
-                e.preventDefault();
-                // Highlight active
-                btn.parentElement.querySelectorAll('.p-segment').forEach(b => b.classList.toggle('p-is-active', b === btn));
-                const cat = btn.dataset.cat;
-                // If your shortcuts are grouped by fieldset with data-cat, keep this:
-                document.querySelectorAll('.shortcut-grid fieldset').forEach(fs => {
-                    fs.classList.toggle('hidden', cat !== 'all' && fs.dataset.cat !== cat);
-                });
-            });
-        });
-
-        window.addEventListener('DOMContentLoaded', () => feather.replace());
-    </script>
+    
 </body>
 
 </html>

@@ -251,7 +251,6 @@ document.addEventListener('DOMContentLoaded', function () {
     chrome.storage.sync.get(
         [
             'hideArrowButtonsCheckbox',
-            'hideCornerButtonsCheckbox',
             'removeMarkdownOnCopyCheckbox',
             'moveTopBarToBottomCheckbox',
             'pageUpDownTakeover',
@@ -268,7 +267,6 @@ document.addEventListener('DOMContentLoaded', function () {
         function (data) {
             const defaults = {
                 hideArrowButtonsCheckbox: data.hideArrowButtonsCheckbox !== undefined ? data.hideArrowButtonsCheckbox : false,
-                hideCornerButtonsCheckbox: data.hideCornerButtonsCheckbox === undefined ? true : data.hideCornerButtonsCheckbox,
                 removeMarkdownOnCopyCheckbox: data.removeMarkdownOnCopyCheckbox !== undefined ? data.removeMarkdownOnCopyCheckbox : true, // Default to true
                 moveTopBarToBottomCheckbox: data.moveTopBarToBottomCheckbox !== undefined ? data.moveTopBarToBottomCheckbox : false, // Default to false
                 pageUpDownTakeover: data.pageUpDownTakeover !== undefined ? data.pageUpDownTakeover : true, // Default to true
@@ -285,7 +283,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Update the checkbox and radio button states in the popup based on stored or default values
             document.getElementById('hideArrowButtonsCheckbox').checked = defaults.hideArrowButtonsCheckbox;
-            document.getElementById('hideCornerButtonsCheckbox').checked = defaults.hideCornerButtonsCheckbox;
             document.getElementById('removeMarkdownOnCopyCheckbox').checked = defaults.removeMarkdownOnCopyCheckbox;
             document.getElementById('moveTopBarToBottomCheckbox').checked = defaults.moveTopBarToBottomCheckbox;
             document.getElementById('pageUpDownTakeover').checked = defaults.pageUpDownTakeover;
@@ -350,7 +347,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Apply the handler to each checkbox and radio button
     handleStateChange('hideArrowButtonsCheckbox', 'hideArrowButtonsCheckbox');
-    handleStateChange('hideCornerButtonsCheckbox', 'hideCornerButtonsCheckbox');
     handleStateChange('removeMarkdownOnCopyCheckbox', 'removeMarkdownOnCopyCheckbox');
     handleStateChange('moveTopBarToBottomCheckbox', 'moveTopBarToBottomCheckbox');
     handleStateChange('pageUpDownTakeover', 'pageUpDownTakeover');
