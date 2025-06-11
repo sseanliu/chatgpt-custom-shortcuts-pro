@@ -1,5 +1,8 @@
 # Changelog
 
+#### [6.12.2025]
+- Refined settings card headers with Puppertino subhead styling.
+
 #### [6.11.2025]
 - Adjusted shortcut card margins for improved spacing.
 - Switched tabs and copy-behavior controls to Puppertino scripts.
@@ -20,6 +23,8 @@
 - Cleaned popup.css rules duplicated from Puppertino defaults.
 - Align settings rows using Puppertino baseline layout and spacing tokens.
 - Removed custom margin-left from `.p-form-switch` for consistent toggle alignment.
+- Reduce shortcut row min-height to 2.75rem.
+
 
 
 #### [6.5.2025]
