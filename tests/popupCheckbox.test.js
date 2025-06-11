@@ -35,10 +35,9 @@ function loadPopup(storage) {
     window.chrome = {
         storage: {
             sync: {
-    assert.ok(
-        Object.prototype.hasOwnProperty.call(defaults, id),
-        `Missing default for checkbox ID: ${id}`
-    );
+                get(keys, cb) {
+                    const res = {};
+                    if (typeof keys === 'string') res[keys] = storage[keys];
                     else if (Array.isArray(keys)) keys.forEach(k => { res[k] = storage[k]; });
                     else if (keys) Object.keys(keys).forEach(k => { res[k] = storage[k]; });
                     cb(res);
@@ -62,23 +61,16 @@ function loadPopup(storage) {
 const ids = getInputIds();
 const defaults = parseDefaults();
 
-// Ensure every checkbox/radio has a default value defined
-ids.forEach(id => {
-
-    if (!Object.prototype.hasOwnProperty.call(defaults, id)) {
-        throw new Error(`Missing default for checkbox ID: ${id}`);
-    }
-    // Default when storage is empty
-    let state = {};
-    let result = loadPopup(state);
-    assert.strictEqual(result.window.document.getElementById(id).checked, defaults[id]);
-
-
 const originalLog = console.log;
 console.log = () => {};
 
 try {
     ids.forEach(id => {
+        assert.ok(
+            Object.prototype.hasOwnProperty.call(defaults, id),
+            `Missing default for checkbox ID: ${id}`
+        );
+
         // Default when storage is empty
         let state = {};
         let result = loadPopup(state);
