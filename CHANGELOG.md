@@ -2,6 +2,10 @@
 
 The full changelog and feature history is maintained here.
 
+#### [6.12.2025]
+- Align popup font sizes with Puppertino layout tokens.
+- Restore default card spacing.
+
 #### [6.11.2025]
 - Adjusted shortcut card margins for improved spacing.
 - Switched tabs and copy-behavior controls to Puppertino scripts.
