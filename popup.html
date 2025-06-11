@@ -48,8 +48,8 @@
                         <!-- SHORTCUT GRID (grouped by category for filter logic) -->
                         <div class="shortcut-grid">
                             <!-- Row 1 -->
-                            <div class="shortcut-card" data-cat="scroll">
-                                <div class="shortcut-card-header i18n" data-i18n="card_header_scrolling">
+                            <div class="p-card" data-cat="scroll">
+                                <div class="p-card-header i18n" data-i18n="card_header_scrolling">
                                     Scroll
                                 </div>
 
@@ -116,8 +116,8 @@
                             </div>
 
 
-                            <div class="shortcut-card" data-cat="agent">
-                                <div class="shortcut-card-header" data-i18n="label_model_tools">
+                            <div class="p-card" data-cat="agent">
+                                <div class="p-card-header" data-i18n="label_model_tools">
                                     Model + Tools
                                 </div>
 
@@ -132,16 +132,14 @@
                                             <span class="mp-option-text i18n" data-i18n="label_use_alt">Alt +
                                                 1,2,3,4,5</span>
                                             <input checked id="useAltForModelSwitcherRadio"
-                                                name="useAltOrControlForModelSelection" type="radio"
-                                                class="material-radio" />
+                                                name="useAltOrControlForModelSelection" type="radio" />
                                         </label>
                                         <label class="mp-option tooltip"
                                             data-tooltip="__MSG_tt_use_control_for_picker__" style="gap:2px;">
                                             <span class="mp-option-text i18n" data-i18n="label_use_control">Control +
                                                 1,2,3,4,5</span>
                                             <input id="useControlForModelSwitcherRadio"
-                                                name="useAltOrControlForModelSelection" type="radio"
-                                                class="material-radio" />
+                                                name="useAltOrControlForModelSelection" type="radio" />
                                         </label>
                                     </div>
                                 </div>
@@ -171,8 +169,8 @@
                                 </div>
                             </div>
 
-                            <div class="shortcut-card" data-cat="copy">
-                                <div class="shortcut-card-header i18n" data-i18n="label_copy">
+                            <div class="p-card" data-cat="copy">
+                                <div class="p-card-header i18n" data-i18n="label_copy">
                                     Copy
                                 </div>
                             
@@ -203,7 +201,7 @@
                                     </div>
                                     <label class="p-form-switch">
                                         <input type="checkbox" id="removeMarkdownOnCopyCheckbox"
-                                            name="removeMarkdownOnCopyCheckbox" class="material-checkbox" />
+                                            name="removeMarkdownOnCopyCheckbox" />
                                         <span></span>
                                     </label>
                                 </div>
@@ -244,8 +242,7 @@
                                         <span class="i18n" data-i18n="label_disable_autocopy">Disable Auto‑Copy</span>
                                     </div>
                                     <label class="p-form-switch">
-                                        <input type="checkbox" id="disableCopyAfterSelectCheckbox" name="disableCopyAfterSelectCheckbox"
-                                            class="material-checkbox" />
+                                        <input type="checkbox" id="disableCopyAfterSelectCheckbox" name="disableCopyAfterSelectCheckbox" />
                                         <span></span>
                                     </label>
                                 </div>
@@ -254,8 +251,8 @@
 
 
 
-                            <div class="shortcut-card" data-cat="navigation">
-                                <div class="shortcut-card-header" data-i18n="label_chat_navigation">
+                            <div class="p-card" data-cat="navigation">
+                                <div class="p-card-header" data-i18n="label_chat_navigation">
                                     Chat Navigation
                                 </div>
 
@@ -350,8 +347,8 @@
                                 </div>
                             </div>
 
-                            <div class="shortcut-card" data-cat="message">
-                                <div class="shortcut-card-header" data-i18n="label_message_actions">
+                            <div class="p-card" data-cat="message">
+                                <div class="p-card-header" data-i18n="label_message_actions">
                                     Message Actions
                                 </div>
 
@@ -423,8 +420,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="shortcut-card" data-cat="joinAndCopy">
-                                <div class="shortcut-card-header" data-i18n="label_join_all">
+                            <div class="p-card" data-cat="joinAndCopy">
+                                <div class="p-card-header" data-i18n="label_join_all">
                                     Join &amp; Copy
                                 </div>
 
@@ -483,8 +480,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="shortcut-card" data-cat="interface">
-                                <div class="shortcut-card-header" data-i18n="label_interface_options">
+                            <div class="p-card" data-cat="interface">
+                                <div class="p-card-header" data-i18n="label_interface_options">
                                     Interface Options
                                 </div>
 
@@ -553,8 +550,11 @@
                                 </div>
                                 <!-- Section Right: Checkbox -->
                                 <div class="icon-input-container" style="flex-shrink: 0;">
-                                    <input checked class="material-checkbox" id="moveTopBarToBottomCheckbox"
-                                        name="moveTopBarToBottomCheckbox" type="checkbox" />
+                                    <label class="p-form-switch">
+                                        <input checked id="moveTopBarToBottomCheckbox"
+                                            name="moveTopBarToBottomCheckbox" type="checkbox" />
+                                        <span></span>
+                                    </label>
                                 </div>
                             </div>
                         </div>
