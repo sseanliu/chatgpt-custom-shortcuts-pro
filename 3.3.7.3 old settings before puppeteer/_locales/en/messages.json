@@ -207,13 +207,13 @@
         "message": "Switch ChatGPT Plus model using Alt or Control + number keys (1–5)"
     },
     "label_use_alt": {
-        "message": "Alt + 1,2,3,4,5"
+        "message": "Use Alt"
     },
     "tt_use_Alt_for_picker": {
         "message": "Select ChatGPT model using Alt+1 (4o), Alt+2 (o3), Alt+3 (o4-mini), Alt+4 (o4-mini-high), Alt+5 (4o-mini)"
     },
     "label_use_control": {
-        "message": "Control + 1,2,3,4,5"
+        "message": "Use Control"
     },
     "tt_use_Control_for_picker": {
         "message": "Select ChatGPT model using Control+1 (4o), Control+2 (o3), Control+3 (o4-mini), Control+4 (o4-mini-high), Control+5 (4o-mini)"

@@ -5,12 +5,19 @@
 
 /* Define color tokens */
 :root {
-  --text-primary: #1e1e1e;           /* modern dark neutral, softer than black */
-  --text-secondary: #646464;         /* restrained, clean gray */
-  --border-light: #dfdfdc;           /* neutral-warm, blends softly without yellow */
-  --bg-primary: #f4f3f1;             /* warm greige off-white, subtle and modern */
-  --bg-secondary: #f8f7f5;           /* slightly lighter greige, pairs with primary */
-  --highlight-color: #3f51b5;        /* still works beautifully here */
+    --text-primary: #1e1e1e;
+    --text-secondary: #646464;
+    --border-light: #dfdfdc;
+    --bg-primary: #f4f3f1;
+    --bg-secondary: #f8f7f5;
+    --highlight-color: #3f51b5;
+    --segment-bg: #f8f7f5;
+    --segment-border: #e0e0e6;
+    --segment-active-bg: #fff;
+    --segment-active-border: #b8d4ff;
+    --segment-active-shadow: 0 2.5px 10px 0 rgba(0, 122, 255, 0.06);
+    --segment-text: #333;
+    --segment-active-text: #007aff;
 }
 
 /* Base resets */
@@ -22,50 +29,35 @@
 
 body {
     width: 100%;
-    /* Prevent unnecessary width overflow */
-    height: 100vh;
-    overflow-y: auto;
-    overflow-x: hidden;
-    /* Already correct */
+    min-height: 100vh;
     margin: 0;
-    padding: 0.5rem;
+    padding: 0;
+    box-sizing: border-box;
     display: flex;
     justify-content: center;
     align-items: flex-start;
-}
-
-body,
-.shortcut-label,
-.key-text,
-.key-input,
-.tooltiptext,
-h1 {
-    font-family: ui-sans-serif, -apple-system, system-ui, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol";
+    background: var(--bg-primary);
+    font-family: ui-sans-serif, -apple-system, system-ui, "Segoe UI", Helvetica, Arial, sans-serif;
     font-size: 14px;
-    font-feature-settings: normal;
-    font-variation-settings: normal;
-    text-size-adjust: 100%;
-    text-align: start;
-    text-overflow: ellipsis;
-    white-space-collapse: collapse;
-    unicode-bidi: isolate;
-    text-wrap: balance;
-    pointer-events: auto;
-    
 }
 
-/* Prevent shortcut container from overflowing */
+
 .shortcut-container {
     width: 750px;
     max-width: 100%;
-    /* Ensure it never exceeds available space */
     margin: 0 auto;
-    padding: 1rem;
-    background-color: var(--bg-primary);
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    box-sizing: border-box;
+    padding: 1.2rem 0 2.5rem 0;
+    background: none;
+    /* <--- NO background color */
+    border-radius: 0;
+    /* <--- NO border radius */
+    box-shadow: none;
+    /* <--- NO shadow */
+    border: none;
+    /* <--- NO border */
+    display: block;
 }
+
 
 
 /* Tooltip Area */
@@ -74,14 +66,15 @@ h1 {
     /* Initially hidden */
     opacity: 0;
     transition: opacity 0.5s ease-in-out;
-/* Smooth fade-out effect */
+    /* Smooth fade-out effect */
     position: fixed;
     bottom: 0;
     left: 0;
     width: 100%;
     height: 60px;
     padding: 10px;
-    padding-top: 8px;     /* Reduce top padding slightly */ 
+    padding-top: 8px;
+    /* Reduce top padding slightly */
     background-color: #F5F5F5;
     color: #616161;
     text-align: center;
@@ -149,10 +142,17 @@ h1 {
 
 /* Grid Layout */
 .shortcut-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
 }
+
+.full-width,
+.blank-row {
+    display: none;
+    /* Not needed anymore */
+}
+
 
 /* Columns */
 .shortcut-column {
@@ -196,34 +196,11 @@ h1 {
     font-weight: bold;
 }
 
-.key-input {
-    width: 50px;
-    height: 2rem;
-    border: 1px solid var(--border-light);
-    border-radius: 0.375rem;
-    text-align: center;
-    font-size: 0.8rem;
-    font-weight: bold;
-    background-color: var(--bg-primary);
-    color: var(--text-secondary);
-}
 
-.key-input:focus {
-    border-color: var(--highlight-color);
-    outline: none;
-}
 
 /* Checkbox and Icon Container */
-.icon-input-container {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
 
-.material-checkbox {
-    width: 16px;
-    height: 16px;
-}
+
 
 .material-icons-outlined {
     font-size: 18px;
@@ -231,22 +208,138 @@ h1 {
 }
 
 
-.shortcut-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
+/* Key input (shortcut key) refinement */
+.key-input {
+    width: 38px;
+    height: 2rem;
+    font-size: 1em;
+    font-weight: 500;
+    padding: 0 10px;
+    min-width: 34px;
+    border: 1.2px solid #e4e6ee;
+    border-radius: 7px;
+    text-align: center;
+    background: #f4f4f8;
+    color: var(--text-primary);
+    margin-left: 2px;
+    vertical-align: middle;
+    transition: border-color .14s;
+}
+
+.key-input:focus {
+    border-color: #007aff;
+    outline: none;
 }
 
 
-.full-width {
-    grid-column: span 2;
+/* Button/toggle vertical centering in row */
+.shortcut-card .shortcut-item>*:last-child {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+/* For the input[type="text"] used in Join & Copy Separator, etc */
+.shortcut-card input[type="text"].material-input {
+    width: 190px;
+    height: 1.8rem;
+    font-size: 0.93em;
+    border-radius: 7px;
+    border: 1px solid var(--border-light);
+    background: #f7f8fa;
+    padding: 0 6px;
+    margin-left: 2px;
+}
+
+/* Smaller switches, always vertically centered */
+.p-form-switch {
+    --width: 44px;
+    /* macOS/iOS native: 44 or 51px; 44 is HIG macOS */
+    --height: 28px;
+    /* macOS: 28px; iOS: 31px */
+    width: var(--width) !important;
+    height: var(--height) !important;
+    min-width: var(--width) !important;
+    min-height: var(--height) !important;
+    display: inline-flex;
+    align-items: center;
+    vertical-align: middle;
+    margin-left: 0.3em;
+    margin-right: 0.2em;
+    position: relative;
+}
+
+.p-form-switch input[type="checkbox"] {
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    margin: 0;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.p-form-switch span {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 999px;
+    background: #e0e0e0;
+    position: relative;
+    transition: background 0.17s;
+    box-shadow: 0 1.5px 5px rgba(120, 150, 255, 0.09);
+}
+
+.p-form-switch input[type="checkbox"]:checked+span {
+    background: #34c759;
+}
+
+.p-form-switch span::after {
+    content: '';
+    position: absolute;
+    left: 3px;
+    top: 3px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(100, 140, 220, 0.11);
+    transition: left 0.17s cubic-bezier(.6, .2, .3, 1), background 0.13s;
+}
+
+.p-form-switch input[type="checkbox"]:checked+span::after {
+    left: 19px;
+    /* 44-22-3 = 19 */
+    background: #fff;
 }
 
 
-.blank-row {
-    grid-column: span 2;
-    height: 8px;
+.shortcut-card {
+    max-width: 420px;
+    width: 420px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 0.55rem;
+    padding: 1.1rem 1.2rem 1rem 1.2rem;
+    border-radius: 13px;
+    border: 1.5px solid #e3e7ee;
+    /* was #eceefd, now slightly darker */
+    box-shadow: 0 4px 24px 0 rgba(60, 100, 220, 0.10);
+    /* stronger */
+    background: #fff;
+    transition: box-shadow .13s, border-color .13s;
 }
+
+.shortcut-card:hover {
+    box-shadow: 0 7px 18px 0 rgba(60, 100, 220, 0.10);
+    border-color: #b7d5ff;
+}
+
+
+
+
 
 
 @keyframes pulse-highlight {
@@ -327,7 +420,7 @@ h1 {
 }
 
 #opacity-slider-wrapper:hover {
-    
+
     cursor: pointer;
 }
 
@@ -449,75 +542,83 @@ h1 {
 }
 
 
-
-/*
-// Model Picker CSS 
-*/
-/* ===== Model Picker Shortcuts ===== */
-.model-picker-shortcut {
-    /* keeps overall grid sizing */
-    flex-direction: column;
-    align-items: stretch;
-    gap: 6px;
+/*────────  Message‑Selection segmented switcher  ────────*/
+.message-selection-group {
+    display: flex;
+    justify-content: center;
+    border: 1.5px solid var(--segment-border);
+    border-radius: 13px;
+    background: var(--segment-bg);
+    max-width: 420px;
+    width: 100%;
+    margin: 4px auto 0 auto;
+    overflow: hidden;
 }
 
-/* container that stacks icons then radios */
-.model-picker {
-    width: 100%;
+/* hide form controls */
+.message-selection-group input[type="radio"] {
+    display: none
+}
+
+/* base segment (label acts as button) */
+.message-selection-group label.p-segment {
+    flex: 1 1 0%;
     display: flex;
     flex-direction: column;
     align-items: center;
-}
-
-/* ---- icon strip ---- */
-.mp-icons {
-    display: flex;
     justify-content: center;
-    /* no gaps; tiny—shrinks with container */
-    font-size: clamp(9px, 1.9vw, 12px);
-    line-height: 1;
-    scale: 0.7;
+    gap: 3px;
+    padding: .45em 1.1em;
+    /* ≈ 7 px × 18 px */
+    font-size: 1.06rem;
+    /* 17 px */
+    font-weight: 500;
+    color: var(--segment-text);
+    background: none;
+    cursor: pointer;
+    border: none;
+    border-right: 1px solid var(--segment-border);
+    transition: background .14s, color .14s;
 }
 
-.mp-icons .material-symbols-outlined {
-    margin: 0 -1px;
-    /* negative margin pulls glyphs tight */
+.message-selection-group label.p-segment:last-of-type {
+    border-right: none;
+    /* no divider on far right */
+}
+
+/* active state driven purely by :checked */
+.message-selection-group input[type="radio"]:checked+label.p-segment {
+    background: var(--segment-active-bg);
+    color: var(--segment-active-text);
+    font-weight: 600;
+    box-shadow: 0 2.5px 10px rgba(0, 122, 255, .07);
+}
+
+/* icon + caption inside segment */
+.message-selection-group .material-symbols-outlined {
+    font-size: 16px;
+    line-height: 1;
     pointer-events: none;
 }
 
-/* ---- radio row ---- */
-.mp-options {
-    display: flex;
-    justify-content: center;
-    gap: 3rem;
-    /* even spacing between the two radios */
-    margin-top: 4px;
-}
-
-.mp-option {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    cursor: pointer;
-    position: relative;
-    user-select: none;
-    font-size: 13px;
-}
-
-.mp-option-text {
-    /* “Use Alt” / “Use Control” */
-    text-align: center;
-    font-weight: 500;
-    font-size: 0.75rem;
+.message-selection-group .segment-text {
+    font-size: .74rem;
+    line-height: 1.15;
     text-wrap: balance;
 }
 
-.mp-option input[type="radio"] {
-    width: 18px;
-    height: 18px;
-    accent-color: var(--highlight-color);
-    /* re-uses theme blue */
+/*────────  Disable‑Auto‑Copy toggle row  ────────*/
+.auto-copy-toggle.shortcut-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: .2rem 0;
+    min-height: 36px;
+}
+
+.auto-copy-toggle .toggle-label-col {
+    font-size: .97em;
+    color: var(--text-primary);
 }
 
 #toast-container .toast {
@@ -535,4 +636,363 @@ h1 {
     color: #aaa;
     border-color: #ccc;
     cursor: not-allowed;
+}
+
+
+/* --- Remove horizontal scrollbars from popup window and all containers --- */
+html,
+body {
+    width: 100% !important;
+    max-width: 100%;
+    overflow-x: hidden !important;
+}
+
+.shortcut-container,
+.p-tabs-container,
+.p-panel,
+.shortcut-grid {
+    overflow-x: hidden;
+}
+
+
+
+/* PRIMARY TABS */
+.p-tabs-container {
+    width: 450px;
+    /* Match your .shortcut-card width! */
+    max-width: 100vw;
+    margin: 0 auto 1.3rem auto;
+    /* Centered and spaced from cards below */
+    background: none;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+}
+
+.p-tabs {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    /* Stretch inside .p-tabs-container, NOT page */
+    gap: 0;
+    background: none;
+    border: none;
+    margin-bottom: 0;
+}
+
+.p-tab {
+    border-radius: 10px;
+    /* Remove/minimize borders for a modern look */
+    border: none;
+    margin: 0 1.5px;
+    padding: 0.5em 1.8em;
+    /* Soft capsule, not huge */
+    min-width: 0;
+    font-size: 1.01rem;
+}
+
+.p-tabs> :first-child {
+    border-radius: 12px 0 0 12px;
+}
+
+.p-tabs> :last-child {
+    border-radius: 0 12px 12px 0;
+}
+
+
+.p-tab.p-is-active {
+    color: #1e1e1e;
+    border-bottom: 2.5px solid #007aff;
+    background: #f8f7f5;
+}
+
+
+
+.shortcut-section {
+    margin-bottom: 2rem;
+}
+
+.p-card {
+    background: #fff;
+    border-radius: 13px;
+    box-shadow: 0 2.5px 13px rgba(0, 0, 0, 0.09);
+    padding: 1.1rem 1.3rem;
+    margin-bottom: 0.4rem;
+}
+
+.p-card-header {
+    font-size: 1.01rem;
+    font-weight: 600;
+    color: #444;
+    margin-bottom: 0.7rem;
+}
+
+.shortcut-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.45em 0;
+    border-bottom: 1px solid #f2f2f5;
+}
+
+.shortcut-row:last-child {
+    border-bottom: none;
+}
+
+.shortcut-keys {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.shortcut-keys input[type="text"] {
+    width: 40px;
+    border-radius: 6px;
+    border: 1px solid #e2e2e6;
+    background: #f8f8fb;
+    text-align: center;
+    font-weight: 500;
+    color: #444;
+    transition: border-color .13s;
+}
+
+.shortcut-keys input[type="text"]:focus {
+    border-color: #007aff;
+    outline: none;
+}
+
+
+/* Card spacing & layout */
+
+
+
+
+.shortcut-card-header {
+    font-size: 1.09rem;
+    font-weight: 700;
+    margin-bottom: 0.85rem;
+}
+
+.shortcut-card .shortcut-item {
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    padding: 0.19rem 0 0.16rem 0;
+    margin-bottom: 1px;
+    min-height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.shortcut-card .shortcut-item:not(:last-child) {
+    border-bottom: 1px solid #f5f5f7;
+}
+
+.shortcut-card .shortcut-item:last-child {
+    margin-bottom: 0;
+}
+/*────────  Cupertino‑style segmented control  ────────*/
+.p-segmented-controls {
+    display: flex;
+    border: 1.5px solid var(--segment-border);
+    border-radius: 13px;
+    background: var(--segment-bg);
+    /* light grey panel */
+    max-width: 420px;
+    width: 100%;
+    margin: 0 auto 1.2rem auto;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(90, 130, 220, .08);
+}
+
+/* base segment */
+.p-segment {
+    flex: 1 1 0%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    padding: .42em 1.1em;
+    /* ≈ 7 × 18 px */
+    min-height: 32px;
+    font-size: 1.06rem;
+    /* 17 px */
+    font-weight: 500;
+    color: var(--segment-text);
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: background .14s, color .14s, box-shadow .14s;
+    position: relative;
+}
+
+/* vertical divider between *inactive* segments only  */
+.p-segment+.p-segment {
+    box-shadow: -1px 0 0 0 var(--segment-border) inset;
+}
+
+/* active look — solid accent tint, white text */
+.p-segment.p-is-active {
+    background: #007aff;
+    /* native accent blue */
+    color: #fff;
+    font-weight: 600;
+    box-shadow: none;
+    /* remove outer shadow */
+}
+
+/* hide divider on the active segment and its right neighbour */
+.p-segment.p-is-active {
+    box-shadow: none;
+}
+
+.p-segment.p-is-active+.p-segment {
+    box-shadow: none;
+}
+
+/* keyboard focus ring */
+.p-segment:focus-visible {
+    outline: 2px solid #aad1ff;
+    outline-offset: -3px;
+}
+
+@media (max-width:600px) {
+    .p-segmented-controls {
+        border-radius: 9px;
+        font-size: .97rem;
+    }
+
+    .p-segment {
+        font-size: 1rem;
+        padding: .34em .9em;
+        min-height: 30px;
+    }
+}
+
+
+.shortcut-toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 36px;
+    background: transparent;
+    padding: 0.19rem 0 0.16rem 0;
+    border: none;
+    margin-bottom: 1px;
+}
+
+.toggle-label-col {
+    font-size: 0.97em;
+    color: var(--text-primary);
+}
+
+.toggle-switch-col {
+    display: flex;
+    align-items: center;
+    /* No justify-content; let flexbox push right */
+}
+
+.toggle-filler-col {
+    display: none;
+}
+  
+
+/*──────── FINAL message‑selection overrides ────────*/
+.message-selection-group .p-segment {
+    border: none;
+    /* kill grey ring */
+    background: none;
+    color: var(--segment-text);
+    box-shadow:none !important;
+}
+
+/* thin divider only on inactive neighbours */
+.message-selection-group .p-segment+.p-segment {
+    border-left:1px solid var(--segment-border);
+}
+
+/* active pill */
+.message-selection-group .p-segment.p-is-active {
+    background: #007aff !important;
+    /* full blue fill */
+    color: #fff !important;
+    /* white icon/text */
+    font-weight: 600;
+}
+
+/* remove divider to the right of the active pill */
+.message-selection-group .p-segment.p-is-active+.p-segment {
+    border-left: none;
+}
+
+
+
+
+/*────────  Select + Copy Behavior row ────────*/
+/*────────  FINAL Select + Copy Behaviour polish  ────────*/
+
+/* row layout: label | pill‑group */
+.select-copy-row {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    column-gap: 1.4rem;
+    align-items: center;
+}
+
+/* label column (no hard <br> tag needed) */
+.select-copy-row .shortcut-label {
+    white-space: normal;
+    /* allow natural wrapping */
+    line-height: 1.25;
+    font-weight: 500;
+}
+
+/* pill group: full width, no wrapping */
+.select-copy-row .message-selection-group {
+    display: flex;
+    flex: 1 1 auto;
+    flex-wrap: nowrap !important;
+    /* keep a single row */
+    max-width: 100%;
+}
+
+/* each pill shares 1/3 width */
+.message-selection-group .p-segment {
+    flex: 1 0 0;
+}
+
+/* kill any inset box‑shadow Puppertino adds */
+.message-selection-group .p-segment {
+    box-shadow: none !important
+}
+
+/* divider only between inactive neighbours */
+.message-selection-group .p-segment+.p-segment {
+    border-left: 1px solid var(--segment-border);
+}
+
+/* ACTIVE pill – solid blue fill, white icon/text */
+.message-selection-group .p-segment.p-is-active {
+    background: #007aff !important;
+    color: #fff !important;
+    font-weight: 600;
+    border-left: none;
+    /* erase divider over blue */
+}
+
+.message-selection-group .p-segment.p-is-active+.p-segment {
+    border-left: none;
+    /* no divider on its right edge either */
+}
+
+/* tiny type shrink for narrow screens */
+@media(max-width:520px) {
+    .message-selection-group .segment-text {
+        font-size: .70rem
+    }
 }
