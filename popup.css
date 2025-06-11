@@ -12,6 +12,13 @@
 }
 
 body {
+
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-size: 1rem;
   background: var(--p-silver-100);
   font-family: -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
 }
@@ -453,13 +460,6 @@ h1 {
 
 
 /* --- Remove horizontal scrollbars from popup window and all containers --- */
-html,
-body {
-    width: 100% !important;
-    max-width: 100%;
-    overflow-x: hidden !important;
-}
-
 .shortcut-container,
 .shortcut-grid {
     overflow-x: hidden;
