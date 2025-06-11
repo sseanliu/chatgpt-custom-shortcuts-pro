@@ -2,18 +2,6 @@
 @import url('https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined');
 @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
 
-html {
-  font: 400 17px/1.32 -apple-system, BlinkMacSystemFont, 'SF Pro', sans-serif;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-}
-
-@media (min-width: 480px) {
-  html {
-    font-size: 16px;
-  }
-}
-
 /* Rely on Puppertino color tokens */
 
 /* Base resets */
@@ -24,20 +12,22 @@ html {
 }
 
 body {
+
   width: 100%;
   min-height: 100vh;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  font-size: 1rem;
   background: var(--p-silver-100);
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
 }
 
 
 .shortcut-container {
-  max-width: 600px;
-  width: 100%;
+  max-width: 420px;
   margin: 0 auto;
-  padding: 1.25rem 1.5rem;
+  padding: 1rem;
 }
 
 
@@ -62,6 +52,7 @@ body {
     text-align: center;
     line-height: 1.5;
     border-top: 1px solid var(--p-silver-300);
+    font-size: 0.9rem;
     font-weight: 400;
     z-index: 100;
     box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.2);
@@ -143,11 +134,12 @@ h1 {
   justify-content: space-between;
   align-items: center;
   padding: 0.5rem 1rem;
-  min-height: 44px;
+  min-height: 2.75rem;
 }
 
 /* Shortcut Name */
 .shortcut-label {
+  color: var(--p-dark-700);
   font-weight: 500;
   text-wrap: balance;
 }
@@ -159,7 +151,7 @@ h1 {
 }
 
 .key-text {
-  font-weight: 600;
+  font-weight: bold;
 }
 
 
@@ -168,35 +160,31 @@ h1 {
 
 
 
-.material-icons-outlined,
-.material-symbols-outlined {
-    font-size: 20px;
-    line-height: 1;
-    vertical-align: middle;
-}
-
-.icon-middle {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+.material-icons-outlined {
+    font-size: 18px;
+    color: var(--p-silver-700);
 }
 
 
 /* Key input (shortcut key) refinement */
-.key-input,
-.p-card input[type="text"].material-input {
-    height: 32px;
-    min-width: 40px;
-    font: 500 15px/1.2 -apple-system;
-    border-radius: 8px;
-    padding: 0 8px;
-    background: var(--p-system-background);
-    border: 1px solid var(--p-separator-opaque);
-    color: var(--p-label);
+.key-input {
+    width: 38px;
+    height: 2rem;
+    font-size: 1em;
+    font-weight: 500;
+    padding: 0 10px;
+    min-width: 34px;
+    border: 1.2px solid var(--p-silver-300);
+    border-radius: 7px;
+    text-align: center;
+    background: var(--p-silver-100);
+    color: var(--p-dark-700);
+    margin-left: 2px;
+    vertical-align: middle;
+    transition: border-color .14s;
 }
 
-.key-input:focus,
-.p-card input[type="text"].material-input:focus {
+.key-input:focus {
     border-color: var(--p-blueberry-500);
     outline: none;
 }
@@ -209,9 +197,59 @@ h1 {
     height: 100%;
 }
 
+/* For the input[type="text"] used in Join & Copy Separator, etc */
+.p-card input[type="text"].material-input {
+    width: 190px;
+    height: 1.8rem;
+    font-size: 0.93em;
+    border-radius: 7px;
+    border: 1px solid var(--p-silver-300);
+    background: var(--p-silver-100);
+    padding: 0 6px;
+    margin-left: 2px;
+}
 
 
 
+@keyframes pulse-highlight {
+    0% {
+        box-shadow: 0 0 0 0 rgba(33, 150, 243, 0.6);
+    }
+
+    70% {
+        box-shadow: 0 0 0 10px rgba(33, 150, 243, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(33, 150, 243, 0);
+    }
+}
+
+.flash-highlight {
+    animation: pulse-highlight 0.6s ease-out 1.2s 1;
+}
+
+.new-emoji-indicator {
+    font-size: 1.5em;
+    line-height: 1;
+    user-select: none;
+    pointer-events: none;
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+.new-feature-tag {
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: white;
+    background-color: var(--p-blueberry-500);
+    /* Material blue */
+    padding: 2px 6px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+    line-height: 1;
+    user-select: none;
+}
 
 
 
@@ -440,23 +478,13 @@ h1 {
 }
 
 .p-tab {
-    font: 600 15px/1 -apple-system;
-    padding: 0 12px 8px;
-    border-radius: 8px 8px 0 0;
-    position: relative;
+    font-size: 1.01rem;
 }
 
-.p-tab.p-is-active::after {
-    content: '';
-    position: absolute;
-    left: 10px;
-    right: 10px;
-    bottom: 0;
-    height: 3px;
-    background: var(--p-blue-600);
-    border-radius: 3px 3px 0 0;
+/* Utility classes for popup layout */
+.icon-middle {
+  vertical-align: middle;
 }
-
 
 .mp-options {
   display: flex;
@@ -561,7 +589,8 @@ h1 {
 
 .p-card-header {
   font-weight: 600;
-  letter-spacing: .02em;
+  color: var(--p-silver-700);
+  text-transform: uppercase;
   margin-bottom: 0.4rem;
 }
 
@@ -603,20 +632,18 @@ h1 {
 
 
 .p-card {
-  background: var(--p-system-background);
-  border-radius: 14px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.10);
-  margin: 0 0 14px 0;
-  padding: 0;
-  overflow: hidden;
+  background: #fff;
+  border-radius: 12px;
+  margin-bottom: 0.75rem;
+  padding: 0.75rem 0;
 }
 
 .p-card .shortcut-item {
-  padding: 12px 16px;
+  padding: 0.5rem 1rem;
 }
 
 .p-card .shortcut-item:not(:last-child) {
-  border-bottom: 0.5px solid var(--p-separator-opaque);
+  border-bottom: 1px solid var(--p-bd-card);
 }
 /*────────  Cupertino‑style segmented control  ────────*/
 
@@ -695,8 +722,8 @@ h1 {
 
 /* ACTIVE pill – solid blue fill, white icon/text */
 .message-selection-group .p-segment.p-is-active {
-    background: var(--p-blueberry-500) !important;
-    color: var(--p-silver-100) !important;
+    background: #007aff !important;
+    color: #fff !important;
     font-weight: 600;
     border-left: none;
     /* erase divider over blue */
@@ -709,3 +736,38 @@ h1 {
 
 
 
+/* tiny type shrink for narrow screens */
+@media(max-width:520px) {
+    .message-selection-group .segment-text {
+        font-size: .70rem
+    }
+}
+
+/* Font size overrides */
+body.p-layout {
+  font-size: 14px;
+}
+.p-layout h1 {
+  font-size: 22px;
+}
+.p-layout h2 {
+  font-size: 20px;
+}
+.p-layout h3 {
+  font-size: 18px;
+}
+.p-headline {
+  font-size: 17px;
+}
+.p-subhead {
+  font-size: 15px;
+}
+.p-callout {
+  font-size: 15px;
+}
+.p-footnote {
+  font-size: 13px;
+}
+.p-caption {
+  font-size: 12px;
+}
