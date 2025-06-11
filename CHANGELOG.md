@@ -1,5 +1,9 @@
 # Changelog
 
+#### [6.18.2025]
+##### Changed
+- Align settings rows using Puppertino baseline layout and spacing tokens.
+
 #### [6.17.2025]
 ##### Fixed
 - Restore message selection radio inputs.
