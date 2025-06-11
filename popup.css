@@ -328,19 +328,17 @@ h1 {
 
 
 .shortcut-card {
-    max-width: 420px;
-    width: 420px;
-    margin-left: auto;
-    margin-right: auto;
-    margin-bottom: 1rem;
-    padding: 1.1rem 1.2rem 1rem 1.2rem;
-    border-radius: 13px;
-    border: 1.5px solid #e3e7ee;
-    /* was #eceefd, now slightly darker */
-    box-shadow: 0 4px 24px 0 rgba(60, 100, 220, 0.10);
-    /* stronger */
-    background: #fff;
-    transition: box-shadow .13s, border-color .13s;
+  max-width: 420px;
+  width: 420px;
+  margin: 0 auto 1.5rem auto; /* more breathing room */
+  padding: 1.1rem 1.2rem 1rem 1.2rem;
+  border-radius: 13px;
+  border: 1.5px solid #e3e7ee;
+  /* was #eceefd, now slightly darker */
+  box-shadow: 0 4px 24px 0 rgba(60, 100, 220, 0.10);
+  /* stronger */
+  background: #fff;
+  transition: box-shadow .13s, border-color .13s;
 }
 
 .shortcut-card:hover {

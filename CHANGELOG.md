@@ -2,8 +2,8 @@
 
 The full changelog and feature history is maintained here.
 
-#### [6.12.2025]
-##### Changed
+#### [6.11.2025]
+- Adjusted shortcut card margins for improved spacing.
 - Switched tabs and copy-behavior controls to Puppertino scripts.
 
 #### [6.5.2025]
