@@ -37,12 +37,6 @@ body {
     justify-content: center;
     align-items: flex-start;
     background: var(--bg-primary);
-    font-family: -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    "Helvetica Neue",
-    Arial,
-    sans-serif;
     font-size: 14px;
 }
 
@@ -86,13 +80,6 @@ body {
     line-height: 1.5;
     border-top: 1px solid #ccc;
     font-size: 0.9rem;
-    font-family: -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    "Helvetica Neue",
-    Arial,
-    sans-serif;
-
     font-weight: 400;
     z-index: 100;
     box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.2);
@@ -244,14 +231,14 @@ h1 {
 
 
 /* Button/toggle vertical centering in row */
-.shortcut-card .shortcut-item>*:last-child {
+.p-card .shortcut-item>*:last-child {
     display: flex;
     align-items: center;
     height: 100%;
 }
 
 /* For the input[type="text"] used in Join & Copy Separator, etc */
-.shortcut-card input[type="text"].material-input {
+.p-card input[type="text"].material-input {
     width: 190px;
     height: 1.8rem;
     font-size: 0.93em;
@@ -327,26 +314,7 @@ h1 {
 }
 
 
-.shortcut-card {
-    max-width: 420px;
-    width: 420px;
-    margin-left: auto;
-    margin-right: auto;
-    margin-bottom: 1rem;
-    padding: 1.1rem 1.2rem 1rem 1.2rem;
-    border-radius: 13px;
-    border: 1.5px solid #e3e7ee;
-    /* was #eceefd, now slightly darker */
-    box-shadow: 0 4px 24px 0 rgba(60, 100, 220, 0.10);
-    /* stronger */
-    background: #fff;
-    transition: box-shadow .13s, border-color .13s;
-}
 
-.shortcut-card:hover {
-    box-shadow: 0 7px 18px 0 rgba(60, 100, 220, 0.10);
-    border-color: #b7d5ff;
-}
 
 
 
@@ -670,7 +638,7 @@ body {
 /* PRIMARY TABS */
 .p-tabs-container {
     width: 450px;
-    /* Match your .shortcut-card width! */
+    /* Match p-card width */
     max-width: 100vw;
     margin: 0 auto 1.3rem auto;
     /* Centered and spaced from cards below */
@@ -724,13 +692,6 @@ body {
     margin-bottom: 2rem;
 }
 
-.p-card {
-    background: #fff;
-    border-radius: 13px;
-    box-shadow: 0 2.5px 13px rgba(0, 0, 0, 0.09);
-    padding: 1.1rem 1.3rem;
-    margin-bottom: 0.4rem;
-}
 
 .p-card-header {
     font-size: 1.01rem;
@@ -779,13 +740,13 @@ body {
 
 
 
-.shortcut-card-header {
+.p-card-header {
     font-size: 1.09rem;
     font-weight: 700;
     margin-bottom: 0.85rem;
 }
 
-.shortcut-card .shortcut-item {
+.p-card .shortcut-item {
     border: none;
     border-radius: 0;
     background: transparent;
@@ -799,11 +760,11 @@ body {
     gap: 1rem;
 }
 
-.shortcut-card .shortcut-item:not(:last-child) {
+.p-card .shortcut-item:not(:last-child) {
     border-bottom: 1px solid #f5f5f7;
 }
 
-.shortcut-card .shortcut-item:last-child {
+.p-card .shortcut-item:last-child {
     margin-bottom: 0;
 }
 /*────────  Cupertino‑style segmented control  ────────*/
@@ -1002,15 +963,6 @@ body {
 }
 
 
-.p-layout,
-.p-large-title,
-.p-headline,
-.p-callout,
-.p-subhead,
-.p-footnote,
-.p-caption {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif !important;
-}
 
 /* tiny type shrink for narrow screens */
 @media(max-width:520px) {

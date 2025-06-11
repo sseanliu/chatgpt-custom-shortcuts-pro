@@ -2,6 +2,11 @@
 
 The full changelog and feature history is maintained here.
 
+#### [6.6.2025]
+- Switched settings cards to Puppertino `.p-card` markup and styling.
+- Adopted Puppertino form classes for switches and segmented controls.
+- Simplified popup CSS to use built-in Puppertino fonts and spacing.
+
 #### [6.5.2025]
 - Permanently removed "Copy All" buttons; features remain accessible via keyboard shortcuts.
 - Automatically disable TopBarToBottom on Codex pages.
