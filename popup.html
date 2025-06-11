@@ -227,18 +227,24 @@
                                             <a href="#" class="p-segment active tooltip"
                                                 data-setting="selectMessagesSentByUserOrChatGptCheckbox"
                                                 data-tooltip="__MSG_tt_select_all__">
+                                                <input type="radio" id="selectMessagesSentByUserOrChatGptCheckbox"
+                                                    name="messageSelection" />
                                                 <span class="material-symbols-outlined">forum</span>
                                                 <span class="segment-text">User&nbsp;&amp;&nbsp;Assistant</span>
                                             </a>
                                             <a href="#" class="p-segment tooltip"
                                                 data-setting="onlySelectAssistantCheckbox"
                                                 data-tooltip="__MSG_tt_select_assistant__">
+                                                <input type="radio" id="onlySelectAssistantCheckbox"
+                                                    name="messageSelection" />
                                                 <span class="material-symbols-outlined">3p</span>
                                                 <span class="segment-text">Assistant</span>
                                             </a>
                                             <a href="#" class="p-segment tooltip"
                                                 data-setting="onlySelectUserCheckbox"
                                                 data-tooltip="__MSG_tt_select_user__">
+                                                <input type="radio" id="onlySelectUserCheckbox"
+                                                    name="messageSelection" />
                                                 <span class="material-symbols-outlined">mode_comment</span>
                                                 <span class="segment-text">User</span>
                                             </a>
@@ -468,7 +474,7 @@
                                     </div>
                                     <div class="icon-input-container">
                                         <input class="material-input p-form-text" id="copyAll-userSeparator"
-                                            name="copyAll-userSeparator" type="text" value="\n  \n --- --- --- \n \n" />
+                                            name="copyAll-userSeparator" type="text" value=" \n  \n --- --- --- \n \n" />
                                     </div>
                                 </div>
 
@@ -497,7 +503,7 @@
                                     <div class="icon-input-container">
                                         <input class="material-input p-form-text" id="copyCode-userSeparator"
                                             name="copyCode-userSeparator" type="text"
-                                            value="\n  \n --- --- --- \n \n" />
+                                            value=" \n  \n --- --- --- \n \n" />
                                     </div>
                                 </div>
                             </div>

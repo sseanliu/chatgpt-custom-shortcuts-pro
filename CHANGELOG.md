@@ -1,5 +1,11 @@
 # Changelog
 
+#### [6.17.2025]
+##### Fixed
+- Restore message selection radio inputs.
+- Readd leading space in separator values.
+
+
 #### [6.16.2025]
 - Converted shortcut rows to Puppertino form markup.
 - Removed custom gap spacing to use default layout.
