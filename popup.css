@@ -601,9 +601,10 @@ body {
 
 
 .p-card-header {
-  font-weight: 700;
-  color: var(--p-dark-700);
-  margin-bottom: 0.7rem;
+  font-weight: 600;
+  color: var(--p-silver-700);
+  text-transform: uppercase;
+  margin-bottom: 0.4rem;
 }
 
 .shortcut-row {
