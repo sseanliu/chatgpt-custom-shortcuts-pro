@@ -2,22 +2,7 @@
 @import url('https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined');
 @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
 
-/* Define color tokens */
-:root {
-    --text-primary: var(--p-dark-700);
-    --text-secondary: var(--p-silver-700);
-    --border-light: var(--p-silver-300);
-    --bg-primary: var(--p-silver-100);
-    --bg-secondary: var(--p-silver-100);
-    --highlight-color: var(--p-blueberry-500);
-    --segment-bg: var(--p-silver-100);
-    --segment-border: var(--p-silver-300);
-    --segment-active-bg: var(--p-silver-100);
-    --segment-active-border: var(--p-blueberry-300);
-    --segment-active-shadow: 0 2.5px 10px 0 rgba(0, 122, 255, 0.06);
-    --segment-text: var(--p-dark-700);
-    --segment-active-text: var(--p-blueberry-500);
-}
+/* Rely on Puppertino color tokens */
 
 /* Base resets */
 * {
@@ -156,7 +141,7 @@ h1 {
 
 /* Shortcut Name */
 .shortcut-label {
-  color: var(--text-primary);
+  color: var(--p-dark-700);
   font-weight: 500;
   text-wrap: balance;
 }
@@ -179,7 +164,7 @@ h1 {
 
 .material-icons-outlined {
     font-size: 18px;
-    color: var(--text-secondary);
+    color: var(--p-silver-700);
 }
 
 
@@ -191,18 +176,18 @@ h1 {
     font-weight: 500;
     padding: 0 10px;
     min-width: 34px;
-    border: 1.2px solid var(--border-light);
+    border: 1.2px solid var(--p-silver-300);
     border-radius: 7px;
     text-align: center;
-    background: var(--bg-secondary);
-    color: var(--text-primary);
+    background: var(--p-silver-100);
+    color: var(--p-dark-700);
     margin-left: 2px;
     vertical-align: middle;
     transition: border-color .14s;
 }
 
 .key-input:focus {
-    border-color: var(--highlight-color);
+    border-color: var(--p-blueberry-500);
     outline: none;
 }
 
@@ -220,8 +205,8 @@ h1 {
     height: 1.8rem;
     font-size: 0.93em;
     border-radius: 7px;
-    border: 1px solid var(--border-light);
-    background: var(--bg-secondary);
+    border: 1px solid var(--p-silver-300);
+    background: var(--p-silver-100);
     padding: 0 6px;
     margin-left: 2px;
 }
@@ -263,7 +248,7 @@ h1 {
     font-size: 0.65rem;
     font-weight: 600;
     color: white;
-    background-color: var(--highlight-color);
+    background-color: var(--p-blueberry-500);
     /* Material blue */
     padding: 2px 6px;
     border-radius: 4px;
@@ -296,7 +281,7 @@ h1 {
     appearance: none;
     width: 12px;
     height: 12px;
-    background: var(--highlight-color);
+    background: var(--p-blueberry-500);
     border-radius: 50%;
     cursor: pointer;
     margin-top: -4px;
@@ -434,9 +419,9 @@ h1 {
 .message-selection-group {
     display: flex;
     justify-content: center;
-    border: 1.5px solid var(--segment-border);
+    border: 1.5px solid var(--p-silver-300);
     border-radius: 13px;
-    background: var(--segment-bg);
+    background: var(--p-silver-100);
     max-width: 420px;
     width: 100%;
     margin: 4px auto 0 auto;
@@ -459,7 +444,7 @@ h1 {
 }
 
 .auto-copy-toggle .toggle-label-col {
-  color: var(--text-primary);
+  color: var(--p-dark-700);
 }
 
 #toast-container .toast {
@@ -617,7 +602,7 @@ body {
 
 .p-card-header {
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--p-dark-700);
   margin-bottom: 0.7rem;
 }
 
@@ -641,16 +626,16 @@ body {
 .shortcut-keys input[type="text"] {
     width: 40px;
     border-radius: 6px;
-    border: 1px solid var(--border-light);
-    background: var(--bg-secondary);
+    border: 1px solid var(--p-silver-300);
+    background: var(--p-silver-100);
     text-align: center;
     font-weight: 500;
-    color: var(--text-primary);
+    color: var(--p-dark-700);
     transition: border-color .13s;
 }
 
 .shortcut-keys input[type="text"]:focus {
-    border-color: var(--highlight-color);
+    border-color: var(--p-blueberry-500);
     outline: none;
 }
 
@@ -685,7 +670,7 @@ body {
 }
 
 .toggle-label-col {
-  color: var(--text-primary);
+  color: var(--p-dark-700);
 }
 
 .toggle-switch-col {
@@ -743,7 +728,7 @@ body {
 
 /* divider only between inactive neighbours */
 .message-selection-group .p-segment+.p-segment {
-    border-left: 1px solid var(--segment-border);
+    border-left: 1px solid var(--p-silver-300);
 }
 
 /* ACTIVE pill – solid blue fill, white icon/text */

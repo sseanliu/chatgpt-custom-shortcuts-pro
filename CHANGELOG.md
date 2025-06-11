@@ -1,42 +1,24 @@
 # Changelog
 
-#### [6.18.2025]
-##### Changed
-- Tweak card spacing for iOS look.
-
-#### [6.17.2025]
-##### Fixed
-- Restore message selection radio inputs.
-- Readd leading space in separator values.
-
-
-#### [6.16.2025]
-- Converted shortcut rows to Puppertino form markup.
-- Removed custom gap spacing to use default layout.
-
-#### [6.15.2025]
-- Removed custom switch width to restore Puppertino default size.
-- Fixed top bar option label targeting correct checkbox.
-
-#### [6.14.2025]
-- Simplified card CSS to inherit Puppertino defaults.
-
-
-The full changelog and feature history is maintained here.
-
-#### [6.13.2025]
-- Wrap popup contents in Puppertino layout container.
-
-#### [6.12.2025]
-- Align popup font sizes with Puppertino layout tokens.
-- Restore default card spacing.
-
 #### [6.11.2025]
 - Adjusted shortcut card margins for improved spacing.
 - Switched tabs and copy-behavior controls to Puppertino scripts.
 - Switched settings cards to Puppertino `.p-card` markup and styling.
 - Adopted Puppertino form classes for switches and segmented controls.
 - Simplified popup CSS to use built-in Puppertino fonts and spacing.
+- Align popup font sizes with Puppertino layout tokens.
+- Restore default card spacing.
+- Wrap popup contents in Puppertino layout container.
+- Simplified card CSS to inherit Puppertino defaults.
+- Removed custom switch width to restore Puppertino default size.
+- Fixed top bar option label targeting correct checkbox.
+- Converted shortcut rows to Puppertino form markup.
+- Removed custom gap spacing to use default layout.
+- Restore message selection radio inputs.
+- Readd leading space in separator values.
+- Tweak card spacing for iOS look.
+- Cleaned popup.css rules duplicated from Puppertino defaults.
+
 
 #### [6.5.2025]
 - Permanently removed "Copy All" buttons; features remain accessible via keyboard shortcuts.
