@@ -1,5 +1,8 @@
 # Changelog
 
+#### [6.15.2025]
+- Removed custom switch width to restore Puppertino default size.
+
 #### [6.14.2025]
 - Simplified card CSS to inherit Puppertino defaults.
 
