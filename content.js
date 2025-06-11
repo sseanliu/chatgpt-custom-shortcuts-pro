@@ -94,6 +94,7 @@ function applyVisibilitySettings(data) {
     // Value: [defaultIfUndefined, defaultIfMissing]
     const settingsMap = {
         moveTopBarToBottomCheckbox: false,
+        pageUpDownTakeover: true,
         hideArrowButtonsCheckbox: false,
         removeMarkdownOnCopyCheckbox: true,
         selectMessagesSentByUserOrChatGptCheckbox: true,
@@ -130,6 +131,7 @@ window.applyVisibilitySettings = applyVisibilitySettings;
     chrome.storage.sync.get([
         'hideArrowButtonsCheckbox',
         'moveTopBarToBottomCheckbox',
+        'pageUpDownTakeover',
         'removeMarkdownOnCopyCheckbox',
         'selectMessagesSentByUserOrChatGptCheckbox',
         'onlySelectUserCheckbox',
