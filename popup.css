@@ -42,9 +42,9 @@ body {
 
 
 .shortcut-container {
+  max-width: 420px;
   margin: 0 auto;
   padding: 1rem;
-  max-width: 100%;
 }
 
 
