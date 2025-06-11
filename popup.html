@@ -214,21 +214,24 @@
                                     <div class="shortcut-keys">
                                         <div class="p-segmented-controls message-selection-group" role="radiogroup"
                                             aria-labelledby="label_select_copy_behavior">
-                                            <input type="radio" id="select-all" name="messageSelection" value="all" />
-                                            <label for="select-all" class="p-segment tooltip" data-tooltip="__MSG_tt_select_all__">
+                                            <a href="#" class="p-segment active tooltip"
+                                                data-setting="selectMessagesSentByUserOrChatGptCheckbox"
+                                                data-tooltip="__MSG_tt_select_all__">
                                                 <span class="material-symbols-outlined">forum</span>
                                                 <span class="segment-text">User&nbsp;&amp;&nbsp;Assistant</span>
-                                            </label>
-                                            <input type="radio" id="select-assistant" name="messageSelection" value="assistant" />
-                                            <label for="select-assistant" class="p-segment tooltip" data-tooltip="__MSG_tt_select_assistant__">
+                                            </a>
+                                            <a href="#" class="p-segment tooltip"
+                                                data-setting="onlySelectAssistantCheckbox"
+                                                data-tooltip="__MSG_tt_select_assistant__">
                                                 <span class="material-symbols-outlined">3p</span>
                                                 <span class="segment-text">Assistant</span>
-                                            </label>
-                                            <input type="radio" id="select-user" name="messageSelection" value="user" />
-                                            <label for="select-user" class="p-segment tooltip" data-tooltip="__MSG_tt_select_user__">
+                                            </a>
+                                            <a href="#" class="p-segment tooltip"
+                                                data-setting="onlySelectUserCheckbox"
+                                                data-tooltip="__MSG_tt_select_user__">
                                                 <span class="material-symbols-outlined">mode_comment</span>
                                                 <span class="segment-text">User</span>
-                                            </label>
+                                            </a>
                                         </div>
                                     </div>
                                 </div>
