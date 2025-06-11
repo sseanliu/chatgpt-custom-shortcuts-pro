@@ -20,14 +20,16 @@ body {
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  background: var(--p-silver-100);
+  background: var(--bg-primary);
+  font-size: 1rem;
+  font-family: -apple-system, "Inter", sans-serif;
 }
 
 
 .shortcut-container {
+  max-width: 420px;
   margin: 0 auto;
   padding: 1rem;
-  max-width: 100%;
 }
 
 
@@ -642,29 +644,17 @@ body {
 
 
 .p-card {
-    margin-bottom: 2rem;
+  margin: 0 0 0.75rem 0;
+  border-radius: 12px;
+  padding: 0.75rem 0;
 }
-
-
-
 
 .p-card .shortcut-item {
-    margin-bottom: 1px;
+  padding: 0.5rem 1rem;
 }
-
-
 
 .p-card .shortcut-item:not(:last-child) {
-    border-bottom: 1px solid var(--p-bd-card);
-}
-
-.p-card .shortcut-item:first-child {
-    padding-top: 0;
-}
-
-.p-card .shortcut-item:last-child {
-    padding-bottom: 0;
-    margin-bottom: 0;
+  border-bottom: 1px solid var(--p-bd-card);
 }
 /*────────  Cupertino‑style segmented control  ────────*/
 
