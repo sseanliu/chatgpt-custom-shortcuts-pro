@@ -287,11 +287,15 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('moveTopBarToBottomCheckbox').checked = defaults.moveTopBarToBottomCheckbox;
             document.getElementById('pageUpDownTakeover').checked = defaults.pageUpDownTakeover;
             const selectionAnchors = document.querySelectorAll('.message-selection-group a');
-            let activeSelection = 'selectMessagesSentByUserOrChatGptCheckbox';
+            let activeSelection = null;
+            if (defaults.selectMessagesSentByUserOrChatGptCheckbox) activeSelection = 'selectMessagesSentByUserOrChatGptCheckbox';
             if (defaults.onlySelectUserCheckbox) activeSelection = 'onlySelectUserCheckbox';
             if (defaults.onlySelectAssistantCheckbox) activeSelection = 'onlySelectAssistantCheckbox';
             selectionAnchors.forEach(a => {
-                a.classList.toggle('active', a.dataset.setting === activeSelection);
+                const isActive = a.dataset.setting === activeSelection;
+                a.classList.toggle('active', isActive);
+                const input = a.querySelector('input[type="radio"]');
+                if (input) input.checked = isActive;
             });
             document.getElementById('disableCopyAfterSelectCheckbox').checked = defaults.disableCopyAfterSelectCheckbox;
             document.getElementById('enableSendWithControlEnterCheckbox').checked = defaults.enableSendWithControlEnterCheckbox;
@@ -367,6 +371,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     onlySelectAssistantCheckbox: false
                 };
                 obj[key] = true;
+                document.querySelectorAll('.message-selection-group a').forEach(a => {
+                    const isActive = a.dataset.setting === key;
+                    a.classList.toggle('active', isActive);
+                    const input = a.querySelector('input[type="radio"]');
+                    if (input) input.checked = isActive;
+                });
                 chrome.storage.sync.set(obj, () => {
                     if (chrome.runtime.lastError) {
                         console.error('Error saving option:', chrome.runtime.lastError);
