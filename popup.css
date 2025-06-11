@@ -20,7 +20,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  background: var(--bg-primary);
+  background: var(--p-silver-100);
   font-size: 1rem;
   font-family: -apple-system, "Inter", sans-serif;
 }

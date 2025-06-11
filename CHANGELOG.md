@@ -1,5 +1,8 @@
 # Changelog
 
+#### [6.12.2025]
+- Set popup background to `var(--p-silver-100)` for gray page tone.
+
 #### [6.11.2025]
 - Adjusted shortcut card margins for improved spacing.
 - Switched tabs and copy-behavior controls to Puppertino scripts.
