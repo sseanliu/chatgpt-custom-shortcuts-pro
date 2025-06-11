@@ -501,12 +501,6 @@ document.addEventListener('DOMContentLoaded', function () {
         tooltipContainer.style.display = visible ? 'flex' : 'none';
     }
 
-
-    // Fix: Ensure opacity UI reflects checkbox state from storage
-    function toggleOpacityUI(visible) {
-        tooltipContainer.style.display = visible ? 'flex' : 'none';
-    }
-
     // Update visibility initially and on change
     chrome.storage.sync.get('moveTopBarToBottomCheckbox', ({ moveTopBarToBottomCheckbox }) => {
         const isVisible = moveTopBarToBottomCheckbox !== undefined ? moveTopBarToBottomCheckbox : false;
