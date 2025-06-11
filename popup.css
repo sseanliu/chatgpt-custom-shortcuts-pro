@@ -42,19 +42,9 @@ body {
 
 
 .shortcut-container {
-    width: 750px;
-    max-width: 100%;
-    margin: 0 auto;
-    padding: 1.2rem 0 2.5rem 0;
-    background: none;
-    /* <--- NO background color */
-    border-radius: 0;
-    /* <--- NO border radius */
-    box-shadow: none;
-    /* <--- NO shadow */
-    border: none;
-    /* <--- NO border */
-    display: block;
+  margin: 0 auto;
+  padding: 1rem;
+  max-width: 100%;
 }
 
 
@@ -132,10 +122,8 @@ body {
 
 /* Title */
 h1 {
-    font-size: 2.25rem;
-    font-weight: 500;
-    text-align: center;
-    margin-bottom: 1rem;
+  text-align: center;
+  margin-bottom: 1rem;
 }
 
 /* Grid Layout */
@@ -159,19 +147,18 @@ h1 {
 
 /* Shortcut Block */
 .shortcut-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.75rem 1rem;
-    min-height: 3.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  min-height: 3.5rem;
 }
 
 /* Shortcut Name */
 .shortcut-label {
-    font-size: 0.8rem;
-    color: var(--text-primary);
-    font-weight: 500;
-    text-wrap: balance;
+  color: var(--text-primary);
+  font-weight: 500;
+  text-wrap: balance;
 }
 
 /* Key Input */
@@ -181,8 +168,7 @@ h1 {
 }
 
 .key-text {
-    font-size: 0.8rem;
-    font-weight: bold;
+  font-weight: bold;
 }
 
 
@@ -473,8 +459,7 @@ h1 {
 }
 
 .auto-copy-toggle .toggle-label-col {
-    font-size: .97em;
-    color: var(--text-primary);
+  color: var(--text-primary);
 }
 
 #toast-container .toast {
@@ -524,6 +509,101 @@ body {
     font-size: 1.01rem;
 }
 
+/* Utility classes for popup layout */
+.icon-middle {
+  vertical-align: middle;
+}
+
+.mp-options {
+  display: flex;
+  gap: 2rem;
+  margin-top: 0;
+}
+
+.mp-option {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.relative {
+  position: relative;
+}
+
+.flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+}
+
+.flex-static {
+  flex: 0 0 auto;
+}
+
+.mb-4px {
+  margin-bottom: 4px;
+}
+
+.flex-1-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.flex-column-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  max-width: 300px;
+  transform: scale(1);
+  transform-origin: top center;
+}
+
+.svg-small {
+  width: 20px;
+  height: 20px;
+  display: block;
+  opacity: 0.6;
+}
+
+.w-70 {
+  width: 70%;
+}
+
+.flex-gap-4 {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.icon-input-container {
+  flex-shrink: 0;
+}
+
+#panel-changelog {
+  padding: 0;
+  height: 400px;
+  overflow: hidden;
+}
+
+#panel-changelog .shortcut-container {
+  height: 100%;
+  padding: 0;
+  background: none;
+  box-shadow: none;
+}
+
+.changelog-frame {
+  border: 0;
+  width: 100%;
+  height: 100%;
+}
+
 
 
 
@@ -536,11 +616,9 @@ body {
 
 
 .p-card-header {
-    font-size: 1.34rem;
-    font-weight: 700;
-    color: var(--text-primary);
-    margin-bottom: 0.7rem;
-    padding: 0 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.7rem;
 }
 
 .shortcut-row {
@@ -619,8 +697,7 @@ body {
 }
 
 .toggle-label-col {
-    font-size: 0.97em;
-    color: var(--text-primary);
+  color: var(--text-primary);
 }
 
 .toggle-switch-col {
