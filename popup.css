@@ -202,10 +202,6 @@ h1 {
     margin-left: 2px;
 }
 
-.p-form-switch {
-  margin-left: var(--p-h-spacing);
-  margin-right: var(--p-h-spacing);
-}
 
 
 @keyframes pulse-highlight {
