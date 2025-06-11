@@ -7,6 +7,18 @@ const root = path.resolve(__dirname, '..');
 const popupHtml = fs.readFileSync(path.join(root, 'popup.html'), 'utf8');
 const popupJs = fs.readFileSync(path.join(root, 'popup.js'), 'utf8');
 
+function parseDefaults() {
+    const match = popupJs.match(/const defaults = {([\s\S]*?)^\s*};/m);
+    if (!match) throw new Error('Defaults object not found in popup.js');
+    const body = match[1];
+    const defaults = {};
+    body.split(/\n/).forEach(line => {
+        const m = line.match(/(\w+):[^?]*\?[^:]*:\s*(true|false)/);
+        if (m) defaults[m[1]] = m[2] === 'true';
+    });
+    return defaults;
+}
+
 function getInputIds() {
     const dom = new JSDOM(popupHtml);
     const { document } = dom.window;
@@ -47,18 +59,12 @@ function loadPopup(storage) {
 }
 
 const ids = getInputIds();
-const defaults = {
-    hideArrowButtonsCheckbox: false,
-    removeMarkdownOnCopyCheckbox: true,
-    moveTopBarToBottomCheckbox: false,
-    pageUpDownTakeover: true,
-    disableCopyAfterSelectCheckbox: false,
-    enableSendWithControlEnterCheckbox: true,
-    enableStopWithControlBackspaceCheckbox: true,
-    useAltForModelSwitcherRadio: true,
-    useControlForModelSwitcherRadio: false,
-    rememberSidebarScrollPositionCheckbox: false
-};
+const defaults = parseDefaults();
+
+// Ensure every checkbox/radio has a default value defined
+ids.forEach(id => {
+    assert.ok(id in defaults, `Missing default for ${id}`);
+});
 
 const originalLog = console.log;
 console.log = () => {};
