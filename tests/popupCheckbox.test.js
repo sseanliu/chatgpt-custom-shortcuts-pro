@@ -35,9 +35,10 @@ function loadPopup(storage) {
     window.chrome = {
         storage: {
             sync: {
-                get(keys, cb) {
-                    const res = {};
-                    if (typeof keys === 'string') res[keys] = storage[keys];
+    assert.ok(
+        Object.prototype.hasOwnProperty.call(defaults, id),
+        `Missing default for checkbox ID: ${id}`
+    );
                     else if (Array.isArray(keys)) keys.forEach(k => { res[k] = storage[k]; });
                     else if (keys) Object.keys(keys).forEach(k => { res[k] = storage[k]; });
                     cb(res);
