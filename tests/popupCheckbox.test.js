@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const assert = require('assert');
-const { JSDOM } = require('jsdom');
+const { JSDOM, VirtualConsole } = require('jsdom');
 
 const root = path.resolve(__dirname, '..');
 const popupHtml = fs.readFileSync(path.join(root, 'popup.html'), 'utf8');
@@ -16,7 +16,8 @@ function getInputIds() {
 }
 
 function loadPopup(storage) {
-    const dom = new JSDOM(popupHtml, { runScripts: 'outside-only' });
+    const virtualConsole = new VirtualConsole();
+    const dom = new JSDOM(popupHtml, { runScripts: 'outside-only', virtualConsole });
     const { window } = dom;
 
     window.chrome = {
@@ -59,21 +60,28 @@ const defaults = {
     rememberSidebarScrollPositionCheckbox: false
 };
 
-ids.forEach(id => {
-    // Default when storage is empty
-    let state = {};
-    let result = loadPopup(state);
-    assert.strictEqual(result.window.document.getElementById(id).checked, defaults[id]);
+const originalLog = console.log;
+console.log = () => {};
 
-    // Explicit true value
-    state = { [id]: true };
-    result = loadPopup(state);
-    assert.strictEqual(result.window.document.getElementById(id).checked, true);
+try {
+    ids.forEach(id => {
+        // Default when storage is empty
+        let state = {};
+        let result = loadPopup(state);
+        assert.strictEqual(result.window.document.getElementById(id).checked, defaults[id]);
 
-    // Explicit false value
-    state = { [id]: false };
-    result = loadPopup(state);
-    assert.strictEqual(result.window.document.getElementById(id).checked, false);
-});
+        // Explicit true value
+        state = { [id]: true };
+        result = loadPopup(state);
+        assert.strictEqual(result.window.document.getElementById(id).checked, true);
+
+        // Explicit false value
+        state = { [id]: false };
+        result = loadPopup(state);
+        assert.strictEqual(result.window.document.getElementById(id).checked, false);
+    });
+} finally {
+    console.log = originalLog;
+}
 
 console.log('Popup checkbox and radio state tests passed.');
