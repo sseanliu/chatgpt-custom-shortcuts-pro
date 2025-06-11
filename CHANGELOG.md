@@ -18,6 +18,7 @@
 - Readd leading space in separator values.
 - Tweak card spacing for iOS look.
 - Cleaned popup.css rules duplicated from Puppertino defaults.
+- Align settings rows using Puppertino baseline layout and spacing tokens.
 
 
 #### [6.5.2025]

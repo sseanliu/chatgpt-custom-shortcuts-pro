@@ -212,8 +212,8 @@ h1 {
 }
 
 .p-form-switch {
-    margin-left: 0.3em;
-    margin-right: 0.2em;
+  margin-left: var(--p-h-spacing);
+  margin-right: var(--p-h-spacing);
 }
 
 
