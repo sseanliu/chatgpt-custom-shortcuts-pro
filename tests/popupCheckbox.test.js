@@ -1,11 +1,23 @@
 const fs = require('fs');
 const path = require('path');
 const assert = require('assert');
-const { JSDOM } = require('jsdom');
+const { JSDOM, VirtualConsole } = require('jsdom');
 
 const root = path.resolve(__dirname, '..');
 const popupHtml = fs.readFileSync(path.join(root, 'popup.html'), 'utf8');
 const popupJs = fs.readFileSync(path.join(root, 'popup.js'), 'utf8');
+
+function parseDefaults() {
+    const match = popupJs.match(/const defaults = {([\s\S]*?)^\s*};/m);
+    if (!match) throw new Error('Defaults object not found in popup.js');
+    const body = match[1];
+    const defaults = {};
+    body.split(/\n/).forEach(line => {
+        const m = line.match(/(\w+):[^?]*\?[^:]*:\s*(true|false)/);
+        if (m) defaults[m[1]] = m[2] === 'true';
+    });
+    return defaults;
+}
 
 function getInputIds() {
     const dom = new JSDOM(popupHtml);
@@ -16,7 +28,8 @@ function getInputIds() {
 }
 
 function loadPopup(storage) {
-    const dom = new JSDOM(popupHtml, { runScripts: 'outside-only' });
+    const virtualConsole = new VirtualConsole();
+    const dom = new JSDOM(popupHtml, { runScripts: 'outside-only', virtualConsole });
     const { window } = dom;
 
     window.chrome = {
@@ -46,20 +59,11 @@ function loadPopup(storage) {
 }
 
 const ids = getInputIds();
-const defaults = {
-    hideArrowButtonsCheckbox: false,
-    removeMarkdownOnCopyCheckbox: true,
-    moveTopBarToBottomCheckbox: false,
-    pageUpDownTakeover: true,
-    disableCopyAfterSelectCheckbox: false,
-    enableSendWithControlEnterCheckbox: true,
-    enableStopWithControlBackspaceCheckbox: true,
-    useAltForModelSwitcherRadio: true,
-    useControlForModelSwitcherRadio: false,
-    rememberSidebarScrollPositionCheckbox: false
-};
+const defaults = parseDefaults();
 
+// Ensure every checkbox/radio has a default value defined
 ids.forEach(id => {
+
     if (!Object.prototype.hasOwnProperty.call(defaults, id)) {
         throw new Error(`Missing default for checkbox ID: ${id}`);
     }
@@ -68,15 +72,29 @@ ids.forEach(id => {
     let result = loadPopup(state);
     assert.strictEqual(result.window.document.getElementById(id).checked, defaults[id]);
 
-    // Explicit true value
-    state = { [id]: true };
-    result = loadPopup(state);
-    assert.strictEqual(result.window.document.getElementById(id).checked, true);
 
-    // Explicit false value
-    state = { [id]: false };
-    result = loadPopup(state);
-    assert.strictEqual(result.window.document.getElementById(id).checked, false);
-});
+const originalLog = console.log;
+console.log = () => {};
+
+try {
+    ids.forEach(id => {
+        // Default when storage is empty
+        let state = {};
+        let result = loadPopup(state);
+        assert.strictEqual(result.window.document.getElementById(id).checked, defaults[id]);
+
+        // Explicit true value
+        state = { [id]: true };
+        result = loadPopup(state);
+        assert.strictEqual(result.window.document.getElementById(id).checked, true);
+
+        // Explicit false value
+        state = { [id]: false };
+        result = loadPopup(state);
+        assert.strictEqual(result.window.document.getElementById(id).checked, false);
+    });
+} finally {
+    console.log = originalLog;
+}
 
 console.log('Popup checkbox and radio state tests passed.');
