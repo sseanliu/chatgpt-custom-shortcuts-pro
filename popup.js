@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Replace shortcut labels for Mac
-    const altLabel = isMac ? "Opt ⌥" : "Alt +";
+    const altLabel = isMac ? "Control + " : "Alt +";
     const ctrlLabel = isMac ? "Command + " : "Control + ";
     document.querySelectorAll(".shortcut span, .key-text.platform-alt-label").forEach(span => {
         if (span.textContent.includes("Alt +")) {

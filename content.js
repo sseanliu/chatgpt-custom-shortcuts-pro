@@ -359,19 +359,17 @@ window.applyVisibilitySettings = applyVisibilitySettings;
 
         if (targetMessage) {
             gsap.to(scrollContainer, {
-                duration: .4,
+                duration: 0,
                 scrollTo: {
                     y: targetMessage.offsetTop - scrollOffset
-                },
-                ease: "power4.out"
+                }
             });
         } else {
             gsap.to(scrollContainer, {
-                duration: .6,
+                duration: 0,
                 scrollTo: {
                     y: 0
-                },
-                ease: "power4.out"
+                }
             });
         }
 
@@ -451,15 +449,13 @@ window.applyVisibilitySettings = applyVisibilitySettings;
 
         if (targetMessage) {
             gsap.to(scrollContainer, {
-                duration: 0.4,
-                scrollTo: { y: targetMessage.offsetTop - scrollOffset },
-                ease: "power4.out"
+                duration: 0,
+                scrollTo: { y: targetMessage.offsetTop - scrollOffset }
             });
         } else {
             gsap.to(scrollContainer, {
-                duration: 0.6,
-                scrollTo: { y: scrollContainer.scrollHeight - scrollContainer.clientHeight },
-                ease: "power4.out"
+                duration: 0,
+                scrollTo: { y: scrollContainer.scrollHeight - scrollContainer.clientHeight }
             });
         }
 
@@ -689,6 +685,28 @@ window.applyVisibilitySettings = applyVisibilitySettings;
                     goDownOneMessage(); // function is available even when button is hidden
                 }
             },
+            // Ctrl+I: Scroll up twice (2x Ctrl+A)
+            'i': () => {
+                const upButton = document.getElementById('upButton');
+                if (upButton) {
+                    upButton.click();
+                    upButton.click(); // Instant double scroll
+                } else {
+                    goUpOneMessage();
+                    goUpOneMessage();
+                }
+            },
+            // Ctrl+O: Scroll down twice (2x Ctrl+F) 
+            'o': () => {
+                const downButton = document.getElementById('downButton');
+                if (downButton) {
+                    downButton.click();
+                    downButton.click(); // Instant double scroll
+                } else {
+                    goDownOneMessage();
+                    goDownOneMessage();
+                }
+            },
             [shortcuts.shortcutKeyCopyAllResponses]: copyAll,
             [shortcuts.shortcutKeyCopyAllCodeBlocks]: copyCode,
             [shortcuts.shortcutKeyCopyLowest]: () => {
@@ -740,7 +758,7 @@ window.applyVisibilitySettings = applyVisibilitySettings;
                 setTimeout(() => {
                     try {
                         const allButtons = Array.from(
-                            document.querySelectorAll('button svg path[d^="M13.2929 4.29291"]')
+                            document.querySelectorAll('button svg path[d^="M11.3312 3.56837"]')
                         ).map(svgPath => svgPath.closest('button'));
 
                         const composerBackground = document.getElementById('composer-background');
@@ -1357,20 +1375,20 @@ window.applyVisibilitySettings = applyVisibilitySettings;
                 ? event.key.toLowerCase()
                 : event.key;
 
-            // Handle Alt-based shortcuts (only if Alt is enabled for model switching or not a model-switch combo)
-            if (isAltPressed && !isCtrlPressed) {
+            // Handle main shortcuts (Control+Key on Mac, Alt+Key on Windows/Linux)
+            if ((isMac ? event.ctrlKey : event.altKey) && !isCtrlPressed) {
 
-                // Always open menu for Alt+W (or whatever your toggle key is)
+                // Always open menu for Control+W on Mac or Alt+W on Windows/Linux (or whatever toggle key is)
                 if (keyIdentifier === modelToggleKey) {
                     event.preventDefault();
                     window.toggleModelSelector();
                     return;
                 }
 
-                // Only block Alt+1-5 if using Ctrl/Cmd for model switching
+                // Only block Control+1-5 on Mac or Alt+1-5 on Windows/Linux if using Ctrl/Cmd for model switching
                 if (window.useAltForModelSwitcherRadio === false) {
                     if (/^\d$/.test(keyIdentifier)) {
-                        // Only block Alt+1 through Alt+5, but NOT the toggle key
+                        // Only block the number keys, but NOT the toggle key
                         return;
                     }
                 }
@@ -1383,7 +1401,7 @@ window.applyVisibilitySettings = applyVisibilitySettings;
 
             // Handle Ctrl/Command‑based shortcuts (model‑menu **toggle** only)
             // Number‑key selection is left to the IIFE so we don’t duplicate logic.
-            if (isCtrlPressed && !isAltPressed) {
+            if (isCtrlPressed && !(isMac ? event.ctrlKey : event.altKey)) {
 
                 // If user chose Ctrl/Cmd for the model switcher, only intercept the toggle key (e.g. Ctrl + W).
                 if (window.useControlForModelSwitcherRadio === true && keyIdentifier === modelToggleKey) {
