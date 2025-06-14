@@ -110,6 +110,18 @@
     "tt_scroll_bottom": {
         "message": "Activate the native scroll-to-bottom button."
     },
+    "label_scroll_up_twice": {
+        "message": "Scroll Up Twice"
+    },
+    "label_scroll_down_twice": {
+        "message": "Scroll Down Twice"
+    },
+    "tt_scroll_up_twice": {
+        "message": "Scroll up two messages at once for faster navigation."
+    },
+    "tt_scroll_down_twice": {
+        "message": "Scroll down two messages at once for faster navigation."
+    },
     "tt_pgup_pgdown": {
         "message": "Check to make your keyboard's PageUp and PageDown keys scroll the conversation instead of the input box. Uncheck to disable."
     },
@@ -166,6 +178,18 @@
     },
     "tt_next_thread": {
         "message": "Go to next thread in current conversation. Clicks lowest visible > button."
+    },
+    "label_prev_question": {
+        "message": "Previous Question"
+    },
+    "label_next_question": {
+        "message": "Next Question"
+    },
+    "tt_prev_question": {
+        "message": "Navigate to the previous question in the conversation history."
+    },
+    "tt_next_question": {
+        "message": "Navigate to the next question in the conversation history."
     },
     "tt_edit_msg": {
         "message": "Click edit on a previous message. If multiple, clicks lowest."

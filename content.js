@@ -531,7 +531,7 @@ window.applyVisibilitySettings = applyVisibilitySettings;
 
 
     // @note Keyboard shortcut defaults 
-    chrome.storage.sync.get(['shortcutKeyScrollUpOneMessage', 'shortcutKeyScrollDownOneMessage', 'shortcutKeyCopyLowest', 'shortcutKeyEdit', 'shortcutKeySendEdit', 'shortcutKeyCopyAllResponses', 'shortcutKeyCopyAllCodeBlocks', 'shortcutKeyClickNativeScrollToBottom', 'shortcutKeyScrollToTop', 'shortcutKeyNewConversation', 'shortcutKeySearchConversationHistory', 'shortcutKeyToggleSidebar', 'shortcutKeyActivateInput', 'shortcutKeySearchWeb', 'shortcutKeyPreviousThread', 'shortcutKeyNextThread', 'selectThenCopy', 'shortcutKeyToggleSidebarFoldersButton', 'shortcutKeyClickSendButton', 'shortcutKeyClickStopButton', 'shortcutKeyToggleModelSelector', 'shortcutKeyRegenerate'], (data) => {
+    chrome.storage.sync.get(['shortcutKeyScrollUpOneMessage', 'shortcutKeyScrollDownOneMessage', 'shortcutKeyCopyLowest', 'shortcutKeyEdit', 'shortcutKeySendEdit', 'shortcutKeyCopyAllResponses', 'shortcutKeyCopyAllCodeBlocks', 'shortcutKeyClickNativeScrollToBottom', 'shortcutKeyScrollToTop', 'shortcutKeyNewConversation', 'shortcutKeySearchConversationHistory', 'shortcutKeyToggleSidebar', 'shortcutKeyActivateInput', 'shortcutKeySearchWeb', 'shortcutKeyPreviousThread', 'shortcutKeyNextThread', 'selectThenCopy', 'shortcutKeyToggleSidebarFoldersButton', 'shortcutKeyClickSendButton', 'shortcutKeyClickStopButton', 'shortcutKeyToggleModelSelector', 'shortcutKeyRegenerate', 'shortcutKeyScrollUpTwice', 'shortcutKeyScrollDownTwice', 'shortcutKeyPreviousQuestion', 'shortcutKeyNextQuestion'], (data) => {
         const shortcutDefaults = {
             shortcutKeyScrollUpOneMessage: 'a',
             shortcutKeyScrollDownOneMessage: 'f',
@@ -554,7 +554,11 @@ window.applyVisibilitySettings = applyVisibilitySettings;
             shortcutKeyClickSendButton: 'Enter',
             shortcutKeyClickStopButton: 'Backspace',
             shortcutKeyToggleModelSelector: '/',
-            shortcutKeyRegenerate: 'r'
+            shortcutKeyRegenerate: 'r',
+            shortcutKeyScrollUpTwice: 'i',
+            shortcutKeyScrollDownTwice: 'o',
+            shortcutKeyPreviousQuestion: 'j',
+            shortcutKeyNextQuestion: 'k'
         };
 
         const shortcuts = {};
@@ -685,8 +689,7 @@ window.applyVisibilitySettings = applyVisibilitySettings;
                     goDownOneMessage(); // function is available even when button is hidden
                 }
             },
-            // Ctrl+I: Scroll up twice (2x Ctrl+A)
-            'i': () => {
+            [shortcuts.shortcutKeyScrollUpTwice]: () => {
                 const upButton = document.getElementById('upButton');
                 if (upButton) {
                     upButton.click();
@@ -696,8 +699,7 @@ window.applyVisibilitySettings = applyVisibilitySettings;
                     goUpOneMessage();
                 }
             },
-            // Ctrl+O: Scroll down twice (2x Ctrl+F) 
-            'o': () => {
+            [shortcuts.shortcutKeyScrollDownTwice]: () => {
                 const downButton = document.getElementById('downButton');
                 if (downButton) {
                     downButton.click();
@@ -706,6 +708,104 @@ window.applyVisibilitySettings = applyVisibilitySettings;
                     goDownOneMessage();
                     goDownOneMessage();
                 }
+            },
+            [shortcuts.shortcutKeyPreviousQuestion]: () => {
+                setTimeout(() => {
+                    try {
+                        const allButtons = Array.from(
+                            document.querySelectorAll('button svg path[d^="M11.5292 3.7793C11.7889 3.5196"]')
+                        ).map(svgPath => svgPath.closest('button'));
+
+                        const composerBackground = document.getElementById('composer-background');
+                        const composerRect = composerBackground ? composerBackground.getBoundingClientRect() : null;
+
+                        const visibleButtons = allButtons.filter(button => {
+                            if (!button) return false;
+                            const rect = button.getBoundingClientRect();
+
+                            const isVisible = (
+                                rect.bottom > 0 &&
+                                rect.right > 0 &&
+                                rect.top < (window.innerHeight || document.documentElement.clientHeight) &&
+                                rect.left < (window.innerWidth || document.documentElement.clientWidth)
+                            );
+
+                            const doesNotOverlapComposer = composerRect
+                                ? !(rect.bottom > composerRect.top && rect.top < composerRect.bottom &&
+                                    rect.right > composerRect.left && rect.left < composerRect.right)
+                                : true;
+
+                            return isVisible && doesNotOverlapComposer;
+                        });
+
+                        if (visibleButtons.length > 0) {
+                            const buttonsAwayFromBottom = visibleButtons.filter(button => {
+                                const rect = button.getBoundingClientRect();
+                                return rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) - 100;
+                            });
+
+                            const targetButton = (buttonsAwayFromBottom.length > 0)
+                                ? buttonsAwayFromBottom.reduce((lowest, button) => {
+                                    const buttonBottom = button.getBoundingClientRect().bottom;
+                                    return buttonBottom > lowest.getBoundingClientRect().bottom ? button : lowest;
+                                }, buttonsAwayFromBottom[0])
+                                : null;
+
+                            targetButton?.click();
+                        }
+                    } catch (e) {
+                        // Silent fail
+                    }
+                }, 50);
+            },
+            [shortcuts.shortcutKeyNextQuestion]: () => {
+                setTimeout(() => {
+                    try {
+                        const allButtons = Array.from(
+                            document.querySelectorAll('button svg path[d^="M7.52925 3.7793C7.75652 3.55203"]')
+                        ).map(svgPath => svgPath.closest('button'));
+
+                        const composerBackground = document.getElementById('composer-background');
+                        const composerRect = composerBackground ? composerBackground.getBoundingClientRect() : null;
+
+                        const visibleButtons = allButtons.filter(button => {
+                            if (!button) return false;
+                            const rect = button.getBoundingClientRect();
+
+                            const isVisible = (
+                                rect.bottom > 0 &&
+                                rect.right > 0 &&
+                                rect.top < (window.innerHeight || document.documentElement.clientHeight) &&
+                                rect.left < (window.innerWidth || document.documentElement.clientWidth)
+                            );
+
+                            const doesNotOverlapComposer = composerRect
+                                ? !(rect.bottom > composerRect.top && rect.top < composerRect.bottom &&
+                                    rect.right > composerRect.left && rect.left < composerRect.right)
+                                : true;
+
+                            return isVisible && doesNotOverlapComposer;
+                        });
+
+                        if (visibleButtons.length > 0) {
+                            const buttonsAwayFromBottom = visibleButtons.filter(button => {
+                                const rect = button.getBoundingClientRect();
+                                return rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) - 100;
+                            });
+
+                            const targetButton = (buttonsAwayFromBottom.length > 0)
+                                ? buttonsAwayFromBottom.reduce((lowest, button) => {
+                                    const buttonBottom = button.getBoundingClientRect().bottom;
+                                    return buttonBottom > lowest.getBoundingClientRect().bottom ? button : lowest;
+                                }, buttonsAwayFromBottom[0])
+                                : null;
+
+                            targetButton?.click();
+                        }
+                    } catch (e) {
+                        // Silent fail
+                    }
+                }, 50);
             },
             [shortcuts.shortcutKeyCopyAllResponses]: copyAll,
             [shortcuts.shortcutKeyCopyAllCodeBlocks]: copyCode,

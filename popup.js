@@ -410,6 +410,10 @@ document.addEventListener('DOMContentLoaded', function () {
         'shortcutKeyToggleSidebarFoldersButton',
         'shortcutKeyToggleModelSelector',
         'shortcutKeyRegenerate',
+        'shortcutKeyScrollUpTwice',
+        'shortcutKeyScrollDownTwice',
+        'shortcutKeyPreviousQuestion',
+        'shortcutKeyNextQuestion',
     ];
     const shortcutKeyValues = {};
 
